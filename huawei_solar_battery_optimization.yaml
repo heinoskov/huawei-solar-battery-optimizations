@@ -706,24 +706,6 @@ script:
 
 # Automations
 automation:
-  # - id: hsbo_daily_battery_optimization
-  #   alias: "HSBO Daily Battery Optimization"
-  #   # This automation runs daily at 6:00 AM to perform the battery optimization analysis
-  #   # for the upcoming day. It calculates energy thresholds/pricing, analyzes hourly forecast data, and
-  #   # generates a summary of recommendations.
-  #   trigger:
-  #     - platform: time
-  #       at: "06:00:00"
-  #   action:
-  #     - service: input_number.set_value
-  #       target:
-  #         entity_id: input_number.hsbo_charge_start_time
-  #       data:
-  #         value: 0
-  #     - service: script.hsbo_calculate_energy_thresholds
-  #     - service: script.hsbo_analyze_hourly_data
-  #     - service: script.hsbo_generate_summary
-
   - id: hsbo_daily_battery_optimization
     alias: "HSBO Daily Battery Optimization"
     # This automation runs daily at 6:00 AM to perform the battery optimization analysis
