@@ -1,6 +1,6 @@
 # Huawei Solar Battery Optimization
 
-This Home Assistant package provides a set of scripts and automations to optimize the use of a Huawei solar battery system. It aims to maximize self-consumption, optimize charging/discharging of the Huawei Battery based on electricity prices and solar forecast, as well as manage grid export based on electricity spot prices. In Denmark we can even have negative spot prices and this package will manage these situation and disable grid export.
+This Home Assistant package provides a set of scripts and automations to optimize the use of a Huawei solar battery system. It aims to maximize self-consumption, optimize charging/discharging of the Huawei Battery based on electricity prices, and manage grid export based on electricity spot prices.
 
 ## Features
 
@@ -31,6 +31,7 @@ For more information on using packages in Home Assistant, see the [official docu
 You may need to adjust the following input sensors in the package file to match your setup:
 
 - `sensor.solcast_pv_forecast_forecast_today` (from Solcast integration)
+- `sensor.solcast_pv_forecast_forecast_tomorrow` (from Solcast integration)
 - `sensor.energi_data_service_total_price` (from Energi Data Service integration)
 - `sensor.energi_data_service_spot_price` (from Energi Data Service integration)
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)

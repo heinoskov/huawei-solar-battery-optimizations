@@ -46,6 +46,7 @@
 # --------------------------------------------------------------------------------------
 # A few input sensors may need to be adjusted:
 # sensor.solcast_pv_forecast_forecast_today (from Solcast integration)
+# sensor.solcast_pv_forecast_forecast_tomorrow (from Solcast integration)
 # sensor.energi_data_service_total_price (from Energi Data Service integration)
 # sensor.energi_data_service_spot_price (from Energi Data Service integration)
 # sensor.batteries_state_of_capacity (from Huawei Solar Integration)
