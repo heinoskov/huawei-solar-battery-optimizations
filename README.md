@@ -15,7 +15,7 @@ It aims to maximize self-consumption, optimize charging/discharging of Huawei Ba
 and manage grid export based on spot prices.
 
 --------------------------------------------------------------------------------------
-# Brief explanation
+# Brief explanation #
 Daily processes:
 The daily optimization runs at 6:00 AM, triggering energy threshold calculations, hourly data analysis, and
 summary generation.
@@ -39,7 +39,7 @@ Some of these are used in automations and some is there to use manually or for f
 --------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------
-# Requirements to use below scripts / automations
+# Requirements to use below scripts / automations #
 Huawai Solar integration by wlcrs: https://github.com/wlcrs/huawei_solar
 Solcast integration by oziee: https://github.com/BJReplay/ha-solcast-solar 
 Energi Data Service integration by MTrab: https://github.com/MTrab/energidataservice 
