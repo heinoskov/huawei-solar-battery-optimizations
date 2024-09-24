@@ -160,6 +160,8 @@ input_text:
     name: HSBO Recommendation for 16:00
   hsbo_recommended_working_mode:
     name: HSBO Recommended Working Mode
+  hsbo_device_id:
+    name: HSBO Device ID for Huawei Solar device
 
 input_datetime:
   hsbo_next_mode_change_time:
@@ -171,9 +173,9 @@ input_datetime:
 binary_sensor:
   - platform: template
     sensors:
-      negative_spot_price:
+      hsbo_negative_spot_price:
         friendly_name: "Negative Spot Price"
-        unique_id: negative_spot_price
+        unique_id: hsbo_negative_spot_price
         value_template: >
           {{ states('sensor.energi_data_service_spot_price')|float < 0 }}
         attribute_templates:
@@ -442,7 +444,7 @@ script:
           periods: |-
             00:01-06:00/1234567/+
             17:00-23:59/1234567/-
-          device_id: 8ee3ed713a270c3bbf9596bcfe414175
+          device_id: "{{ states('input_text.hsbo_device_id') }}"
       - service: select.select_option
         target:
           entity_id: select.batteries_excess_pv_energy_use_in_tou
@@ -502,7 +504,7 @@ script:
       - service: huawei_solar.set_tou_periods
         data:
           periods: 00:00-00:01/1234567/+
-          device_id: 8ee3ed713a270c3bbf9596bcfe414175
+          device_id: "{{ states('input_text.hsbo_device_id') }}"
       - service: select.select_option
         target:
           entity_id: select.batteries_excess_pv_energy_use_in_tou
@@ -528,7 +530,7 @@ script:
     sequence:
       - service: huawei_solar.set_maximum_feed_grid_power_percent
         data:
-          device_id: baba156a5f8b0c02d3503a0e21ce3a8e
+          device_id: "{{ states('input_text.hsbo_device_id') }}"
           power_percentage: 0
       - service: notify.notify
         data:
@@ -546,7 +548,7 @@ script:
     sequence:
       - service: huawei_solar.set_maximum_feed_grid_power_percent
         data:
-          device_id: baba156a5f8b0c02d3503a0e21ce3a8e
+          device_id: "{{ states('input_text.hsbo_device_id') }}"
           power_percentage: 100
       - service: notify.notify
         data:
@@ -854,7 +856,7 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - binary_sensor.negative_spot_price
+          - binary_sensor.hsbo_negative_spot_price
         id: price_change
       - platform: time_pattern
         hours: "*"
@@ -876,7 +878,7 @@ automation:
               - choose:
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'on'
                       - condition: not
                         conditions:
@@ -889,7 +891,7 @@ automation:
                           entity_id: script.hsbo_disable_grid_export
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'off'
                       - condition: not
                         conditions:
@@ -907,7 +909,7 @@ automation:
               - choose:
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'on'
                       - condition: not
                         conditions:
@@ -920,7 +922,7 @@ automation:
                           entity_id: script.hsbo_disable_grid_export
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'off'
                       - condition: not
                         conditions:
@@ -935,7 +937,7 @@ automation:
         data:
           message: >
             HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh, 
-            Negative price: {{ states('binary_sensor.negative_spot_price') }},
+            Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
             Current export state: {{ current_export_state }},
             Action taken: {{ trigger.id }}
     mode: single
@@ -959,6 +961,7 @@ sensor:
     sensors:
       hsbo_optimization_summary:
         friendly_name: "HSBO Battery Optimization Summary"
+        unique_id: hsbo_optimization_summary
         # This sensor provides a summary of the daily optimization results, including
         # potential grid selling, battery charging, and remaining charge levels.
         value_template: >
@@ -971,6 +974,7 @@ sensor:
     sensors:
       hsbo_next_mode_change_time:
         friendly_name: "HSBO Next Mode Change Time"
+        unique_id: hsbo_next_mode_change_time
         value_template: >
           {% set target_hour = states('input_number.hsbo_charge_start_time') | int %}
           {% set now_time = now() %}
