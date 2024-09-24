@@ -662,7 +662,7 @@ script:
           ac_charge_cutoff_soc: >
             {% if required_grid_charging > 0 %}
               {% set cutoff_percentage = ((target_capacity / max_capacity) * 100) | round(0) %}
-              {{ [cutoff_percentage, 100] | min | max(20) | float }}
+              {{ [cutoff_percentage, 100] | min(20) | max(100) | float }}
             {% else %}
               {{ 20 | float }}
             {% endif %}
