@@ -66,6 +66,21 @@ Future planned features include:
 1. Adjustable AMP configuration for EV Charging (Wallbox Pulsar Plus) based on excessive PV production after house load.
 2. Peak shaving / Capacity Control.
 
+## Lovelace card
+
+You can use the following lovelace card to show all entities related to HSBO using the [custom auto entities card](https://github.com/thomasloven/lovelace-auto-entities):
+
+```yaml
+- type: custom:auto-entities
+  card:
+    type: entities
+    title: HSBO
+  filter:
+    include:
+      - entity_id: '*hsbo*'
+    exclude: []
+```
+
 ## Contributing
 
 This package is created by Heino Skov. While no official support is provided, you're free to use and edit it to your needs. Contributions, suggestions, and improvements are welcome via GitHub issues and pull requests.
