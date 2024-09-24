@@ -379,8 +379,8 @@ script:
                     - condition: template
                       value_template: >
                         {{ 'Charge Battery' in current_recommendation and
-                           'if needed' not in current_recommendation and
-                           states('input_number.hsbo_charge_start_time') | float == 0 }}
+                          'if needed' not in current_recommendation and
+                          states('input_number.hsbo_charge_start_time') | float == 0 }}
                   sequence:
                     - service: input_number.set_value
                       target:
@@ -732,11 +732,7 @@ automation:
 
   - id: hsbo_implement_daily_optimization
     alias: "HSBO Implement Daily Optimization"
-    # This automation runs at 6:05 AM to implement the optimization strategy determined
-    # by the daily analysis. It initially disables battery charging/discharging, then
-    # switches to the appropriate mode at the calculated optimal charging start time.
-    # The calculated optimal charging time is to sell power to grid when price is higher 
-    # and wait with charging the battery to later in the day.
+    description: "Implements the daily optimization strategy for the Huawei Solar Battery system"
     trigger:
       - platform: time
         at: "06:05:00"
@@ -753,23 +749,15 @@ automation:
                 entity_id: input_number.hsbo_charge_start_time
                 above: 0
             sequence:
-              - variables:
-                  target_time: >
-                    {% set target_hour = states('input_number.hsbo_charge_start_time') | int %}
-                    {% set target = now().replace(hour=target_hour, minute=0, second=0, microsecond=0) %}
-                    {% if target <= now() %}
-                      {% set target = target.replace(day=target.day+1) %}
-                    {% endif %}
-                    {{ target }}
               - service: input_datetime.set_datetime
                 target:
                   entity_id: input_datetime.hsbo_next_mode_change_time
                 data:
-                  datetime: "{{ target_time.strftime('%Y-%m-%d %H:%M:%S') }}"
+                  datetime: "{{ states('sensor.hsbo_next_mode_change_time') }}"
               - service: system_log.write
                 data:
                   message: >
-                    HSBO: Set next mode change time to {{ target_time.strftime('%Y-%m-%d %H:%M:%S') }}.
+                    HSBO: Set next mode change time to {{ states('sensor.hsbo_next_mode_change_time') }}.
                     Current time: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
         default:
           - service: system_log.write
@@ -978,3 +966,16 @@ sensor:
           Battery Charging: {{ states('input_number.hsbo_battery_charging') }} kWh,
           Actual Remaining Charge: {{ states('input_number.hsbo_remaining_charge') }} kWh,
           Simulated Remaining Charge: {{ states('input_number.hsbo_simulated_remaining_charge') }} kWh
+
+  - platform: template
+    sensors:
+      hsbo_next_mode_change_time:
+        friendly_name: "HSBO Next Mode Change Time"
+        value_template: >
+          {% set target_hour = states('input_number.hsbo_charge_start_time') | int %}
+          {% set now_time = now() %}
+          {% set target = now_time.replace(hour=target_hour, minute=0, second=0, microsecond=0) %}
+          {% if target <= now_time %}
+            {% set target = target + timedelta(days=1) %}
+          {% endif %}
+          {{ target.strftime('%Y-%m-%d %H:%M:%S') }}
