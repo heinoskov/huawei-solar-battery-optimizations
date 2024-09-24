@@ -160,7 +160,27 @@ input_text:
     name: HSBO Recommendation for 16:00
   hsbo_recommended_working_mode:
     name: HSBO Recommended Working Mode
-
+  hsbo_device_id_inverter:
+    name: HSBO Device ID for Huawei Solar device - Inverter
+  hsbo_device_id_batteries:
+    name: HSBO Device ID for Huawei Solar device - Batteries
+  hsbo_batteries_grid_charge_cutoff_soc:
+    name: HSBO Sensor for number.batteries_grid_charge_cutoff_soc
+  hsbo_batteries_working_mode:
+    name: HSBO Sensor for select.batteries_working_mode
+  hsbo_batteries_excess_pv_energy_use_in_tou:
+    name: HSBO Sensor for select.batteries_excess_pv_energy_use_in_tou
+  hsbo_energi_data_service_total_price:
+    name: HSBO Sensor for sensor.energi_data_service
+  hsbo_energi_data_service_spot_price:
+    name: HSBO Sensor for sensor.energi_data_service_produktion
+  hsbo_solcast_pv_forecast_forecast_today:
+    name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_today
+  hsbo_solcast_pv_forecast_forecast_tomorrow:
+    name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_tomorrow
+  hsbo_batteries_state_of_capacity:
+    name: HSBO Sensor for batteries_state_of_capacity
+    
 input_datetime:
   hsbo_next_mode_change_time:
     name: HSBO Next Mode Change Time
@@ -171,13 +191,13 @@ input_datetime:
 binary_sensor:
   - platform: template
     sensors:
-      negative_spot_price:
+      hsbo_negative_spot_price:
         friendly_name: "Negative Spot Price"
-        unique_id: negative_spot_price
+        unique_id: hsbo_negative_spot_price
         value_template: >
-          {{ states('sensor.energi_data_service_spot_price')|float < 0 }}
+          {{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float < 0 }}
         attribute_templates:
-          energi_data_service_price: "{{ states('sensor.energi_data_service_spot_price') }}"
+          energi_data_service_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) }}"
 
 # Scripts
 script:
@@ -190,17 +210,17 @@ script:
         target:
           entity_id: input_number.hsbo_energy_avg_price
         data:
-          value: "{{ state_attr('sensor.energi_data_service_total_price', 'today_mean') | float }}"
+          value: "{{ state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_mean') | float }}"
       - service: input_number.set_value
         target:
           entity_id: input_number.hsbo_energy_high_threshold
         data:
-          value: "{{ (state_attr('sensor.energi_data_service_total_price', 'today_max')['price'] | float) * 0.95}}"
+          value: "{{ (state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_max')['price'] | float) * 0.95}}"
       - service: input_number.set_value
         target:
           entity_id: input_number.hsbo_energy_low_threshold
         data:
-          value: "{{ (state_attr('sensor.energi_data_service_total_price', 'today_min')['price'] | float) * 1.05}}"
+          value: "{{ (state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_min')['price'] | float) * 1.05}}"
 
   hsbo_analyze_hourly_data:
     alias: "HSBO Analyze Hourly Data"
@@ -223,13 +243,13 @@ script:
           value: 0
       - service: system_log.write
         data:
-          message: "HSBO: Battery capacity sensor value: {{ states('sensor.batteries_state_of_capacity') }}"
+          message: "HSBO: Battery capacity sensor value: states(states('input_text.hsbo_batteries_state_of_capacity'))"
       - service: input_number.set_value
         target:
           entity_id: input_number.hsbo_remaining_charge
         data:
           value: >
-            {% set battery_capacity = states('sensor.batteries_state_of_capacity') | float %}
+            {% set battery_capacity = states(states('input_text.hsbo_batteries_state_of_capacity')) | float %}
             {% if battery_capacity != 'unknown' and battery_capacity != 'unavailable' %}
               {{ ((100 - battery_capacity) / 100 * 10) | round(2) }}
             {% else %}
@@ -245,14 +265,14 @@ script:
           entity_id: input_number.hsbo_remaining_charge
       - service: system_log.write
         data:
-          message: "HSBO: Actual remaining charge set to: {{ states('input_number.hsbo_remaining_charge') }} kWh (Battery at {{ states('sensor.batteries_state_of_capacity') }}%)"
+          message: "HSBO: Actual remaining charge set to: {{ states('input_number.hsbo_remaining_charge') }} kWh (Battery at states(states('input_text.hsbo_batteries_state_of_capacity')) %)"
       - repeat:
           count: 11
           sequence:
             - variables:
                 current_hour: "{{ repeat.index + 5 }}"
                 hour_forecast: >
-                  {{ state_attr('sensor.solcast_pv_forecast_forecast_today', 'detailedHourly')[current_hour].pv_estimate * 0.9 }}
+                  {{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'detailedHourly')[current_hour].pv_estimate * 0.9 }}
             - service: script.hsbo_process_hourly_data
               data:
                 hour: "{{ current_hour }}"
@@ -268,7 +288,7 @@ script:
     # charge the battery, or use the energy based on the current price and battery state.
     sequence:
       - variables:
-          hour_price: "{{ state_attr('sensor.energi_data_service_total_price', 'raw_today')[hour].price }}"
+          hour_price: "{{ state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'raw_today')[hour].price }}"
           charging_amount: "{{ [hour_forecast, 5, states('input_number.hsbo_simulated_remaining_charge') | float] | min }}"
       - choose:
           - conditions:
@@ -442,17 +462,17 @@ script:
           periods: |-
             00:01-06:00/1234567/+
             17:00-23:59/1234567/-
-          device_id: 8ee3ed713a270c3bbf9596bcfe414175
+          device_id: "{{ states('input_text.hsbo_device_id_batteries') }}"
       - service: select.select_option
         target:
-          entity_id: select.batteries_excess_pv_energy_use_in_tou
+          entity_id: "{{ states('input_text.hsbo_batteries_excess_pv_energy_use_in_tou') }}"
         data:
           option: charge
       - delay:
           seconds: 10
       - service: select.select_option
         target:
-          entity_id: select.batteries_working_mode
+          entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: time_of_use_luna2000
       - service: notify.gotify_solar
@@ -468,7 +488,7 @@ script:
     sequence:
       - service: select.select_option
         target:
-          entity_id: select.batteries_working_mode
+          entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: fully_fed_to_grid
       - service: notify.gotify_solar
@@ -484,7 +504,7 @@ script:
     sequence:
       - service: select.select_option
         target:
-          entity_id: select.batteries_working_mode
+          entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: maximise_self_consumption
       - service: notify.gotify_solar
@@ -502,17 +522,17 @@ script:
       - service: huawei_solar.set_tou_periods
         data:
           periods: 00:00-00:01/1234567/+
-          device_id: 8ee3ed713a270c3bbf9596bcfe414175
+          device_id: "{{ states('input_text.hsbo_device_id_batteries') }}"
       - service: select.select_option
         target:
-          entity_id: select.batteries_excess_pv_energy_use_in_tou
+          entity_id: "{{ states('input_text.hsbo_batteries_excess_pv_energy_use_in_tou') }}"
         data:
           option: fed_to_grid
       - delay:
           seconds: 10
       - service: select.select_option
         target:
-          entity_id: select.batteries_working_mode
+          entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: time_of_use_luna2000
       - service: notify.gotify_solar
@@ -528,7 +548,7 @@ script:
     sequence:
       - service: huawei_solar.set_maximum_feed_grid_power_percent
         data:
-          device_id: baba156a5f8b0c02d3503a0e21ce3a8e
+          device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
           power_percentage: 0
       - service: notify.notify
         data:
@@ -546,7 +566,7 @@ script:
     sequence:
       - service: huawei_solar.set_maximum_feed_grid_power_percent
         data:
-          device_id: baba156a5f8b0c02d3503a0e21ce3a8e
+          device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
           power_percentage: 100
       - service: notify.notify
         data:
@@ -566,7 +586,7 @@ script:
       
       # Get tomorrow's solar forecast with debug logging
       - variables:
-          tomorrow_forecast_raw: "{{ state_attr('sensor.solcast_pv_forecast_forecast_tomorrow', 'estimate') }}"
+          tomorrow_forecast_raw: "{{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'estimate') }}"
       - service: system_log.write
         data:
           message: "HSBO Debug: Raw tomorrow forecast: {{ tomorrow_forecast_raw }}"
@@ -575,9 +595,9 @@ script:
           tomorrow_forecast: >
             {% if tomorrow_forecast_raw is not none and tomorrow_forecast_raw | float(-1) >= 0 %}
               {{ tomorrow_forecast_raw | float }}
-            {% elif state_attr('sensor.solcast_pv_forecast_forecast_today', 'estimate') is not none 
-                    and state_attr('sensor.solcast_pv_forecast_forecast_today', 'estimate') | float(-1) >= 0 %}
-              {{ state_attr('sensor.solcast_pv_forecast_forecast_today', 'estimate') | float }}
+            {% elif state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') is not none 
+                    and state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') | float(-1) >= 0 %}
+              {{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') | float }}
             {% else %}
               5
             {% endif %}
@@ -723,7 +743,7 @@ automation:
           value: 0
       - service: number.set_value
         target:
-          entity_id: number.batteries_grid_charge_cutoff_soc
+          entity_id: "{{ states('input_text.hsbo_batteries_grid_charge_cutoff_soc') }}"
         data:
           value: "{{ states('input_number.hsbo_ac_charge_cutoff_soc') | int }}"
       - service: script.hsbo_calculate_energy_thresholds
@@ -854,7 +874,7 @@ automation:
     trigger:
       - platform: state
         entity_id:
-          - binary_sensor.negative_spot_price
+          - binary_sensor.hsbo_negative_spot_price
         id: price_change
       - platform: time_pattern
         hours: "*"
@@ -865,7 +885,7 @@ automation:
         after: "07:00:00"
         before: "20:00:00"
     variables:
-      spot_price: "{{ states('sensor.energi_data_service_spot_price') | float }}"
+      spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
       current_export_state: "{{ states('sensor.inverter_active_power_control') }}"
     action:
       - choose:
@@ -876,7 +896,7 @@ automation:
               - choose:
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'on'
                       - condition: not
                         conditions:
@@ -889,7 +909,7 @@ automation:
                           entity_id: script.hsbo_disable_grid_export
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'off'
                       - condition: not
                         conditions:
@@ -907,7 +927,7 @@ automation:
               - choose:
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'on'
                       - condition: not
                         conditions:
@@ -920,7 +940,7 @@ automation:
                           entity_id: script.hsbo_disable_grid_export
                   - conditions:
                       - condition: state
-                        entity_id: binary_sensor.negative_spot_price
+                        entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'off'
                       - condition: not
                         conditions:
@@ -935,7 +955,7 @@ automation:
         data:
           message: >
             HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh, 
-            Negative price: {{ states('binary_sensor.negative_spot_price') }},
+            Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
             Current export state: {{ current_export_state }},
             Action taken: {{ trigger.id }}
     mode: single
@@ -959,6 +979,7 @@ sensor:
     sensors:
       hsbo_optimization_summary:
         friendly_name: "HSBO Battery Optimization Summary"
+        unique_id: hsbo_optimization_summary
         # This sensor provides a summary of the daily optimization results, including
         # potential grid selling, battery charging, and remaining charge levels.
         value_template: >
@@ -971,6 +992,7 @@ sensor:
     sensors:
       hsbo_next_mode_change_time:
         friendly_name: "HSBO Next Mode Change Time"
+        unique_id: hsbo_next_mode_change_time
         value_template: >
           {% set target_hour = states('input_number.hsbo_charge_start_time') | int %}
           {% set now_time = now() %}
