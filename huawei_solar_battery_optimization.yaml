@@ -272,7 +272,8 @@ script:
             - variables:
                 current_hour: "{{ repeat.index + 5 }}"
                 hour_forecast: >
-                  {{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'detailedHourly')[current_hour].pv_estimate * 0.9 }}
+                  {% set forecast = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'detailedHourly') %}
+                  {{ forecast[current_hour].pv_estimate * 0.9 | float(0) if forecast != None else 0.0 }}
             - service: script.hsbo_process_hourly_data
               data:
                 hour: "{{ current_hour }}"
@@ -475,7 +476,7 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: time_of_use_luna2000
-      - service: notify.gotify_solar
+      - service: notify.notify
         data:
           message: Huawei Solar Working Mode set to Default TOU
     mode: single
@@ -491,7 +492,7 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: fully_fed_to_grid
-      - service: notify.gotify_solar
+      - service: notify.notify
         data:
           message: Huawei Solar Working Mode set to Fully Fed to Grid
     description: "This forces the Solar Plant to Fully Fed to Grid"
@@ -507,7 +508,7 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: maximise_self_consumption
-      - service: notify.gotify_solar
+      - service: notify.notify
         data:
           message: Huawei Solar Working Mode set to Maximise Self Consumption
     description: "This script enables the Maximise Self Consumption working mode. TOU is not used in this mode"
@@ -535,7 +536,7 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: time_of_use_luna2000
-      - service: notify.gotify_solar
+      - service: notify.notify
         data:
           message: Huawei Solar Working Mode set to TOU with Disabled Battery Charging and Discharging
     mode: single
@@ -553,9 +554,6 @@ script:
       - service: notify.notify
         data:
           message: "HSBO: Solar Inverter GRID EXPORT disabled"
-      - service: notify.gotify_solar
-        data:
-          message: "HSBO: Solar Inverter GRID EXPORT disabled"
     mode: single
     description: "Disables grid export and sends notifications"
 
@@ -569,9 +567,6 @@ script:
           device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
           power_percentage: 100
       - service: notify.notify
-        data:
-          message: "HSBO: Solar Inverter GRID EXPORT enabled"
-      - service: notify.gotify_solar
         data:
           message: "HSBO: Solar Inverter GRID EXPORT enabled"
     mode: single
@@ -662,7 +657,7 @@ script:
           ac_charge_cutoff_soc: >
             {% if required_grid_charging > 0 %}
               {% set cutoff_percentage = ((target_capacity / max_capacity) * 100) | round(0) %}
-              {{ [cutoff_percentage, 100] | min(20) | max(100) | float }}
+              {{ [[cutoff_percentage, 100] | min, 20] | max | float }}
             {% else %}
               {{ 20 | float }}
             {% endif %}
@@ -794,7 +789,7 @@ automation:
         value_template: >
           {{ states('input_datetime.hsbo_next_mode_change_time') != 'unavailable' 
             and states('input_datetime.hsbo_next_mode_change_time') != 'unknown'
-            and now() >= states.input_datetime.hsbo_next_mode_change_time.state }}
+            and now() | as_timestamp >= states.input_datetime.hsbo_next_mode_change_time.state | as_timestamp }}
     action:
       - service: script.turn_on
         target:
