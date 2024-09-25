@@ -789,7 +789,7 @@ automation:
         value_template: >
           {{ states('input_datetime.hsbo_next_mode_change_time') != 'unavailable' 
             and states('input_datetime.hsbo_next_mode_change_time') != 'unknown'
-            and now() >= states.input_datetime.hsbo_next_mode_change_time.state | as_datetime }}
+            and now() | as_timestamp >= states.input_datetime.hsbo_next_mode_change_time.state | as_timestamp }}
     action:
       - service: script.turn_on
         target:
