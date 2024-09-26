@@ -421,32 +421,32 @@ script:
             {% set simulated_remaining_charge = states('input_number.hsbo_simulated_remaining_charge') | float %}
             {% set charge_start_hour = states('input_number.hsbo_charge_start_time') | int %}
 
-            Battery Optimization Summary:
-            --------------------------------
-            Current remaining charge: {{ actual_remaining_charge | round(2) }} kWh
-            Simulated remaining charge after optimizations: {{ simulated_remaining_charge | round(2) }} kWh
-            Total potential grid selling: {{ grid_selling | round(2) }} kWh
-            Total potential battery charging: {{ battery_charging | round(2) }} kWh
-
+            Battery Optimization Summary:{{ '\n' -}}
+            --------------------------------{{ '\n' -}}
+            Current remaining charge: {{ actual_remaining_charge | round(2) }} kWh{{ '\n' -}}
+            Simulated remaining charge after optimizations: {{ simulated_remaining_charge | round(2) }} kWh{{ '\n' -}}
+            Total potential grid selling: {{ grid_selling | round(2) }} kWh{{ '\n' -}}
+            Total potential battery charging: {{ battery_charging | round(2) }} kWh{{ '\n' -}}
+            {{ '\n' -}}
             {% if simulated_remaining_charge <= 0 %}
-            The battery can be fully charged to 100% by 17:00 based on the simulation.
+            The battery can be fully charged to 100% by 17:00 based on the simulation.{{ '\n' -}}
             {% else %}
-            Warning: The simulation shows the battery may not be fully charged by 17:00.
-            Consider adjusting the charging strategy or using grid power during the lowest-priced hours.
+            Warning: The simulation shows the battery may not be fully charged by 17:00.{{ '\n' -}}
+            Consider adjusting the charging strategy or using grid power during the lowest-priced hours.{{ '\n' -}}
             {% endif %}
-
-            Hourly Recommendations:
+            {{ '\n' -}}
+            Hourly Recommendations:{{ '\n' -}}
             --------------------------------
             {% for hour in range(6, 17) %}
-            {{ states('input_text.hsbo_recommendation_' ~ hour) | replace(hour | string ~ ':00: ', hour | string ~ ':00 - ') }}
+            {{ states('input_text.hsbo_recommendation_' ~ hour) | replace(hour | string ~ ':00: ', hour | string ~ ':00 - ') }}{{ '\n' -}}
             {% endfor %}
-
-            Conclusion:
-            --------------------------------
+            {{ '\n' -}}
+            Conclusion:{{ '\n' -}}
+            --------------------------------{{ '\n' -}}
             {% if charge_start_hour > 0 %}
-            Recommended battery charging start time: {{ charge_start_hour }}:00
+            Recommended battery charging start time: {{ charge_start_hour }}:00{{ '\n' -}}
             {% else %}
-            No specific battery charging time recommended. Consider selling to grid or manual adjustment.
+            No specific battery charging time recommended. Consider selling to grid or manual adjustment.{{ '\n' -}}
             {% endif %}
       - service: system_log.write
         data:
