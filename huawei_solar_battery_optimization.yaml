@@ -1047,7 +1047,7 @@ automation:
                       - condition: template
                         value_template: >
                           {{ solar_production > house_load and 
-                             now() < (next_mode_change_time | as_datetime) }}
+                            now() < (next_mode_change_time | as_datetime) }}
                       - condition: template
                         value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
                     sequence:
