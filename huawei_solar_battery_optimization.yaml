@@ -971,10 +971,10 @@ automation:
     trigger:
       - platform: time_pattern
         minutes: "/5"
-    condition:
-      - condition: time
-        after: "06:00:00"
-        before: "23:59:59"
+        id: regular_check
+      - platform: time
+        at: "00:00:01"
+        id: midnight_check
     action:
       - variables:
           current_mode: "{{ states(states('input_text.hsbo_batteries_working_mode')) }}"
@@ -982,88 +982,129 @@ automation:
           house_load: "{{ states('sensor.meter_active_power') | float(0) }}"
           next_mode_change_time: "{{ states('input_datetime.hsbo_next_mode_change_time') }}"
           current_month: "{{ now().month }}"
+          recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
       - choose:
-          # Between 6 AM and solar production > house load > set working mode to Default TOU
+          # Midnight: Set mode based on evening calculation
           - conditions:
-              - condition: time
-                before: "10:00:00"
-              - condition: template
-                value_template: "{{ solar_production <= house_load }}"
-              - condition: template
-                value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
+              - condition: trigger
+                id: midnight_check
             sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-              - service: system_log.write
-                data:
-                  message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }}"
+              - choose:
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ recommended_working_mode == 'TOU' and current_mode != 'time_of_use_luna2000' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_default_tou_periods
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Set to Default TOU Mode at midnight based on evening calculation"
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ recommended_working_mode == 'Maximise Self Consumption' and current_mode != 'maximise_self_consumption' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Set to Maximise Self Consumption at midnight based on evening calculation"
+                default:
+                  - service: system_log.write
+                    data:
+                      message: "HSBO: No change needed at midnight. Current mode: {{ current_mode }}"
 
-          # When solar production > house load, before next_mode_change_time > set working mode to fully fed to grid
+          # Regular checks throughout the day
           - conditions:
+              - condition: trigger
+                id: regular_check
               - condition: time
-                before: "17:00:00"
-              - condition: template
-                value_template: >
-                  {{ solar_production > house_load and 
-                     now() < (next_mode_change_time | as_datetime) }}
-              - condition: template
-                value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
+                after: "06:00:00"
+                before: "23:59:59"
             sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_fully_fed_to_grid
-              - service: system_log.write
-                data:
-                  message: "HSBO: Changed to Fully Fed to Grid at {{ now().strftime('%H:%M:%S') }}"
+              - choose:
+                  # Between 6 AM and solar production > house load
+                  - conditions:
+                      - condition: time
+                        before: "10:00:00"
+                      - condition: template
+                        value_template: "{{ solar_production <= house_load }}"
+                      - condition: template
+                        value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_default_tou_periods
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }}"
 
-          # At or after next_mode_change_time, but before 5 PM > set working mode to maximise self consumption
-          - conditions:
-              - condition: time
-                before: "17:00:00"
-              - condition: template
-                value_template: "{{ now() >= (next_mode_change_time | as_datetime) }}"
-              - condition: template
-                value_template: "{{ current_mode != 'maximise_self_consumption' }}"
-            sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-              - service: system_log.write
-                data:
-                  message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }}"
+                  # When solar production > house load, before next_mode_change_time
+                  - conditions:
+                      - condition: time
+                        before: "17:00:00"
+                      - condition: template
+                        value_template: >
+                          {{ solar_production > house_load and 
+                             now() < (next_mode_change_time | as_datetime) }}
+                      - condition: template
+                        value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_fully_fed_to_grid
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Changed to Fully Fed to Grid at {{ now().strftime('%H:%M:%S') }}"
 
-          # After 5 PM (Winter/Spring months: October to April) > set working mode to Default TOU
-          - conditions:
-              - condition: time
-                after: "17:00:00"
-              - condition: template
-                value_template: "{{ current_month in [9, 10, 11, 12, 1, 2, 3, 4] }}"
-              - condition: template
-                value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
-            sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-              - service: system_log.write
-                data:
-                  message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }}"
+                  # At or after next_mode_change_time, but before 5 PM
+                  - conditions:
+                      - condition: time
+                        before: "17:00:00"
+                      - condition: template
+                        value_template: "{{ now() >= (next_mode_change_time | as_datetime) }}"
+                      - condition: template
+                        value_template: "{{ current_mode != 'maximise_self_consumption' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }}"
 
-          # After 5 PM (Summer/Fall months: May to September) > set working mode to maximise self consumption
-          - conditions:
-              - condition: time
-                after: "17:00:00"
-              - condition: template
-                value_template: "{{ current_month in [5, 6, 7, 8] }}"
-              - condition: template
-                value_template: "{{ current_mode != 'maximise_self_consumption' }}"
-            sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-              - service: system_log.write
-                data:
-                  message: "HSBO: Changed to Maximise Self Consumption (Summer/Fall months) at {{ now().strftime('%H:%M:%S') }}"
+                  # After 5 PM (Winter/Spring months: October to April)
+                  - conditions:
+                      - condition: time
+                        after: "17:00:00"
+                      - condition: template
+                        value_template: "{{ current_month in [9, 10, 11, 12, 1, 2, 3, 4] }}"
+                      - condition: template
+                        value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_default_tou_periods
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }}"
+
+                  # After 5 PM (Summer/Fall months: May to September)
+                  - conditions:
+                      - condition: time
+                        after: "17:00:00"
+                      - condition: template
+                        value_template: "{{ current_month in [5, 6, 7, 8] }}"
+                      - condition: template
+                        value_template: "{{ current_mode != 'maximise_self_consumption' }}"
+                    sequence:
+                      - service: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+                      - service: system_log.write
+                        data:
+                          message: "HSBO: Changed to Maximise Self Consumption (Summer/Fall months) at {{ now().strftime('%H:%M:%S') }}"
     mode: single
 
 # Sensors
