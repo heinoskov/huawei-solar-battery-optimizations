@@ -1038,7 +1038,7 @@ automation:
               - condition: time
                 after: "17:00:00"
               - condition: template
-                value_template: "{{ current_month in [10, 11, 12, 1, 2, 3, 4] }}"
+                value_template: "{{ current_month in [9, 10, 11, 12, 1, 2, 3, 4] }}"
               - condition: template
                 value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
             sequence:
@@ -1054,7 +1054,7 @@ automation:
               - condition: time
                 after: "17:00:00"
               - condition: template
-                value_template: "{{ current_month in [5, 6, 7, 8, 9] }}"
+                value_template: "{{ current_month in [5, 6, 7, 8] }}"
               - condition: template
                 value_template: "{{ current_mode != 'maximise_self_consumption' }}"
             sequence:
