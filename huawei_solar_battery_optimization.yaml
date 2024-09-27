@@ -1045,7 +1045,7 @@ automation:
                       - condition: not
                         conditions:
                           - condition: state
-                            entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
+                            entity_id: input_text.hsbo_inverter_active_power_control
                             state: "Limited to 0.0%"
                     sequence:
                       - service: script.turn_on
@@ -1058,7 +1058,7 @@ automation:
                       - condition: not
                         conditions:
                           - condition: state
-                            entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
+                            entity_id: input_text.hsbo_inverter_active_power_control
                             state: "Limited to 100.0%"
                     sequence:
                       - service: script.turn_on
@@ -1172,7 +1172,7 @@ automation:
                       - condition: not
                         conditions:
                           - condition: state
-                            entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
+                            entity_id: input_text.hsbo_inverter_active_power_control
                             state: "Limited to 0.0%"
                     sequence:
                       - service: script.turn_on
@@ -1185,7 +1185,7 @@ automation:
                       - condition: not
                         conditions:
                           - condition: state
-                            entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
+                            entity_id: input_text.hsbo_inverter_active_power_control
                             state: "Limited to 100.0%"
                     sequence:
                       - service: script.turn_on
