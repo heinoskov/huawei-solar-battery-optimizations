@@ -198,7 +198,7 @@ binary_sensor:
   - platform: template
     sensors:
       hsbo_negative_spot_price:
-        friendly_name: "Negative Spot Price"
+        friendly_name: "HSBO Negative Spot Price"
         unique_id: hsbo_negative_spot_price
         value_template: >
           {{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float < 0 }}
