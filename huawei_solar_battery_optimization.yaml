@@ -996,7 +996,8 @@ automation:
           current_month: "{{ now().month }}"
           recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
           spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
-          current_export_state: "{{ states(states('input_text.hsbo_inverter_active_power_control')) }}"
+          inverter_entity: "{{ states('input_text.hsbo_inverter_active_power_control') }}"
+          current_export_state: "{{ states(inverter_entity) }}"
       - choose:
           # Midnight: Set mode based on evening calculation
           - conditions:
@@ -1042,11 +1043,9 @@ automation:
                       - condition: state
                         entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'on'
-                      - condition: not
-                        conditions:
-                          - condition: state
-                            entity_id: input_text.hsbo_inverter_active_power_control
-                            state: "Limited to 0.0%"
+                      - condition: template
+                        value_template: >
+                          {{ states(inverter_entity) != "Limited to 0.0%" }}
                     sequence:
                       - service: script.turn_on
                         target:
@@ -1055,11 +1054,9 @@ automation:
                       - condition: state
                         entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'off'
-                      - condition: not
-                        conditions:
-                          - condition: state
-                            entity_id: input_text.hsbo_inverter_active_power_control
-                            state: "Limited to 100.0%"
+                      - condition: template
+                        value_template: >
+                          {{ states(inverter_entity) != "Limited to 100.0%" }}
                     sequence:
                       - service: script.turn_on
                         target:
@@ -1069,8 +1066,8 @@ automation:
                   message: >
                     HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh, 
                     Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
-                    Current export state: {{ current_export_state }},
-                    Action taken: Spot price change
+                    Current export state: {{ states(inverter_entity) }},
+                    Action taken: {{ trigger.id if trigger is defined else 'Manual check' }}
 
           # Regular checks throughout the day
           - conditions:
@@ -1104,7 +1101,7 @@ automation:
                       - condition: template
                         value_template: >
                           {{ solar_production > house_load and 
-                              now() < (next_mode_change_time | as_datetime) }}
+                            now().replace(tzinfo=None) < (next_mode_change_time | as_timestamp | timestamp_custom('%Y-%m-%d %H:%M:%S')) }}
                       - condition: template
                         value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
                     sequence:
@@ -1120,7 +1117,7 @@ automation:
                       - condition: time
                         before: "17:00:00"
                       - condition: template
-                        value_template: "{{ now() >= (next_mode_change_time | as_datetime) }}"
+                        value_template: '{{ now().replace(tzinfo=None) >= (next_mode_change_time | as_timestamp | timestamp_custom("%Y-%m-%d %H:%M:%S")) }}'
                       - condition: template
                         value_template: "{{ current_mode != 'maximise_self_consumption' }}"
                     sequence:
@@ -1169,11 +1166,9 @@ automation:
                       - condition: state
                         entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'on'
-                      - condition: not
-                        conditions:
-                          - condition: state
-                            entity_id: input_text.hsbo_inverter_active_power_control
-                            state: "Limited to 0.0%"
+                      - condition: template
+                        value_template: >
+                          {{ states(inverter_entity) != "Limited to 0.0%" }}
                     sequence:
                       - service: script.turn_on
                         target:
@@ -1182,11 +1177,9 @@ automation:
                       - condition: state
                         entity_id: binary_sensor.hsbo_negative_spot_price
                         state: 'off'
-                      - condition: not
-                        conditions:
-                          - condition: state
-                            entity_id: input_text.hsbo_inverter_active_power_control
-                            state: "Limited to 100.0%"
+                      - condition: template
+                        value_template: >
+                          {{ states(inverter_entity) != "Limited to 100.0%" }}
                     sequence:
                       - service: script.turn_on
                         target:
