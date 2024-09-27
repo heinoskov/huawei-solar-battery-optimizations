@@ -1102,7 +1102,7 @@ automation:
                         value_template: >
                           {% set next_change = strptime(next_mode_change_time, '%Y-%m-%d %H:%M:%S') %}
                           {{ solar_production > house_load and 
-                            now() < next_change }}
+                            now() | as_timestamp < next_change | as_timestamp }}
                       - condition: template
                         value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
                     sequence:
@@ -1120,7 +1120,7 @@ automation:
                       - condition: template
                         value_template: >
                           {% set next_change = strptime(next_mode_change_time, '%Y-%m-%d %H:%M:%S') %}
-                          {{ now() >= next_change }}
+                          {{ now() | as_timestamp >= next_change | as_timestamp }}
                       - condition: template
                         value_template: "{{ current_mode != 'maximise_self_consumption' }}"
                     sequence:
