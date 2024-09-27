@@ -701,22 +701,23 @@ script:
         data:
           value: "{{ recommended_working_mode }}"
       
+      # Replaced by automation hsbo_comprehensive_daily_mode_management - remove this section after October 10th 2024
       # Trigger appropriate working mode script
-      - choose:
-          - conditions:
-              - condition: template
-                value_template: "{{ recommended_working_mode == 'TOU' }}"
-            sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-          - conditions:
-              - condition: template
-                value_template: "{{ recommended_working_mode == 'Maximise Self Consumption' }}"
-            sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+      # - choose:
+      #     - conditions:
+      #         - condition: template
+      #           value_template: "{{ recommended_working_mode == 'TOU' }}"
+      #       sequence:
+      #         - service: script.turn_on
+      #           target:
+      #             entity_id: script.hsbo_set_working_mode_to_default_tou_periods
+      #     - conditions:
+      #         - condition: template
+      #           value_template: "{{ recommended_working_mode == 'Maximise Self Consumption' }}"
+      #       sequence:
+      #         - service: script.turn_on
+      #           target:
+      #             entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
       
       - service: system_log.write
         data:
