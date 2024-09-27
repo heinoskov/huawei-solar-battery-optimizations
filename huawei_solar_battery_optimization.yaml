@@ -180,6 +180,10 @@ input_text:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_tomorrow
   hsbo_batteries_state_of_capacity:
     name: HSBO Sensor for batteries_state_of_capacity
+  hsbo_house_consumption_power:
+    name: HSBO Sensor for house consumption power
+  hsbo_solar_production_power:
+    name: HSBO Sensor for solar production power
     
 input_datetime:
   hsbo_next_mode_change_time:
@@ -984,8 +988,8 @@ automation:
     action:
       - variables:
           current_mode: "{{ states(states('input_text.hsbo_batteries_working_mode')) }}"
-          solar_production: "{{ states('sensor.inverter_active_power') | float(0) }}"
-          house_load: "{{ states('sensor.meter_active_power') | float(0) }}"
+          solar_production: "{{ states(states('input_text.hsbo_solar_production_power')) | float(0) }}"
+          house_load: "{{ states(states('input_text.hsbo_house_consumption_power')) | float(0) }}"
           next_mode_change_time: "{{ states('input_datetime.hsbo_next_mode_change_time') }}"
           current_month: "{{ now().month }}"
           recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
