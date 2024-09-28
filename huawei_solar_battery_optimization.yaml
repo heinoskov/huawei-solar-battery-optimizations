@@ -206,6 +206,8 @@ input_text:
     name: HSBO Sensor for solar production power
   hsbo_ev_charger_status:
     name: HSBO Sensor for EV charging status
+  hsbo_current_priority_mode:
+    name: HSBO Sensor for current priority mode
     
 input_datetime:
   hsbo_next_mode_change_time:
@@ -224,6 +226,14 @@ binary_sensor:
           {{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float < 0 }}
         attribute_templates:
           energi_data_service_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) }}"
+
+  - platform: template
+    sensors:
+      hsbo_ev_charging:
+        friendly_name: "HSBO EV Charging Status"
+        value_template: >-
+          {% set ev_status = states(states('input_text.hsbo_ev_charger_status')) | lower %}
+          {{ ev_status in ['charging', 'charging scheduled'] }}
 
 # Scripts
 script:
@@ -1005,6 +1015,16 @@ automation:
         entity_id:
           - binary_sensor.hsbo_negative_spot_price
         id: price_change
+      - platform: state 
+        entity_id:
+          - binary_sensor.hsbo_ev_charging 
+        to: 'on'
+        id: ev_charging_start
+      - platform: state 
+        entity_id:
+          - binary_sensor.hsbo_ev_charging 
+        to: 'off'
+        id: ev_charging_stop
     action:
       - variables:
           current_mode: "{{ states(states('input_text.hsbo_batteries_working_mode')) }}"
@@ -1016,11 +1036,61 @@ automation:
           spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
           inverter_entity: "{{ states('input_text.hsbo_inverter_active_power_control') }}"
           current_export_state: "{{ states(inverter_entity) }}"
+          ev_charging: "{{ is_state('binary_sensor.hsbo_ev_charging', 'on') }}"
       - choose:
-          # Midnight: Set mode based on evening calculation
+          # EV Charging Start: Set to TOU and Disable Battery Charging and Discharging
+          - conditions:
+              - condition: trigger
+                id: ev_charging_start
+            sequence:
+              - action: script.turn_on
+                target:
+                  entity_id: script.hsbo_set_working_mode_to_tou_and_disable_battery_charging_and_discharging
+              - action: input_text.set_value
+                target:
+                  entity_id: input_text.hsbo_current_priority_mode
+                data:
+                  value: "ev_charging"
+              - action: system_log.write
+                data:
+                  message: "HSBO: Changed to TOU with Disabled Battery Charging and Discharging due to EV charging start at {{ now().strftime('%H:%M:%S') }}"
+
+          # EV Charging Stop: Revert to recommended mode
+          - conditions:
+              - condition: trigger
+                id: ev_charging_stop
+            sequence:
+              - choose:
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ recommended_working_mode == 'TOU' }}"
+                    sequence:
+                      - action: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_default_tou_periods
+                  - conditions:
+                      - condition: template
+                        value_template: "{{ recommended_working_mode == 'Maximise Self Consumption' }}"
+                    sequence:
+                      - action: script.turn_on
+                        target:
+                          entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+              - action: input_text.set_value
+                target:
+                  entity_id: input_text.hsbo_current_priority_mode
+                data:
+                  value: "default"
+              - action: system_log.write
+                data:
+                  message: "HSBO: Reverted to {{ recommended_working_mode }} mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
+
+          # Midnight: Set mode based on evening calculation (only if not EV charging)
           - conditions:
               - condition: trigger
                 id: midnight_check
+              - condition: state
+                entity_id: binary_sensor.hsbo_ev_charging
+                state: 'off'
             sequence:
               - choose:
                   - conditions:
@@ -1048,7 +1118,7 @@ automation:
                     data:
                       message: "HSBO: No change needed at midnight. Current mode: {{ current_mode }}"
 
-          # Manage inverter export based on spot price
+          # Manage inverter export based on spot price (regardless of EV charging status)
           - conditions:
               - condition: trigger
                 id: price_change
@@ -1087,13 +1157,16 @@ automation:
                     Current export state: {{ states(inverter_entity) }},
                     Action taken: {{ trigger.id if trigger is defined else 'Manual check' }}
 
-          # Regular checks throughout the day
+          # Regular checks throughout the day (only if not EV charging)
           - conditions:
               - condition: trigger
                 id: regular_check
               - condition: time
                 after: "06:00:00"
                 before: "23:59:59"
+              - condition: state
+                entity_id: binary_sensor.hsbo_ev_charging
+                state: 'off'
             sequence:
               - choose:
                   # Between 6 AM and solar production > house load
@@ -1213,7 +1286,7 @@ automation:
                     Current export state: {{ current_export_state }},
                     Action taken: Regular check
     mode: single
-
+    
 # Sensors
 sensor:
   - platform: template
