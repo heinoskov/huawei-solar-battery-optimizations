@@ -47,10 +47,6 @@ You may need to adjust the following input sensors in the package file to match 
 - **5:00 PM**: The system switches to an appropriate mode based on the current month.
 - **9:00 PM**: The system calculates the charging strategy for the next day.
 
-### Monthly Process
-
-- On the 1st of each month, the system checks and sets the appropriate working mode based on the season.
-
 ### Continuous Processes
 
 - The system manages inverter export based on spot prices, triggered by price changes or hourly checks.
