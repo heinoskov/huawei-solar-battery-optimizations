@@ -120,6 +120,39 @@ These default periods are set to optimize battery usage based on typical daily e
 
 By utilizing these working modes and the grid export management feature, you can tailor your Huawei solar battery system's operation to your specific needs, local energy market conditions, and personal energy goals.
 
+## EV Charging
+
+This package now includes features to optimize battery usage when an electric vehicle (EV) is charging. Here's how it works:
+
+### EV Charging Detection
+
+The system monitors the state of EV charging using a binary sensor (`binary_sensor.hsbo_ev_charging`). When EV charging starts or stops, it triggers specific actions to optimize energy usage.
+
+### Behavior During EV Charging
+
+When EV charging starts:
+1. The system switches to a special Time-of-Use (TOU) mode where battery charging and discharging are disabled.
+2. This ensures that all available power (from solar and grid) is directed to charging the EV, without drawing from or storing energy in the home battery.
+3. The current priority mode is set to "ev_charging" to indicate this special state.
+
+When EV charging stops:
+1. The system reverts to the recommended working mode (either standard TOU or Maximize Self Consumption).
+2. This allows the home battery to resume normal operation based on the current energy situation and time of day.
+
+### Benefits
+
+- Prioritizes EV charging when needed, ensuring the fastest possible charge for your vehicle.
+- Prevents unnecessary cycling of the home battery during EV charging, which could reduce overall system efficiency.
+- Automatically returns to optimal home energy management when EV charging is complete.
+
+### Configuration
+
+To use this feature, ensure you have a binary sensor set up in Home Assistant that indicates when your EV is charging. Update the `input_text.hsbo_ev_charger_status` in the package configuration to point to your EV charging sensor.
+
+This EV charging optimization works seamlessly with the other features of the Huawei Solar Battery Optimization package, providing a comprehensive energy management solution for homes with both solar systems and electric vehicles.
+
+Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations. 
+
 ## Roadmap
 
 Future planned features include:
