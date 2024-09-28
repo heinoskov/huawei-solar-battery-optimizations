@@ -1028,8 +1028,16 @@ automation:
     action:
       - variables:
           current_mode: "{{ states(states('input_text.hsbo_batteries_working_mode')) }}"
-          solar_production: "{{ states(states('input_text.hsbo_solar_production_power')) | float(0) }}"
-          house_load: "{{ states(states('input_text.hsbo_house_consumption_power')) | float(0) }}"
+          ema_solar_production: "{{ states('sensor.hsbo_ema_solar_production') }}"
+          ema_house_load: "{{ states('sensor.hsbo_ema_house_load') }}"
+          differential_ema: >
+            {% if is_number(ema_solar_production) and is_number(ema_house_load) %}
+              {{ (ema_solar_production | float - ema_house_load | float) / 1000 }}
+            {% else %}
+              {% set solar_production = states('sensor.hsbo_solar_production') | float(0) %}
+              {% set house_load = states('sensor.hsbo_house_consumption') | float(0) %}
+              {{ (solar_production - house_load) / 1000 }}
+            {% endif %}
           next_mode_change_time: "{{ states('input_datetime.hsbo_next_mode_change_time') }}"
           current_month: "{{ now().month }}"
           recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
@@ -1169,12 +1177,12 @@ automation:
                 state: 'off'
             sequence:
               - choose:
-                  # Between 6 AM and solar production > house load
+                  # Between 6 AM and solar production <= house load
                   - conditions:
                       - condition: time
                         before: "10:00:00"
                       - condition: template
-                        value_template: "{{ solar_production <= house_load }}"
+                        value_template: "{{ differential_ema <= -0.1 }}"
                       - condition: template
                         value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
                     sequence:
@@ -1183,7 +1191,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }}"
+                          message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
                   # When solar production > house load, before next_mode_change_time
                   - conditions:
@@ -1192,7 +1200,7 @@ automation:
                       - condition: template
                         value_template: >
                           {% set next_change = strptime(next_mode_change_time, '%Y-%m-%d %H:%M:%S') %}
-                          {{ solar_production > house_load and 
+                          {{ differential_ema > 0.1 and 
                             now() | as_timestamp < next_change | as_timestamp }}
                       - condition: template
                         value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
@@ -1202,7 +1210,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_fully_fed_to_grid
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Fully Fed to Grid at {{ now().strftime('%H:%M:%S') }}"
+                          message: "HSBO: Changed to Fully Fed to Grid at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
                   # At or after next_mode_change_time, but before 5 PM
                   - conditions:
@@ -1220,9 +1228,9 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }}"
+                          message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
-                  # After 5 PM (Winter/Spring months: October to April)
+                  # After 5 PM (Winter/Spring months: September to April)
                   - conditions:
                       - condition: time
                         after: "17:00:00"
@@ -1236,9 +1244,9 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }}"
+                          message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
-                  # After 5 PM (Summer/Fall months: May to September)
+                  # After 5 PM (Summer months: May to August)
                   - conditions:
                       - condition: time
                         after: "17:00:00"
@@ -1252,7 +1260,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Maximise Self Consumption (Summer/Fall months) at {{ now().strftime('%H:%M:%S') }}"
+                          message: "HSBO: Changed to Maximise Self Consumption (Summer months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
               # Check and manage inverter export during regular checks
               - choose:
@@ -1283,7 +1291,7 @@ automation:
                   message: >
                     HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh, 
                     Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
-                    Current export state: {{ current_export_state }},
+                    Current export state: {{ states(inverter_entity) }},
                     Action taken: Regular check
     mode: single
     
@@ -1315,3 +1323,65 @@ sensor:
             {% set target = target + timedelta(days=1) %}
           {% endif %}
           {{ target.strftime('%Y-%m-%d %H:%M:%S') }}
+
+  # Intermediate template sensors
+  - platform: template
+    sensors:
+      hsbo_solar_production:
+        friendly_name: "HSBO Solar Production"
+        value_template: "{{ states(states('input_text.hsbo_solar_production_power')) | float(0) }}"
+        unit_of_measurement: "W"
+      hsbo_house_consumption:
+        friendly_name: "HSBO House Consumption"
+        value_template: "{{ states(states('input_text.hsbo_house_consumption_power')) | float(0) }}"
+        unit_of_measurement: "W"
+
+  # Smoothed Solar Production
+  - platform: filter
+    name: "HSBO Smoothed Solar Production"
+    unique_id: hsbo_smoothed_solar_production
+    entity_id: sensor.hsbo_solar_production
+    filters:
+      - filter: lowpass
+        time_constant: 10
+        precision: 2
+
+  # EMA Solar Production
+  - platform: statistics
+    name: "HSBO EMA Solar Production"
+    unique_id: hsbo_ema_solar_production
+    entity_id: sensor.hsbo_smoothed_solar_production
+    state_characteristic: mean
+    sampling_size: 20
+    max_age:
+      minutes: 5
+
+  # Smoothed House Load
+  - platform: filter
+    name: "HSBO Smoothed House Load"
+    unique_id: hsbo_smoothed_house_load
+    entity_id: sensor.hsbo_house_consumption
+    filters:
+      - filter: lowpass
+        time_constant: 10
+        precision: 2
+
+  # EMA House Load
+  - platform: statistics
+    name: "HSBO EMA House Load"
+    unique_id: hsbo_ema_house_load
+    entity_id: sensor.hsbo_smoothed_house_load
+    state_characteristic: mean
+    sampling_size: 20
+    max_age:
+      minutes: 5
+
+  # Differential EMA Sensor
+  - platform: template
+    sensors:
+      hsbo_differential_ema:
+        friendly_name: "HSBO Differential EMA"
+        unique_id: hsbo_differential_ema
+        value_template: >
+          {{ (states('sensor.hsbo_ema_solar_production') | float - 
+             states('sensor.hsbo_ema_house_load') | float) | round(2) }}
