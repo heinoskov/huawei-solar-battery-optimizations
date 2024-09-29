@@ -302,9 +302,10 @@ This section highlights key updates and new features added to the Huawei Solar B
 
 Future planned features include:
 
-1. Adjustable AMP configuration for EV Charging (Wallbox Pulsar Plus) based on excessive PV production after house load.
-2. Peak shaving / Capacity Control.
-3. Integration with smart home devices for enhanced energy management<br><br>
+1. Optimize calculations by implementing statistics power sensors looking back 14 days.
+2. Adjustable AMP configuration for EV Charging based on excessive PV production after house load.
+3. Peak shaving / Capacity Control.
+4. Integration with smart home devices for enhanced energy management<br><br>
 
 
 ## Contributing
