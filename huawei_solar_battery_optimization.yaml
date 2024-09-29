@@ -859,6 +859,9 @@ automation:
               {{ (solar_production - house_load) / 1000 }}
             {% endif %}
           battery_charge_datetime: "{{ states('input_datetime.hsbo_battery_charge_datetime') }}"
+          is_battery_charge_datetime_valid: >
+            {% set charge_datetime = strptime(states('input_datetime.hsbo_battery_charge_datetime'), '%Y-%m-%d %H:%M:%S') %}
+            {{ charge_datetime is not none and charge_datetime.date() == now().date() }}
           current_month: "{{ now().month }}"
           recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
           spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
@@ -1019,9 +1022,13 @@ automation:
                         before: "17:00:00"
                       - condition: template
                         value_template: >
-                          {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
-                          {{ differential_ema > 0.1 and 
-                            now() | as_timestamp < charge_start | as_timestamp }}
+                          {% if is_battery_charge_datetime_valid %}
+                            {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
+                            {{ differential_ema > 0.1 and 
+                              now() | as_timestamp < charge_start | as_timestamp }}
+                          {% else %}
+                            false
+                          {% endif %}
                       - condition: template
                         value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
                     sequence:
@@ -1038,8 +1045,12 @@ automation:
                         before: "17:00:00"
                       - condition: template
                         value_template: >
-                          {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
-                          {{ now() | as_timestamp >= charge_start | as_timestamp }}
+                          {% if is_battery_charge_datetime_valid %}
+                            {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
+                            {{ now() | as_timestamp >= charge_start | as_timestamp }}
+                          {% else %}
+                            false
+                          {% endif %}
                       - condition: template
                         value_template: "{{ current_mode != 'maximise_self_consumption' }}"
                     sequence:
