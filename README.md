@@ -278,7 +278,6 @@ This section highlights key updates and new features added to the Huawei Solar B
 - Added detailed README with installation instructions and configuration guidance
 - Included the Home Assistant YAML package file for easy integration
 
-[... rest of the existing content ...]
 
 ## Roadmap
 
