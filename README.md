@@ -1,6 +1,6 @@
 # Huawei Solar Battery Optimization
 
-This Home Assistant package provides a set of scripts and automations to optimize the use of a Huawei solar battery system. It aims to maximize self-consumption, optimize charging/discharging of the Huawei Battery based on electricity prices, and manage grid export based on electricity spot prices.
+This Home Assistant package provides a set of scripts and automations to optimize the use of a Huawei solar battery system. It aims to maximize self-consumption, optimize charging/discharging of the Huawei Battery based on electricity prices, and manage grid export based on electricity spot prices.<br><br>
 
 ## Features
 
@@ -41,7 +41,7 @@ To use this package, you need the following integrations:
 
 ### Optional integrations 
 - [Huawei Solar PEES package by JensenNick](https://github.com/JensenNick/huawei_solar_pees) (optional but recommended)
-- [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)
+- [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)<br><br>
 
 
 ## Installation
@@ -49,7 +49,7 @@ To use this package, you need the following integrations:
 1. Place the `huawei_solar_battery_optimization.yaml` file in your Home Assistant packages directory (usually `/config/packages/`).
 2. Restart Home Assistant to load the new package.
 
-For more information on using packages in Home Assistant, see the [official documentation](https://www.home-assistant.io/docs/configuration/packages/).
+For more information on using packages in Home Assistant, see the [official documentation](https://www.home-assistant.io/docs/configuration/packages/).<br><br>
 
 
 ## Configuration
@@ -61,7 +61,7 @@ You may need to adjust the following input sensors in the package file to match 
 - `sensor.energi_data_service_total_price` (from Energi Data Service integration)
 - `sensor.energi_data_service_spot_price` (from Energi Data Service integration)
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)
-- `sensor.inverter_active_power_control` (from Huawei Solar Integration) 
+- `sensor.inverter_active_power_control` (from Huawei Solar Integration) <br><br>
 
 
 ## Automations
@@ -97,7 +97,7 @@ The package includes the following automations to manage and optimize your Huawe
      - Managing grid export based on spot prices
    - Provides detailed logging of mode changes and reasons
 
-These automations work together to provide a comprehensive, adaptive system that optimizes your solar battery usage, maximizes self-consumption, and manages grid interaction based on current conditions and forecasts.
+These automations work together to provide a comprehensive, adaptive system that optimizes your solar battery usage, maximizes self-consumption, and manages grid interaction based on current conditions and forecasts.<br><br>
 
 
 ## Scripts
@@ -128,7 +128,7 @@ The package includes the following scripts for managing and optimizing your Huaw
 
 12. `hsbo_calculate_next_day_charging`: Calculates the charging strategy for the next day, including required grid charging and recommended working mode.
 
-These scripts are used in various automations within the package and can also be called manually or incorporated into your own custom automations as needed.
+These scripts are used in various automations within the package and can also be called manually or incorporated into your own custom automations as needed.<br><br>
 
 
 ## Lovelace card
@@ -145,7 +145,7 @@ You can use the following lovelace card to show all entities related to HSBO usi
       - entity_id: '*hsbo*'
     exclude: []
 ```
-
+<br><br>
 
 ## How It Works
 
@@ -159,7 +159,7 @@ You can use the following lovelace card to show all entities related to HSBO usi
 
 ### Continuous Processes
 
-- The system manages inverter export based on spot prices, triggered by price changes or hourly checks.
+- The system manages inverter export based on spot prices, triggered by price changes or hourly checks.<br><br>
 
 
 ## Working Modes
@@ -219,7 +219,7 @@ These default periods are set to optimize battery usage based on typical daily e
 - Enable during periods of high electricity spot prices to maximize revenue from energy export
 - Disable when spot prices are low, and it's more beneficial to store energy in the battery for later use
 
-By utilizing these working modes and the grid export management feature, you can tailor your Huawei solar battery system's operation to your specific needs, local energy market conditions, and personal energy goals.
+By utilizing these working modes and the grid export management feature, you can tailor your Huawei solar battery system's operation to your specific needs, local energy market conditions, and personal energy goals.<br><br>
 
 
 ## EV Charging
@@ -253,7 +253,7 @@ To use this feature, ensure you have a binary sensor set up in Home Assistant th
 
 This EV charging optimization works seamlessly with the other features of the Huawei Solar Battery Optimization package, providing a comprehensive energy management solution for homes with both solar systems and electric vehicles.
 
-Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations.
+Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations.<br><br>
 
 
 ## What's New
@@ -287,7 +287,7 @@ This section highlights key updates and new features added to the Huawei Solar B
 ### September 23, 2024
 - Initial commit of the Huawei Solar Battery Optimization package
 - Added detailed README with installation instructions and configuration guidance
-- Included the Home Assistant YAML package file for easy integration
+- Included the Home Assistant YAML package file for easy integration<br><br>
 
 
 ## Roadmap
@@ -296,7 +296,7 @@ Future planned features include:
 
 1. Adjustable AMP configuration for EV Charging (Wallbox Pulsar Plus) based on excessive PV production after house load.
 2. Peak shaving / Capacity Control.
-3. Integration with smart home devices for enhanced energy management
+3. Integration with smart home devices for enhanced energy management<br><br>
 
 
 ## Contributing
@@ -309,12 +309,12 @@ A big thank you to all the contributors who have helped improve this project:
 
 - [woopstar](https://github.com/woopstar): For numerous pull requests, bug fixes, and feature implementations.
 
-Your contributions, whether through code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!
+Your contributions, whether through code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!<br><br>
 
 
 ## License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is open-source and available under the [MIT License](LICENSE).<br><br>
 
 
 ## Disclaimer
