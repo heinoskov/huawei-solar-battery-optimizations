@@ -58,7 +58,7 @@ You may need to adjust the following input sensors in the package file to match 
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)
 - `sensor.inverter_active_power_control` (from Huawei Solar Integration) 
 
-## Available Automations
+## Automations
 
 The package includes the following automations to manage and optimize your Huawei solar battery system:
 
@@ -93,7 +93,7 @@ The package includes the following automations to manage and optimize your Huawe
 
 These automations work together to provide a comprehensive, adaptive system that optimizes your solar battery usage, maximizes self-consumption, and manages grid interaction based on current conditions and forecasts.
 
-## Available Scripts
+## Scripts
 
 The package includes the following scripts for managing and optimizing your Huawei solar battery system:
 
