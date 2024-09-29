@@ -308,8 +308,7 @@ Future planned features include:
     - Time-of-Day Specificity: Instead of using a single estimate for morning usage, we now have hour-by-hour estimates, which can lead to more precise charging strategies.
     - Seasonal Adaptation: As the 14-day average naturally shifts with seasons, your system will automatically adjust without needing manual intervention.
 2. Adjustable AMP configuration for EV Charging based on excessive PV production after house load.
-3. Peak shaving / Capacity Control.
-4. Integration with smart home devices for enhanced energy management<br><br>
+3. Peak shaving / Capacity Control.<br><br>
 
 
 ## Contributing
