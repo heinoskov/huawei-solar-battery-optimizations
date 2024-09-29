@@ -210,8 +210,8 @@ input_text:
     name: HSBO Sensor for current priority mode
     
 input_datetime:
-  hsbo_next_mode_change_time:
-    name: HSBO Next Mode Change Time
+  hsbo_battery_charge_datetime:
+    name: HSBO Battery Charge Date and Time
     has_date: true
     has_time: true
 
@@ -781,8 +781,8 @@ automation:
       - action: script.hsbo_generate_summary
 
   - id: hsbo_set_battery_charge_time
-    alias: "HSBO Set Battery Charge Time"
-    description: "Set the optimalt time to charge battery"
+    alias: "HSBO Set Battery Charge Date and Time"
+    description: "Set the exact date and time to start battery charging"
     trigger:
       - platform: time
         at: "06:05:00"
@@ -795,198 +795,18 @@ automation:
             sequence:
               - action: input_datetime.set_datetime
                 target:
-                  entity_id: input_datetime.hsbo_next_mode_change_time
+                  entity_id: input_datetime.hsbo_battery_charge_datetime
                 data:
-                  datetime: "{{ states('sensor.hsbo_next_mode_change_time') }}"
+                  datetime: "{{ states('sensor.hsbo_battery_charge_datetime') }}"
               - action: system_log.write
                 data:
                   message: >
-                    HSBO: Set next mode change time to {{ states('sensor.hsbo_next_mode_change_time') }}.
+                    HSBO: Set battery charge date and time to {{ states('sensor.hsbo_battery_charge_datetime') }}.
                     Current time: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
         default:
           - action: system_log.write
             data:
               message: "HSBO: No specific charge start time set, staying with Default TOU settings"
- 
-  # Replaced by automation hsbo_comprehensive_daily_mode_management - remove this section after October 10th 2024
-  # - id: hsbo_check_and_change_mode
-  #   alias: "HSBO Check and Change Mode"
-  #   trigger:
-  #     - platform: time_pattern
-  #       minutes: "/5"
-  #   condition:
-  #     - condition: template
-  #       value_template: >
-  #         {{ states('input_datetime.hsbo_next_mode_change_time') != 'unavailable' 
-  #           and states('input_datetime.hsbo_next_mode_change_time') != 'unknown'
-  #           and now() | as_timestamp >= states.input_datetime.hsbo_next_mode_change_time.state | as_timestamp }}
-  #   action:
-  #     - action: script.turn_on
-  #       target:
-  #         entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-  #     - action: system_log.write
-  #       data:
-  #         message: "HSBO: Switched to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }}"
-  #     - action: input_datetime.set_datetime
-  #       target:
-  #         entity_id: input_datetime.hsbo_next_mode_change_time
-  #       data:
-  #         datetime: "{{ (now() + timedelta(days=1)).strftime('%Y-%m-%d 00:00:00') }}"
-
-  # Replaced by automation hsbo_comprehensive_daily_mode_management - remove this section after October 10th 2024
-  # - id: hsbo_switch_to_appropriate_mode_at_5pm
-  #   alias: "HSBO Switch to Appropriate Mode at 5 PM"
-  #   # This automation switches the system to an appropriate mode at 5 PM based on the season.
-  #   # In from october to april, it uses the default TOU mode. from May to September, it use 
-  #   # maximize self-consumption working mode
-  #   trigger:
-  #     - platform: time
-  #       at: "17:00:00"
-  #   action:
-  #     - choose:
-  #         - conditions:
-  #             - condition: template
-  #               value_template: >
-  #                 {{ now().month in [10, 11, 12, 1, 2, 3, 4] }}
-  #           sequence:
-  #             - action: script.turn_on
-  #               target:
-  #                 entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-  #             - action: system_log.write
-  #               data:
-  #                 message: "HSBO: Switched to Default TOU Mode at 5 PM (Winter/Spring months)"
-  #       default:
-  #         - action: script.turn_on
-  #           target:
-  #             entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-  #         - action: system_log.write
-  #           data:
-  #             message: "HSBO: Switched to Maximise Self Consumption at 5 PM (Summer/Fall months)"
-
-  # Replaced by automation hsbo_comprehensive_daily_mode_management - remove this section after October 10th 2024
-  # - id: hsbo_monthly_mode_check
-  #   alias: "HSBO Monthly Mode Check"
-  #   # This automation runs at the start of each month to set the appropriate working mode
-  #   # based on the season. It helps ensure the system is operating optimally as seasons change.
-  #   trigger:
-  #     - platform: time
-  #       at: "00:00:01"
-  #   condition:
-  #     - condition: template
-  #       value_template: "{{ now().day == 1 }}"
-  #   action:
-  #     - choose:
-  #         - conditions:
-  #             - condition: template
-  #               value_template: >
-  #                 {{ now().month in [10, 11, 12, 1, 2, 3, 4] }}
-  #           sequence:
-  #             - action: script.turn_on
-  #               target:
-  #                 entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-  #             - action: system_log.write
-  #               data:
-  #                 message: "HSBO: Set to Default TOU Mode for the new month (Winter/Spring)"
-  #       default:
-  #         - action: script.turn_on
-  #           target:
-  #             entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-  #         - action: system_log.write
-  #           data:
-  #             message: "HSBO: Set to Maximise Self Consumption for the new month (Summer/Fall)"
-
-  # Replaced by automation hsbo_comprehensive_daily_mode_management - remove this section after October 10th 2024
-  # - id: hsbo_manage_inverter_export_based_on_spot_price
-  #   alias: "HSBO: Manage inverter export based on spot price"
-  #   description: "Manages inverter export based on electricity spot price between 7 AM and 8 PM, avoiding redundant actions"
-  #   trigger:
-  #     - platform: state
-  #       entity_id:
-  #         - binary_sensor.hsbo_negative_spot_price
-  #       id: price_change
-  #     - platform: time_pattern
-  #       hours: "*"
-  #       minutes: "0"
-  #       id: hourly_check
-  #   condition:
-  #     - condition: time
-  #       after: "07:00:00"
-  #       before: "20:00:00"
-  #   variables:
-  #     spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
-  #     current_export_state: "{{ states(states('input_text.hsbo_inverter_active_power_control')) }}"
-  #   action:
-  #     - choose:
-  #         - conditions:
-  #             - condition: trigger
-  #               id: price_change
-  #           sequence:
-  #             - choose:
-  #                 - conditions:
-  #                     - condition: state
-  #                       entity_id: binary_sensor.hsbo_negative_spot_price
-  #                       state: 'on'
-  #                     - condition: not
-  #                       conditions:
-  #                         - condition: state
-  #                           entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
-  #                           state: "Limited to 0.0%"
-  #                   sequence:
-  #                     - action: script.turn_on
-  #                       target:
-  #                         entity_id: script.hsbo_disable_grid_export
-  #                 - conditions:
-  #                     - condition: state
-  #                       entity_id: binary_sensor.hsbo_negative_spot_price
-  #                       state: 'off'
-  #                     - condition: not
-  #                       conditions:
-  #                         - condition: state
-  #                           entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
-  #                           state: "Limited to 100.0%"
-  #                   sequence:
-  #                     - action: script.turn_on
-  #                       target:
-  #                         entity_id: script.hsbo_enable_grid_export
-  #         - conditions:
-  #             - condition: trigger
-  #               id: hourly_check
-  #           sequence:
-  #             - choose:
-  #                 - conditions:
-  #                     - condition: state
-  #                       entity_id: binary_sensor.hsbo_negative_spot_price
-  #                       state: 'on'
-  #                     - condition: not
-  #                       conditions:
-  #                         - condition: state
-  #                           entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
-  #                           state: "Limited to 0.0%"
-  #                   sequence:
-  #                     - action: script.turn_on
-  #                       target:
-  #                         entity_id: script.hsbo_disable_grid_export
-  #                 - conditions:
-  #                     - condition: state
-  #                       entity_id: binary_sensor.hsbo_negative_spot_price
-  #                       state: 'off'
-  #                     - condition: not
-  #                       conditions:
-  #                         - condition: state
-  #                           entity_id: {{ states('input_text.hsbo_inverter_active_power_control') }}
-  #                           state: "Limited to 100.0%"
-  #                   sequence:
-  #                     - action: script.turn_on
-  #                       target:
-  #                         entity_id: script.hsbo_enable_grid_export
-  #     - action: system_log.write
-  #       data:
-  #         message: >
-  #           HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh, 
-  #           Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
-  #           Current export state: {{ current_export_state }},
-  #           Action taken: {{ trigger.id }}
-  #   mode: single
 
   - id: hsbo_calculate_next_day_charging_at_9_pm
     alias: "HSBO Calculate Next Day Charging at 9 PM"
@@ -1038,7 +858,7 @@ automation:
               {% set house_load = states('sensor.hsbo_house_consumption') | float(0) %}
               {{ (solar_production - house_load) / 1000 }}
             {% endif %}
-          next_mode_change_time: "{{ states('input_datetime.hsbo_next_mode_change_time') }}"
+          battery_charge_datetime: "{{ states('input_datetime.hsbo_battery_charge_datetime') }}"
           current_month: "{{ now().month }}"
           recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
           spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
@@ -1193,15 +1013,15 @@ automation:
                         data:
                           message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
-                  # When solar production > house load, before next_mode_change_time
+                  # When solar production > house load, before optimal battery charge time
                   - conditions:
                       - condition: time
                         before: "17:00:00"
                       - condition: template
                         value_template: >
-                          {% set next_change = strptime(next_mode_change_time, '%Y-%m-%d %H:%M:%S') %}
+                          {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
                           {{ differential_ema > 0.1 and 
-                            now() | as_timestamp < next_change | as_timestamp }}
+                            now() | as_timestamp < charge_start | as_timestamp }}
                       - condition: template
                         value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
                     sequence:
@@ -1212,14 +1032,14 @@ automation:
                         data:
                           message: "HSBO: Changed to Fully Fed to Grid at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
-                  # At or after next_mode_change_time, but before 5 PM
+                  # At or after optimal battery charge time, but before 5 PM
                   - conditions:
                       - condition: time
                         before: "17:00:00"
                       - condition: template
                         value_template: >
-                          {% set next_change = strptime(next_mode_change_time, '%Y-%m-%d %H:%M:%S') %}
-                          {{ now() | as_timestamp >= next_change | as_timestamp }}
+                          {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
+                          {{ now() | as_timestamp >= charge_start | as_timestamp }}
                       - condition: template
                         value_template: "{{ current_mode != 'maximise_self_consumption' }}"
                     sequence:
@@ -1312,9 +1132,9 @@ sensor:
 
   - platform: template
     sensors:
-      hsbo_next_mode_change_time:
-        friendly_name: "HSBO Next Mode Change Time"
-        unique_id: hsbo_next_mode_change_time
+      hsbo_battery_charge_datetime:
+        friendly_name: "HSBO Battery Charge Date and Time"
+        unique_id: hsbo_battery_charge_datetime
         value_template: >
           {% set target_hour = states('input_number.hsbo_charge_start_time') | int %}
           {% set now_time = now() %}
