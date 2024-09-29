@@ -132,6 +132,7 @@ input_number:
     max: 100
     step: 1
     unit_of_measurement: '%'
+    initial: 100  # Default to 100%
   
   # This is a user configured helper to configure your solar plants max battery capacity
   hsbo_battery_max_capacity:
@@ -141,6 +142,7 @@ input_number:
     step: 0.1
     unit_of_measurement: kWh
     icon: mdi:battery
+    initial: 10  # Default to 10 kWh, adjust as needed
   
   # This is a user configured helper to configure your house load between 6am and 9am (for which battery should have enough capacity to cover)
   hsbo_morning_energy_need:
@@ -180,26 +182,35 @@ input_text:
     name: HSBO Recommended Working Mode
   hsbo_device_id_inverter:
     name: HSBO Device ID for Huawei Solar device - Inverter
+    initial: inverter_device_id  # Replace with a typical Huawei inverter device ID
   hsbo_device_id_batteries:
     name: HSBO Device ID for Huawei Solar device - Batteries
+    initial: batteries_device_id  # Replace with a typical Huawei Batteries device ID
   hsbo_batteries_grid_charge_cutoff_soc:
     name: HSBO Sensor for number.batteries_grid_charge_cutoff_soc
+    initial: number.batteries_grid_charge_cutoff_soc
   hsbo_batteries_working_mode:
     name: HSBO Sensor for select.batteries_working_mode
+    initial: select.batteries_working_mode
   hsbo_batteries_excess_pv_energy_use_in_tou:
     name: HSBO Sensor for select.batteries_excess_pv_energy_use_in_tou
+    initial: select.batteries_excess_pv_energy_use_in_tou
   hsbo_energi_data_service_total_price:
     name: HSBO Sensor for sensor.energi_data_service
   hsbo_energi_data_service_spot_price:
     name: HSBO Sensor for sensor.energi_data_service_produktion
   hsbo_solcast_pv_forecast_forecast_today:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_today
+    initial: sensor.solcast_pv_forecast_today
   hsbo_solcast_pv_forecast_forecast_tomorrow:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_tomorrow
+    initial: sensor.solcast_pv_forecast_tomorrow
   hsbo_batteries_state_of_capacity:
     name: HSBO Sensor for batteries_state_of_capacity
+    initial: sensor.batteries_state_of_capacity
   hsbo_inverter_active_power_control:
     name: HSBO Sensor for sensor.inverter_active_power_control
+    initial: sensor.inverter_active_power_control
   hsbo_house_consumption_power:
     name: HSBO Sensor for house consumption power
   hsbo_solar_production_power:
