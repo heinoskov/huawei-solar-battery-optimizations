@@ -31,6 +31,7 @@ This Home Assistant package provides a set of scripts and automations to optimiz
   - Provides system logs for troubleshooting and monitoring
   - Sends notifications for major mode changes and actions
 
+
 ## Requirements
 
 To use this package, you need the following integrations:
@@ -43,12 +44,14 @@ To use this package, you need the following integrations:
 - [Huawei Solar PEES package by JensenNick](https://github.com/JensenNick/huawei_solar_pees) (optional but recommended)
 - [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)
 
+
 ## Installation
 
 1. Place the `huawei_solar_battery_optimization.yaml` file in your Home Assistant packages directory (usually `/config/packages/`).
 2. Restart Home Assistant to load the new package.
 
 For more information on using packages in Home Assistant, see the [official documentation](https://www.home-assistant.io/docs/configuration/packages/).
+
 
 ## Configuration
 
@@ -60,6 +63,7 @@ You may need to adjust the following input sensors in the package file to match 
 - `sensor.energi_data_service_spot_price` (from Energi Data Service integration)
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)
 - `sensor.inverter_active_power_control` (from Huawei Solar Integration) 
+
 
 ## Automations
 
@@ -95,6 +99,7 @@ The package includes the following automations to manage and optimize your Huawe
    - Provides detailed logging of mode changes and reasons
 
 These automations work together to provide a comprehensive, adaptive system that optimizes your solar battery usage, maximizes self-consumption, and manages grid interaction based on current conditions and forecasts.
+
 
 ## Scripts
 
@@ -142,6 +147,7 @@ You can use the following lovelace card to show all entities related to HSBO usi
     exclude: []
 ```
 
+
 ## How It Works
 
 ### Daily Processes
@@ -155,6 +161,7 @@ You can use the following lovelace card to show all entities related to HSBO usi
 ### Continuous Processes
 
 - The system manages inverter export based on spot prices, triggered by price changes or hourly checks.
+
 
 ## Working Modes
 
@@ -215,6 +222,7 @@ These default periods are set to optimize battery usage based on typical daily e
 
 By utilizing these working modes and the grid export management feature, you can tailor your Huawei solar battery system's operation to your specific needs, local energy market conditions, and personal energy goals.
 
+
 ## EV Charging
 
 This package now includes features to optimize battery usage when an electric vehicle (EV) is charging. Here's how it works:
@@ -247,6 +255,7 @@ To use this feature, ensure you have a binary sensor set up in Home Assistant th
 This EV charging optimization works seamlessly with the other features of the Huawei Solar Battery Optimization package, providing a comprehensive energy management solution for homes with both solar systems and electric vehicles.
 
 Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations.
+
 
 ## What's New
 
@@ -303,9 +312,11 @@ A big thank you to all the contributors who have helped improve this project:
 
 Your contributions, whether through code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!
 
+
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).
+
 
 ## Disclaimer
 
