@@ -38,7 +38,10 @@ To use this package, you need the following integrations:
 - [Huawei Solar integration by wlcrs](https://github.com/wlcrs/huawei_solar)
 - [Solcast integration by oziee](https://github.com/BJReplay/ha-solcast-solar)
 - [Energi Data Service integration by MTrab](https://github.com/MTrab/energidataservice)
+
+### Optional integrations 
 - [Huawei Solar PEES package by JensenNick](https://github.com/JensenNick/huawei_solar_pees) (optional but recommended)
+- [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)
 
 ## Installation
 
