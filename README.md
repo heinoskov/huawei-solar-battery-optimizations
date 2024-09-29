@@ -1,6 +1,14 @@
 # Huawei Solar Battery Optimization
 
-This Home Assistant package provides a set of scripts and automations to optimize the use of a Huawei solar battery system. It aims to maximize self-consumption, optimize charging/discharging of the Huawei Battery based on electricity prices, and manage grid export based on electricity spot prices.<br><br>
+Maximize the potential of your Huawei solar battery system with this powerful Home Assistant package. By intelligently optimizing battery usage, solar production, and grid interaction, this solution helps you:
+
+- Significantly reduce your energy costs
+- Maximize returns on surplus solar energy
+- Minimize your carbon footprint
+- Increase your energy independence
+
+Perfect for homeowners looking to make the most of their solar investment while contributing to a greener future.
+<br><br>
 
 ## Features
 
