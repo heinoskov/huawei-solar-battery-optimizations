@@ -914,7 +914,7 @@ automation:
               - action: system_log.write
                 data:
                   message: "HSBO: Reverted to {{ recommended_working_mode }} mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
-
+        
           # Midnight: Set mode based on evening calculation (only if not EV charging)
           - conditions:
               - condition: trigger
@@ -1124,6 +1124,8 @@ automation:
                     Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
                     Current export state: {{ states(inverter_entity) }},
                     Action taken: Regular check
+    trace:
+      stored_traces: 72
     mode: single
     
 # Sensors
