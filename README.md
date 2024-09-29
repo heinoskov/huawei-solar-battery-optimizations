@@ -29,8 +29,7 @@ This Home Assistant package provides a set of scripts and automations to optimiz
   - Allows input configuration of all sensors used from integrations, such as Huawei device IDs, Max battery capacity
 - Detailed logging and notifications:
   - Provides system logs for troubleshooting and monitoring
-  - Sends notifications for major mode changes and actions
-
+  - Sends notifications for major mode changes and actions<br><br>
 
 ## Requirements
 
