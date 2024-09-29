@@ -58,6 +58,72 @@ You may need to adjust the following input sensors in the package file to match 
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)
 - `sensor.inverter_active_power_control` (from Huawei Solar Integration) 
 
+## Available Automations
+
+The package includes the following automations to manage and optimize your Huawei solar battery system:
+
+1. `hsbo_daily_battery_optimization`: 
+   - Runs daily at 6:00 AM
+   - Performs the battery optimization analysis for the upcoming day
+   - Calculates energy thresholds/pricing, analyzes hourly forecast data, and generates a summary of recommendations
+
+2. `hsbo_set_battery_charge_time`:
+   - Runs daily at 6:05 AM
+   - Sets the optimal time to charge the battery based on the daily optimization results
+
+3. `hsbo_calculate_next_day_charging_at_9_pm`:
+   - Runs daily at 9:00 PM
+   - Calculates the charging strategy for the next day
+   - Determines required grid charging and recommends working mode for the following day
+
+4. `hsbo_comprehensive_daily_mode_management`:
+   - Runs every 5 minutes and at specific trigger points
+   - Manages the mode of the system throughout the day based on various factors:
+     - EV charging status
+     - Time of day
+     - Solar production vs. house load
+     - Spot prices
+     - Seasonal considerations
+   - Handles working mode switches for:
+     - EV charging optimization
+     - Transitioning between TOU, Maximize Self-Consumption, and Fully Fed to Grid modes
+     - Adapting to changes in solar production and house load
+     - Managing grid export based on spot prices
+   - Provides detailed logging of mode changes and reasons
+
+These automations work together to provide a comprehensive, adaptive system that optimizes your solar battery usage, maximizes self-consumption, and manages grid interaction based on current conditions and forecasts.
+
+## Available Scripts
+
+The package includes the following scripts for managing and optimizing your Huawei solar battery system:
+
+1. `hsbo_calculate_energy_thresholds`: Calculates the average, high, and low energy price thresholds for the day.
+
+2. `hsbo_analyze_hourly_data`: Analyzes the hourly solar production forecast and electricity prices, making decisions about battery charging and grid selling.
+
+3. `hsbo_process_hourly_data`: Processes data for a specific hour, determining whether to sell to the grid, charge the battery, or use the energy.
+
+4. `hsbo_update_hourly_recommendation`: Updates the recommendation for a specific hour based on the decision made in the hourly data processing.
+
+5. `hsbo_generate_summary`: Generates a summary of the battery optimization analysis, including potential grid selling, battery charging, and recommendations.
+
+6. `hsbo_set_working_mode_to_default_tou_periods`: Sets the system to use default Time-of-Use (TOU) periods, configuring charging and discharging times.
+
+7. `hsbo_set_working_mode_to_fully_fed_to_grid`: Sets the system to feed all generated power to the grid.
+
+8. `hsbo_set_working_mode_to_maximise_self_consumption`: Sets the system to maximize self-consumption of generated power.
+
+9. `hsbo_set_working_mode_to_tou_and_disable_battery_charging_and_discharging`: Sets a special TOU mode where battery charging and discharging are disabled.
+
+10. `hsbo_disable_grid_export`: Disables exporting power to the grid.
+
+11. `hsbo_enable_grid_export`: Enables exporting power to the grid.
+
+12. `hsbo_calculate_next_day_charging`: Calculates the charging strategy for the next day, including required grid charging and recommended working mode.
+
+These scripts are used in various automations within the package and can also be called manually or incorporated into your own custom automations as needed.
+
+
 ## Lovelace card
 
 You can use the following lovelace card to show all entities related to HSBO using the [custom auto entities card](https://github.com/thomasloven/lovelace-auto-entities):
@@ -86,10 +152,6 @@ You can use the following lovelace card to show all entities related to HSBO usi
 ### Continuous Processes
 
 - The system manages inverter export based on spot prices, triggered by price changes or hourly checks.
-
-## Available Scripts
-
-The package includes several scripts for setting different working modes, managing grid export, and calculating charging strategies. Some of these are used in automations, while others are available for manual use or further automation improvements.
 
 ## Working Modes
 
