@@ -302,7 +302,11 @@ This section highlights key updates and new features added to the Huawei Solar B
 
 Future planned features include:
 
-1. Optimize calculations by implementing statistics power sensors looking back 14 days.
+1. Dynamic, time-specific, and seasonally-adaptive 14-day average consumption power sensors to make more accurate and personalized energy predictions and charging strategies.
+    - Improved Accuracy: By using historical data specific to your home, the system can make more accurate predictions about your energy needs.
+    - Adaptability: The system will automatically adapt to changes in your usage patterns over time, as the 14-day average updates.
+    - Time-of-Day Specificity: Instead of using a single estimate for morning usage, we now have hour-by-hour estimates, which can lead to more precise charging strategies.
+    - Seasonal Adaptation: As the 14-day average naturally shifts with seasons, your system will automatically adjust without needing manual intervention.
 2. Adjustable AMP configuration for EV Charging based on excessive PV production after house load.
 3. Peak shaving / Capacity Control.
 4. Integration with smart home devices for enhanced energy management<br><br>
