@@ -4,11 +4,32 @@ This Home Assistant package provides a set of scripts and automations to optimiz
 
 ## Features
 
-- Daily optimization of battery usage
-- Seasonal mode switching
-- Grid export management based on spot prices
-- Next-day charging strategy calculation
-- Various working modes (Time-of-Use, Maximize Self-Consumption, Fully Fed to Grid)
+- Daily optimization of battery usage:
+  - Calculates energy thresholds and pricing at 6:00 AM
+  - Analyzes hourly solar production forecast and electricity prices
+  - Generates a summary of recommendations for the day
+- Comprehensive daily mode management:
+  - Automatically switches between different working modes based on time, solar production, and house load
+  - Supports Time-of-Use (TOU), Maximize Self-Consumption, and Fully Fed to Grid modes
+  - Adjusts mode based on seasons (different strategies for winter/spring and summer months)
+- Grid export management based on spot prices:
+  - Enables or disables grid export based on current electricity spot prices
+  - Avoids exporting during negative price periods
+- Next-day charging strategy calculation:
+  - Runs at 9:00 PM to prepare for the following day
+  - Determines required grid charging and recommends working mode
+- EV charging optimization:
+  - Switches to a special TOU mode during EV charging to prioritize vehicle charging
+  - Reverts to optimal mode after EV charging is complete
+- Seasonal mode switching:
+  - Automatically adjusts strategy based on the current month
+- Smoothed sensor readings:
+  - Uses Exponential Moving Average (EMA) for solar production and house load to handle fluctuations
+- Configurable parameters:
+  - Allows input configuration of all sensors used from integrations, such as Huawei device IDs, Max battery capacity
+- Detailed logging and notifications:
+  - Provides system logs for troubleshooting and monitoring
+  - Sends notifications for major mode changes and actions
 
 ## Requirements
 
@@ -35,7 +56,22 @@ You may need to adjust the following input sensors in the package file to match 
 - `sensor.energi_data_service_total_price` (from Energi Data Service integration)
 - `sensor.energi_data_service_spot_price` (from Energi Data Service integration)
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)
-- `sensor.inverter_active_power_control` (from Huawei Solar Integration)
+- `sensor.inverter_active_power_control` (from Huawei Solar Integration) 
+
+## Lovelace card
+
+You can use the following lovelace card to show all entities related to HSBO using the [custom auto entities card](https://github.com/thomasloven/lovelace-auto-entities):
+
+```yaml
+- type: custom:auto-entities
+  card:
+    type: entities
+    title: HSBO
+  filter:
+    include:
+      - entity_id: '*hsbo*'
+    exclude: []
+```
 
 ## How It Works
 
@@ -145,29 +181,7 @@ To use this feature, ensure you have a binary sensor set up in Home Assistant th
 
 This EV charging optimization works seamlessly with the other features of the Huawei Solar Battery Optimization package, providing a comprehensive energy management solution for homes with both solar systems and electric vehicles.
 
-Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations. 
-
-## Roadmap
-
-Future planned features include:
-
-1. Adjustable AMP configuration for EV Charging (Wallbox Pulsar Plus) based on excessive PV production after house load.
-2. Peak shaving / Capacity Control.
-
-## Lovelace card
-
-You can use the following lovelace card to show all entities related to HSBO using the [custom auto entities card](https://github.com/thomasloven/lovelace-auto-entities):
-
-```yaml
-- type: custom:auto-entities
-  card:
-    type: entities
-    title: HSBO
-  filter:
-    include:
-      - entity_id: '*hsbo*'
-    exclude: []
-```
+Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations.
 
 ## What's New
 
@@ -221,13 +235,10 @@ This package is created by Heino Skov. While no official support is provided, yo
 
 A big thank you to all the contributors who have helped improve this project:
 
-- woopstar: For numerous pull requests, bug fixes, and feature implementations.
+- [woopstar](https://github.com/woopstar): For numerous pull requests, bug fixes, and feature implementations.
 
 Your contributions, whether through code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!
 
-## License
-
-[... remaining content ...]
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).
