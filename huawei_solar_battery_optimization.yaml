@@ -1125,7 +1125,7 @@ automation:
                     Current export state: {{ states(inverter_entity) }},
                     Action taken: Regular check
     trace:
-      stored_traces: 72
+      stored_traces: 300
     mode: single
     
 # Sensors
