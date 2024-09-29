@@ -169,10 +169,65 @@ You can use the following lovelace card to show all entities related to HSBO usi
     exclude: []
 ```
 
+## What's New
+
+This section highlights key updates and new features added to the Huawei Solar Battery Optimization package.
+
+### September 28, 2024
+- Added EV charging optimization feature
+  - Updated Daily Mode Management to include EV charging mode on and off
+  - Added a new section in the README for EV charging specifics
+- Introduced smoothed sensors with EMA (Exponential Moving Average) to handle fluctuations for calculating morning routing when solar production is higher than house load
+
+### September 27, 2024
+- Updated README to include a comprehensive description of working modes
+- Configured two new helpers: Battery Max Capacity and Morning Energy Need (for between 6am to 9am)
+- Optimized the script for calculating next day charging strategy
+
+### September 26, 2024
+- Added new automation: hsbo_comprehensive_daily_mode_management
+  - This new automation incorporates and replaces several previous automations, streamlining the daily mode management process
+
+### September 25, 2024
+- Implemented changes to improve cutoff percentage calculations
+- Fixed various bugs and made small improvements to enhance overall performance
+
+### September 24, 2024
+- Added all external sensors into input_texts for easier configuration
+- Added a Lovelace card to the README for easy visualization of HSBO-related entities
+- Corrected datetime errors in daily changes automation
+
+### September 23, 2024
+- Initial commit of the Huawei Solar Battery Optimization package
+- Added detailed README with installation instructions and configuration guidance
+- Included the Home Assistant YAML package file for easy integration
+
+[... rest of the existing content ...]
+
+## Roadmap
+
+Future planned features include:
+
+1. Adjustable AMP configuration for EV Charging (Wallbox Pulsar Plus) based on excessive PV production after house load.
+2. Peak shaving / Capacity Control.
+3. Integration with smart home devices for enhanced energy management
+
+
 ## Contributing
 
 This package is created by Heino Skov. While no official support is provided, you're free to use and edit it to your needs. Contributions, suggestions, and improvements are welcome via GitHub issues and pull requests.
 
+### Thanks to Contributors
+
+A big thank you to all the contributors who have helped improve this project:
+
+- woopstar: For numerous pull requests, bug fixes, and feature implementations.
+
+Your contributions, whether through code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!
+
+## License
+
+[... remaining content ...]
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).
