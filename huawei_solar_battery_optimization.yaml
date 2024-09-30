@@ -233,7 +233,7 @@ binary_sensor:
         friendly_name: "HSBO EV Charging Status"
         value_template: >-
           {% set ev_status = states(states('input_text.hsbo_ev_charger_status')) | lower %}
-          {{ ev_status in ['charging', 'charging scheduled'] }}
+          {{ ev_status in ['charging'] }}
 
 # Scripts
 script:
@@ -473,7 +473,7 @@ script:
             {% endif %}
             {{ '\n' -}}
             Hourly Recommendations:{{ '\n' -}}
-            --------------------------------
+            --------------------------------{{ '\n' -}}
             {% for hour in range(6, 17) %}
             {{ states('input_text.hsbo_recommendation_' ~ hour) | replace(hour | string ~ ':00: ', hour | string ~ ':00 - ') }}{{ '\n' -}}
             {% endfor %}
@@ -514,6 +514,11 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: time_of_use_luna2000
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.hsbo_current_priority_mode
+        data:
+          value: default_tou
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to Default TOU
@@ -524,12 +529,18 @@ script:
     alias: "HSBO - Set Working Mode to Fully Fed to Grid"
     # This script sets the Huawei Solar system to feed all generated power to the grid.
     # This mode is useful when electricity prices are consistently high.
+    # Is currently not used by any automations. Only here as a function for now.
     sequence:
       - action: select.select_option
         target:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: fully_fed_to_grid
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.hsbo_current_priority_mode
+        data:
+          value: fully_fed_to_grid
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to Fully Fed to Grid
@@ -546,10 +557,48 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: maximise_self_consumption
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.hsbo_current_priority_mode
+        data:
+          value: maximise_self_consumption
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to Maximise Self Consumption
     description: "This script enables the Maximise Self Consumption working mode. TOU is not used in this mode"
+
+  hsbo_set_morning_tou_mode_disable_battery_charge:
+    alias: "HSBO - Set Morning TOU Mode and Disable Battery Charge"
+    # This script sets the system to a special TOU mode where battery charging is disabled
+    # All excess power is fed to the grid. This can be useful during periods of 
+    # consistently high grid prices.
+    sequence:
+      - action: huawei_solar.set_tou_periods
+        data:
+          periods: 06:00-14:00/1234567/-
+          device_id: "{{ states('input_text.hsbo_device_id_batteries') }}"
+      - action: select.select_option
+        target:
+          entity_id: "{{ states('input_text.hsbo_batteries_excess_pv_energy_use_in_tou') }}"
+        data:
+          option: fed_to_grid
+      - delay:
+          seconds: 10
+      - action: select.select_option
+        target:
+          entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
+        data:
+          option: time_of_use_luna2000
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.hsbo_current_priority_mode
+        data:
+          value: tou_battery_charge_disabled
+      - action: notify.notify
+        data:
+          message: Huawei Solar set to Morning TOU Mode with Disabled Battery Discharge
+    mode: single
+    description: "This script enables TOU mode, disables battery discharge between 6:00 AM and 2:00 PM, and feeds excess power to the grid during this period."
 
   hsbo_set_working_mode_to_tou_and_disable_battery_charging_and_discharging:
     alias: "HSBO - Set Working Mode to TOU and Disable Battery Charging and Discharging"
@@ -574,6 +623,11 @@ script:
           entity_id: "{{ states('input_text.hsbo_batteries_working_mode') }}"
         data:
           option: time_of_use_luna2000
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.hsbo_current_priority_mode
+        data:
+          value: tou_battery_charge_discharge_disabled
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to TOU with Disabled Battery Charging and Discharging
@@ -847,7 +901,7 @@ automation:
         id: ev_charging_stop
     action:
       - variables:
-          current_mode: "{{ states(states('input_text.hsbo_batteries_working_mode')) }}"
+          current_mode: "{{ states('input_text.hsbo_current_priority_mode') }}"
           ema_solar_production: "{{ states('sensor.hsbo_ema_solar_production') }}"
           ema_house_load: "{{ states('sensor.hsbo_ema_house_load') }}"
           differential_ema: >
@@ -877,11 +931,6 @@ automation:
               - action: script.turn_on
                 target:
                   entity_id: script.hsbo_set_working_mode_to_tou_and_disable_battery_charging_and_discharging
-              - action: input_text.set_value
-                target:
-                  entity_id: input_text.hsbo_current_priority_mode
-                data:
-                  value: "ev_charging"
               - action: system_log.write
                 data:
                   message: "HSBO: Changed to TOU with Disabled Battery Charging and Discharging due to EV charging start at {{ now().strftime('%H:%M:%S') }}"
@@ -906,11 +955,6 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-              - action: input_text.set_value
-                target:
-                  entity_id: input_text.hsbo_current_priority_mode
-                data:
-                  value: "default"
               - action: system_log.write
                 data:
                   message: "HSBO: Reverted to {{ recommended_working_mode }} mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
@@ -926,7 +970,7 @@ automation:
               - choose:
                   - conditions:
                       - condition: template
-                        value_template: "{{ recommended_working_mode == 'TOU' and current_mode != 'time_of_use_luna2000' }}"
+                        value_template: "{{ recommended_working_mode == 'TOU' and current_mode != 'default_tou' }}"
                     sequence:
                       - action: script.turn_on
                         target:
@@ -1007,7 +1051,7 @@ automation:
                       - condition: template
                         value_template: "{{ differential_ema <= -0.1 }}"
                       - condition: template
-                        value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
+                        value_template: "{{ current_mode != 'default_tou' }}"
                     sequence:
                       - action: script.turn_on
                         target:
@@ -1030,14 +1074,14 @@ automation:
                             false
                           {% endif %}
                       - condition: template
-                        value_template: "{{ current_mode != 'fully_fed_to_grid' }}"
+                        value_template: "{{ current_mode != 'tou_battery_charge_disabled' }}"
                     sequence:
                       - action: script.turn_on
                         target:
-                          entity_id: script.hsbo_set_working_mode_to_fully_fed_to_grid
+                          entity_id: script.hsbo_set_morning_tou_mode_disable_battery_charge
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Fully Fed to Grid at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
+                          message: "HSBO: Changed to TOU with battery charge disabled at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
 
                   # At or after optimal battery charge time, but before 5 PM
                   - conditions:
@@ -1068,7 +1112,7 @@ automation:
                       - condition: template
                         value_template: "{{ current_month in [9, 10, 11, 12, 1, 2, 3, 4] }}"
                       - condition: template
-                        value_template: "{{ current_mode != 'time_of_use_luna2000' }}"
+                        value_template: "{{ current_mode != 'default_tou' }}"
                     sequence:
                       - action: script.turn_on
                         target:
