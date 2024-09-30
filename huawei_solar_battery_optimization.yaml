@@ -223,7 +223,7 @@ binary_sensor:
         friendly_name: "HSBO Negative Spot Price"
         unique_id: hsbo_negative_spot_price
         value_template: >
-          {{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float < 0 }}
+          {{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float(0) < 0 }}
         attribute_templates:
           energi_data_service_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) }}"
 
@@ -246,17 +246,17 @@ script:
         target:
           entity_id: input_number.hsbo_energy_avg_price
         data:
-          value: "{{ state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_mean') | float }}"
+          value: "{{ state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_mean') | float(0) }}"
       - action: input_number.set_value
         target:
           entity_id: input_number.hsbo_energy_high_threshold
         data:
-          value: "{{ (state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_max')['price'] | float) * 0.95}}"
+          value: "{{ (state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_max')['price'] | float(0) ) * 0.95}}"
       - action: input_number.set_value
         target:
           entity_id: input_number.hsbo_energy_low_threshold
         data:
-          value: "{{ (state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_min')['price'] | float) * 1.05}}"
+          value: "{{ (state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'today_min')['price'] | float(0) ) * 1.05}}"
 
   hsbo_analyze_hourly_data:
     alias: "HSBO Analyze Hourly Data"
@@ -285,8 +285,8 @@ script:
           entity_id: input_number.hsbo_remaining_charge
         data:
           value: >
-            {% set battery_capacity = states(states('input_text.hsbo_batteries_state_of_capacity')) | float %}
-            {% set max_capacity = states('input_number.hsbo_battery_max_capacity') | float %}
+            {% set battery_capacity = states(states('input_text.hsbo_batteries_state_of_capacity')) | float(0) %}
+            {% set max_capacity = states('input_number.hsbo_battery_max_capacity') | float(0) %}
             {% if battery_capacity != 'unknown' and battery_capacity != 'unavailable' %}
               {{ ((100 - battery_capacity) / 100 * max_capacity) | round(2) }}
             {% else %}
@@ -327,53 +327,53 @@ script:
     sequence:
       - variables:
           hour_price: "{{ state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'raw_today')[hour].price }}"
-          charging_amount: "{{ [hour_forecast, 5, states('input_number.hsbo_simulated_remaining_charge') | float] | min }}"
+          charging_amount: "{{ [hour_forecast, 5, states('input_number.hsbo_simulated_remaining_charge') | float(0)] | min }}"
       - choose:
           - conditions:
-              - "{{ hour < 12 or hour_price > states('input_number.hsbo_energy_high_threshold') | float }}"
+              - "{{ hour < 12 or hour_price > states('input_number.hsbo_energy_high_threshold') | float(0) }}"
             sequence:
               - action: input_number.set_value
                 target:
                   entity_id: input_number.hsbo_grid_selling
                 data:
-                  value: "{{ states('input_number.hsbo_grid_selling') | float + hour_forecast }}"
+                  value: "{{ states('input_number.hsbo_grid_selling') | float(0) + hour_forecast }}"
               - action: input_text.set_value
                 target:
                   entity_id: input_text.hsbo_hourly_decision
                 data:
                   value: "Sell to Grid"
           - conditions:
-              - "{{ states('input_number.hsbo_simulated_remaining_charge') | float > 0 }}"
-              - "{{ hour_price < states('input_number.hsbo_energy_low_threshold') | float }}"
+              - "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) > 0 }}"
+              - "{{ hour_price < states('input_number.hsbo_energy_low_threshold') | float(0) }}"
             sequence:
               - action: input_number.set_value
                 target:
                   entity_id: input_number.hsbo_battery_charging
                 data:
-                  value: "{{ states('input_number.hsbo_battery_charging') | float + charging_amount }}"
+                  value: "{{ states('input_number.hsbo_battery_charging') | float(0) + charging_amount }}"
               - action: input_number.set_value
                 target:
                   entity_id: input_number.hsbo_simulated_remaining_charge
                 data:
-                  value: "{{ states('input_number.hsbo_simulated_remaining_charge') | float - charging_amount }}"
+                  value: "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) - charging_amount }}"
               - action: input_text.set_value
                 target:
                   entity_id: input_text.hsbo_hourly_decision
                 data:
                   value: "Charge Battery"
           - conditions:
-              - "{{ states('input_number.hsbo_simulated_remaining_charge') | float > 0 }}"
+              - "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) > 0 }}"
             sequence:
               - action: input_number.set_value
                 target:
                   entity_id: input_number.hsbo_battery_charging
                 data:
-                  value: "{{ states('input_number.hsbo_battery_charging') | float + charging_amount }}"
+                  value: "{{ states('input_number.hsbo_battery_charging') | float(0) + charging_amount }}"
               - action: input_number.set_value
                 target:
                   entity_id: input_number.hsbo_simulated_remaining_charge
                 data:
-                  value: "{{ states('input_number.hsbo_simulated_remaining_charge') | float - charging_amount }}"
+                  value: "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) - charging_amount }}"
               - action: input_text.set_value
                 target:
                   entity_id: input_text.hsbo_hourly_decision
@@ -384,7 +384,7 @@ script:
             target:
               entity_id: input_number.hsbo_grid_selling
             data:
-              value: "{{ states('input_number.hsbo_grid_selling') | float + hour_forecast }}"
+              value: "{{ states('input_number.hsbo_grid_selling') | float(0) + hour_forecast }}"
           - action: input_text.set_value
             target:
               entity_id: input_text.hsbo_hourly_decision
@@ -438,7 +438,7 @@ script:
                       value_template: >
                         {{ 'Charge Battery' in current_recommendation and
                           'if needed' not in current_recommendation and
-                          states('input_number.hsbo_charge_start_time') | float == 0 }}
+                          states('input_number.hsbo_charge_start_time') | float(0) == 0 }}
                   sequence:
                     - action: input_number.set_value
                       target:
@@ -452,11 +452,11 @@ script:
         data:
           title: "HSBO Battery Optimization Summary"
           message: >
-            {% set grid_selling = states('input_number.hsbo_grid_selling') | float %}
-            {% set battery_charging = states('input_number.hsbo_battery_charging') | float %}
-            {% set actual_remaining_charge = states('input_number.hsbo_remaining_charge') | float %}
-            {% set simulated_remaining_charge = states('input_number.hsbo_simulated_remaining_charge') | float %}
-            {% set charge_start_hour = states('input_number.hsbo_charge_start_time') | int %}
+            {% set grid_selling = states('input_number.hsbo_grid_selling') | float(0) %}
+            {% set battery_charging = states('input_number.hsbo_battery_charging') | float(0) %}
+            {% set actual_remaining_charge = states('input_number.hsbo_remaining_charge') | float(0) %}
+            {% set simulated_remaining_charge = states('input_number.hsbo_simulated_remaining_charge') | float(0) %}
+            {% set charge_start_hour = states('input_number.hsbo_charge_start_time') | int(0) %}
 
             Battery Optimization Summary:{{ '\n' -}}
             --------------------------------{{ '\n' -}}
@@ -638,10 +638,10 @@ script:
       - variables:
           tomorrow_forecast: >
             {% if tomorrow_forecast_raw is not none and tomorrow_forecast_raw | float(-1) >= 0 %}
-              {{ tomorrow_forecast_raw | float }}
+              {{ tomorrow_forecast_raw | float(0) }}
             {% elif state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') is not none 
                     and state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') | float(-1) >= 0 %}
-              {{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') | float }}
+              {{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'estimate') | float(0) }}
             {% else %}
               5
             {% endif %}
@@ -652,7 +652,7 @@ script:
       
       # Calculate estimated solar charging capacity (assuming 90% efficiency)
       - variables:
-          solar_charging_capacity: "{{ (tomorrow_forecast | float * 0.9) | round(2) }}"
+          solar_charging_capacity: "{{ (tomorrow_forecast | float(0) * 0.9) | round(2) }}"
       
       - action: system_log.write
         data:
@@ -709,9 +709,9 @@ script:
           ac_charge_cutoff_soc: >
             {% if required_grid_charging > 0 %}
               {% set cutoff_percentage = (((target_capacity + morning_energy_need) / battery_max_capacity) * 100) | round(0) %}
-              {{ [[cutoff_percentage, 100] | min, 20] | max | float }}
+              {{ [[cutoff_percentage, 100] | min, 20] | max | float(0) }}
             {% else %}
-              {{ 20 | float }}
+              {{ 20.0 }}
             {% endif %}
       
       - action: system_log.write
@@ -775,7 +775,7 @@ automation:
         target:
           entity_id: "{{ states('input_text.hsbo_batteries_grid_charge_cutoff_soc') }}"
         data:
-          value: "{{ states('input_number.hsbo_ac_charge_cutoff_soc') | int }}"
+          value: "{{ states('input_number.hsbo_ac_charge_cutoff_soc') | int(0) }}"
       - action: script.hsbo_calculate_energy_thresholds
       - action: script.hsbo_analyze_hourly_data
       - action: script.hsbo_generate_summary
@@ -852,7 +852,7 @@ automation:
           ema_house_load: "{{ states('sensor.hsbo_ema_house_load') }}"
           differential_ema: >
             {% if is_number(ema_solar_production) and is_number(ema_house_load) %}
-              {{ (ema_solar_production | float - ema_house_load | float) / 1000 }}
+              {{ (ema_solar_production | float(0) - ema_house_load | float(0)) / 1000 }}
             {% else %}
               {% set solar_production = states('sensor.hsbo_solar_production') | float(0) %}
               {% set house_load = states('sensor.hsbo_house_consumption') | float(0) %}
@@ -864,7 +864,7 @@ automation:
             {{ charge_datetime is not none and charge_datetime.date() == now().date() }}
           current_month: "{{ now().month }}"
           recommended_working_mode: "{{ states('input_text.hsbo_recommended_working_mode') }}"
-          spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float }}"
+          spot_price: "{{ states(states('input_text.hsbo_energi_data_service_spot_price')) | float(0) }}"
           inverter_entity: "{{ states('input_text.hsbo_inverter_active_power_control') }}"
           current_export_state: "{{ states(inverter_entity) }}"
           ev_charging: "{{ is_state('binary_sensor.hsbo_ev_charging', 'on') }}"
@@ -1149,7 +1149,7 @@ sensor:
         friendly_name: "HSBO Battery Charge Date and Time"
         unique_id: hsbo_battery_charge_datetime
         value_template: >
-          {% set target_hour = states('input_number.hsbo_charge_start_time') | int %}
+          {% set target_hour = states('input_number.hsbo_charge_start_time') | int(0) %}
           {% set now_time = now() %}
           {% set target = now_time.replace(hour=target_hour, minute=0, second=0, microsecond=0) %}
           {% if target <= now_time %}
@@ -1216,5 +1216,5 @@ sensor:
         friendly_name: "HSBO Differential EMA"
         unique_id: hsbo_differential_ema
         value_template: >
-          {{ (states('sensor.hsbo_ema_solar_production') | float - 
+          {{ (states('sensor.hsbo_ema_solar_production') | float(0) - 
              states('sensor.hsbo_ema_house_load') | float) | round(2) }}
