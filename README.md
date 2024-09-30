@@ -18,7 +18,7 @@ Perfect for homeowners looking to make the most of their solar investment while 
   - Generates a summary of recommendations for the day
 - Comprehensive daily mode management:
   - Automatically switches between different working modes based on time, solar production, and house load
-  - Supports Time-of-Use (TOU), Maximize Self-Consumption, and Fully Fed to Grid modes
+  - Supports several working modes with multiple Time-of-Use (TOU) configuration and Maximize Self-Consumption
   - Adjusts mode based on seasons (different strategies for winter/spring and summer months)
 - Grid export management based on spot prices:
   - Enables or disables grid export based on current electricity spot prices
@@ -100,7 +100,7 @@ The package includes the following automations to manage and optimize your Huawe
      - Seasonal considerations
    - Handles working mode switches for:
      - EV charging optimization
-     - Transitioning between TOU, Maximize Self-Consumption, and Fully Fed to Grid modes
+     - Transitioning between different TOUs and Maximize Self-Consumption working modes
      - Adapting to changes in solar production and house load
      - Managing grid export based on spot prices
    - Provides detailed logging of mode changes and reasons
@@ -124,7 +124,7 @@ The package includes the following scripts for managing and optimizing your Huaw
 
 6. `hsbo_set_working_mode_to_default_tou_periods`: Sets the system to use default Time-of-Use (TOU) periods, configuring charging and discharging times.
 
-7. `hsbo_set_working_mode_to_fully_fed_to_grid`: Sets the system to feed all generated power to the grid.
+7. `hsbo_set_working_mode_to_fully_fed_to_grid`: Sets the system to feed all generated power to the grid. Only in here as a function, not in any automations
 
 8. `hsbo_set_working_mode_to_maximise_self_consumption`: Sets the system to maximize self-consumption of generated power.
 
@@ -204,9 +204,9 @@ These default periods are set to optimize battery usage based on typical daily e
 
 ### 3. Fully Fed to Grid
 
-**Description**: In this mode, all excess solar energy is fed back to the grid instead of being stored in the battery.
+**Description**: In this mode, all excess solar energy is fed back to the grid instead of being stored in the battery and in some circumstances will also drain the battery.
 
-**Use Case**: Useful in scenarios where feeding energy to the grid is more beneficial than storing it.
+**Use Case**: Useful in scenarios where feeding energy to the grid is more beneficial than storing it. Especially if electricity price for selling is high.
 
 **When to Use**:
 - When grid feed-in tariffs are particularly high
