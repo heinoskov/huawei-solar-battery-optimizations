@@ -1218,3 +1218,6 @@ sensor:
         value_template: >
           {{ (states('sensor.hsbo_ema_solar_production') | float(0) - 
              states('sensor.hsbo_ema_house_load') | float) | round(2) }}
+        availability_template: >
+          {{ states('sensor.hsbo_ema_solar_production') | is_number and
+             states('sensor.hsbo_ema_house_load') | is_number }}
