@@ -842,6 +842,7 @@ automation:
       - platform: state
         entity_id:
           - binary_sensor.hsbo_negative_spot_price
+        to: 
         id: price_change
       - platform: state 
         entity_id:
