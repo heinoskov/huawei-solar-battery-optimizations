@@ -742,9 +742,9 @@ script:
         data:
           value: "{{ required_grid_charging | float(0) }}"
       
-      - action: input_number.set_value
+      - action: number.set_value
         target:
-          entity_id: input_number.hsbo_ac_charge_cutoff_soc
+          entity_id: "{{ states('input_text.hsbo_batteries_grid_charge_cutoff_soc') }}"
         data:
           value: "{{ ac_charge_cutoff_soc | float(0) }}"
       
