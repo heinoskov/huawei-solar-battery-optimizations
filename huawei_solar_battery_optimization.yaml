@@ -160,7 +160,9 @@ input_text:
     name: HSBO Recommendation for 16:00
   hsbo_recommended_working_mode:
     name: HSBO Recommended Working Mode
-
+  hsbo_current_priority_mode:
+    name: HSBO Sensor for current priority mode
+    
 input_datetime:
   hsbo_battery_charge_datetime:
     name: HSBO Battery Charge Date and Time
