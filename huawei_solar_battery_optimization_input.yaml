@@ -8,78 +8,6 @@
 
 # Helpers to support the various scripts and automations
 input_number:
-  hsbo_energy_avg_price:
-    name: HSBO Energy Average Price
-    min: 0
-    max: 10
-    step: 0.01
-    unit_of_measurement: DKK/kWh
-  hsbo_energy_high_threshold:
-    name: HSBO Energy High Threshold
-    min: 0
-    max: 10
-    step: 0.01
-    unit_of_measurement: DKK/kWh
-  hsbo_energy_low_threshold:
-    name: HSBO Energy Low Threshold
-    min: 0
-    max: 10
-    step: 0.01
-    unit_of_measurement: DKK/kWh
-  hsbo_grid_selling:
-    name: HSBO Grid Selling
-    min: 0
-    max: 100
-    step: 0.01
-    unit_of_measurement: kWh
-  hsbo_battery_charging:
-    name: HSBO Battery Charging
-    min: 0
-    max: 10
-    step: 0.01
-    unit_of_measurement: kWh
-  hsbo_remaining_charge:
-    name: HSBO Remaining Charge
-    min: 0
-    max: 10
-    initial: 10
-    step: 0.01
-    unit_of_measurement: kWh
-    icon: mdi:battery-charging
-  hsbo_simulated_remaining_charge:
-    name: HSBO Simulated Remaining Charge
-    min: 0
-    max: 10
-    initial: 10
-    step: 0.01
-    unit_of_measurement: kWh
-    icon: mdi:battery-charging-outline
-  hsbo_charge_start_time:
-    name: HSBO Charge Start Time
-    min: 0
-    max: 23
-    step: 1
-    unit_of_measurement: hour
-    icon: mdi:clock-start
-  hsbo_solar_charging_capacity:
-    name: HSBO Solar Charging Capacity
-    min: 0
-    max: 100  # Increase this to a value that comfortably exceeds your maximum possible daily production
-    step: 0.01
-    unit_of_measurement: kWh
-  hsbo_required_grid_charging:
-    name: HSBO Required Grid Charging
-    min: 0
-    max: 10
-    step: 0.01
-    unit_of_measurement: kWh
-  hsbo_ac_charge_cutoff_soc:
-    name: HSBO AC Charge Cutoff SOC
-    min: 0
-    max: 100
-    step: 1
-    unit_of_measurement: '%'
-
   # This is a user configured helper to configure your solar plants max battery capacity
   hsbo_battery_max_capacity:
     name: HSBO Battery Max Capacity
@@ -99,32 +27,6 @@ input_number:
     icon: mdi:flash
 
 input_text:
-  hsbo_hourly_decision:
-    name: HSBO Hourly Decision
-  hsbo_recommendation_6:
-    name: HSBO Recommendation for 6:00
-  hsbo_recommendation_7:
-    name: HSBO Recommendation for 7:00
-  hsbo_recommendation_8:
-    name: HSBO Recommendation for 8:00
-  hsbo_recommendation_9:
-    name: HSBO Recommendation for 9:00
-  hsbo_recommendation_10:
-    name: HSBO Recommendation for 10:00
-  hsbo_recommendation_11:
-    name: HSBO Recommendation for 11:00
-  hsbo_recommendation_12:
-    name: HSBO Recommendation for 12:00
-  hsbo_recommendation_13:
-    name: HSBO Recommendation for 13:00
-  hsbo_recommendation_14:
-    name: HSBO Recommendation for 14:00
-  hsbo_recommendation_15:
-    name: HSBO Recommendation for 15:00
-  hsbo_recommendation_16:
-    name: HSBO Recommendation for 16:00
-  hsbo_recommended_working_mode:
-    name: HSBO Recommended Working Mode
   hsbo_device_id_inverter:
     name: HSBO Device ID for Huawei Solar device - Inverter
   hsbo_device_id_batteries:
@@ -153,11 +55,3 @@ input_text:
     name: HSBO Sensor for solar production power
   hsbo_ev_charger_status:
     name: HSBO Sensor for EV charging status
-  hsbo_current_priority_mode:
-    name: HSBO Sensor for current priority mode
-
-input_datetime:
-  hsbo_battery_charge_datetime:
-    name: HSBO Battery Charge Date and Time
-    has_date: true
-    has_time: true
