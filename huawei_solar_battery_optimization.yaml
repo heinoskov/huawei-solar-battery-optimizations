@@ -132,24 +132,6 @@ input_number:
     max: 100
     step: 1
     unit_of_measurement: '%'
-  
-  # This is a user configured helper to configure your solar plants max battery capacity
-  hsbo_battery_max_capacity:
-    name: HSBO Battery Max Capacity
-    min: 1
-    max: 100
-    step: 0.1
-    unit_of_measurement: kWh
-    icon: mdi:battery
-  
-  # This is a user configured helper to configure your house load between 6am and 9am (for which battery should have enough capacity to cover)
-  hsbo_morning_energy_need:
-    name: HSBO Morning Energy Need
-    min: 0
-    max: 10
-    step: 0.1
-    unit_of_measurement: kWh
-    icon: mdi:flash
 
 input_text:
   hsbo_hourly_decision:
@@ -178,37 +160,7 @@ input_text:
     name: HSBO Recommendation for 16:00
   hsbo_recommended_working_mode:
     name: HSBO Recommended Working Mode
-  hsbo_device_id_inverter:
-    name: HSBO Device ID for Huawei Solar device - Inverter
-  hsbo_device_id_batteries:
-    name: HSBO Device ID for Huawei Solar device - Batteries
-  hsbo_batteries_grid_charge_cutoff_soc:
-    name: HSBO Sensor for number.batteries_grid_charge_cutoff_soc
-  hsbo_batteries_working_mode:
-    name: HSBO Sensor for select.batteries_working_mode
-  hsbo_batteries_excess_pv_energy_use_in_tou:
-    name: HSBO Sensor for select.batteries_excess_pv_energy_use_in_tou
-  hsbo_energi_data_service_total_price:
-    name: HSBO Sensor for sensor.energi_data_service
-  hsbo_energi_data_service_spot_price:
-    name: HSBO Sensor for sensor.energi_data_service_produktion
-  hsbo_solcast_pv_forecast_forecast_today:
-    name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_today
-  hsbo_solcast_pv_forecast_forecast_tomorrow:
-    name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_tomorrow
-  hsbo_batteries_state_of_capacity:
-    name: HSBO Sensor for batteries_state_of_capacity
-  hsbo_inverter_active_power_control:
-    name: HSBO Sensor for sensor.inverter_active_power_control
-  hsbo_house_consumption_power:
-    name: HSBO Sensor for house consumption power
-  hsbo_solar_production_power:
-    name: HSBO Sensor for solar production power
-  hsbo_ev_charger_status:
-    name: HSBO Sensor for EV charging status
-  hsbo_current_priority_mode:
-    name: HSBO Sensor for current priority mode
-    
+
 input_datetime:
   hsbo_battery_charge_datetime:
     name: HSBO Battery Charge Date and Time
