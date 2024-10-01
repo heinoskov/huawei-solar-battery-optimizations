@@ -948,7 +948,7 @@ automation:
                     data:
                       message: "HSBO: No change needed at midnight. Current mode: {{ current_mode }}"
 
-          # Manage inverter export based on spot price (regardless of EV charging status)
+          # Manage inverter export based on spot price
           - conditions:
               - condition: trigger
                 id: price_change
