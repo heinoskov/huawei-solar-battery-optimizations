@@ -1,4 +1,4 @@
-# Huawei Solar Battery Optimization
+# Huawei Solar Battery Optimization (HSBO)
 # huawei_solar_battery_optimization_power.yaml
 # Place this file in your packages directory (usually /config/packages/)
 # See Home Assistant Packages documentation for further details on how to use this
@@ -14,6 +14,36 @@ template:
         device_class: power
         icon: "mdi:flash"
         state: "{{ states(states('input_text.hsbo_house_consumption_power')) | float(0) }}"
+
+      - name: "HSBO House Consumption 0-1 Power"
+        unique_id: "hsbo_house_consumption_0-1_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 0 else 0.0 }}"
+
+      - name: "HSBO House Consumption 1-2 Power"
+        unique_id: "hsbo_house_consumption_1-2_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 1 else 0.0 }}"
+
+      - name: "HSBO House Consumption 2-3 Power"
+        unique_id: "hsbo_house_consumption_2-3_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 2 else 0.0 }}"
+
+      - name: "HSBO House Consumption 3-4 Power"
+        unique_id: "hsbo_house_consumption_3-4_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 3 else 0.0 }}"
+
+      - name: "HSBO House Consumption 4-5 Power"
+        unique_id: "hsbo_house_consumption_4-5_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 4 else 0.0 }}"
+
+      - name: "HSBO House Consumption 5-6 Power"
+        unique_id: "hsbo_house_consumption_5_6_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 5 else 0.0 }}"
 
       - name: "HSBO House Consumption 6-7 Power"
         unique_id: "hsbo_house_consumption_6_7_power_sensor"
@@ -70,9 +100,98 @@ template:
         unit_of_measurement: "W"
         state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 16 else 0.0 }}"
 
+      - name: "HSBO House Consumption 17-18 Power"
+        unique_id: "hsbo_house_consumption_17_18_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 17 else 0.0 }}"
+
+      - name: "HSBO House Consumption 18-19 Power"
+        unique_id: "hsbo_house_consumption_18_19_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 18 else 0.0 }}"
+
+      - name: "HSBO House Consumption 19-20 Power"
+        unique_id: "hsbo_house_consumption_19-20_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 19 else 0.0 }}"
+
+      - name: "HSBO House Consumption 20-21 Power"
+        unique_id: "hsbo_house_consumption_20-21_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 20 else 0.0 }}"
+
+      - name: "HSBO House Consumption 21-22 Power"
+        unique_id: "hsbo_house_consumption_21-22_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 21 else 0.0 }}"
+
+      - name: "HSBO House Consumption 22-23 Power"
+        unique_id: "hsbo_house_consumption_22_23_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 22 else 0.0 }}"
+
+      - name: "HSBO House Consumption 23-00 Power"
+        unique_id: "hsbo_house_consumption_23_00_power_sensor"
+        unit_of_measurement: "W"
+        state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 23 else 0.0 }}"
+
 sensor:
 
 # integration
+  - platform: integration
+    source: sensor.hsbo_house_consumption_0_1_power
+    name: "HSBO House Consumption 0-1 Energy"
+    unique_id: hsbo_house_consumption_0_1_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_1_2_power
+    name: "HSBO House Consumption 1-2 Energy"
+    unique_id: hsbo_house_consumption_1_2_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_2_3_power
+    name: "HSBO House Consumption 2-3 Energy"
+    unique_id: hsbo_house_consumption_2_3_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_3_4_power
+    name: "HSBO House Consumption 3-4 Energy"
+    unique_id: hsbo_house_consumption_3_4_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_4_5_power
+    name: "HSBO House Consumption 4-5 Energy"
+    unique_id: hsbo_house_consumption_4_5_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_5_6_power
+    name: "HSBO House Consumption 5-6 Energy"
+    unique_id: hsbo_house_consumption_5_6_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
   - platform: integration
     source: sensor.hsbo_house_consumption_6_7_power
     name: "HSBO House Consumption 6-7 Energy"
@@ -172,7 +291,129 @@ sensor:
     unit_time: h
     method: left
 
+  - platform: integration
+    source: sensor.hsbo_house_consumption_17_18_power
+    name: "HSBO House Consumption 17-18 Energy"
+    unique_id: hsbo_house_consumption_17_18_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_18_19_power
+    name: "HSBO House Consumption 18-19 Energy"
+    unique_id: hsbo_house_consumption_18_19_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_19_20_power
+    name: "HSBO House Consumption 19-20 Energy"
+    unique_id: hsbo_house_consumption_19_20_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_20_21_power
+    name: "HSBO House Consumption 20-21 Energy"
+    unique_id: hsbo_house_consumption_20_21_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_21_22_power
+    name: "HSBO House Consumption 21-22 Energy"
+    unique_id: hsbo_house_consumption_21_22_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_22_23_power
+    name: "HSBO House Consumption 22-23 Energy"
+    unique_id: hsbo_house_consumption_22_23_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
+  - platform: integration
+    source: sensor.hsbo_house_consumption_23_00_power
+    name: "HSBO House Consumption 23-00 Energy"
+    unique_id: hsbo_house_consumption_23_00_energy
+    round: 6
+    unit_prefix: k
+    unit_time: h
+    method: left
+
 # statistics
+
+  - platform: statistics
+    name: "HSBO House Consumption 0-1 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_0_1_energy
+    unique_id: "hsbo_house_consumption_0_1_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 1-2 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_1_2_energy
+    unique_id: "hsbo_house_consumption_1_2_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+
+  - platform: statistics
+    name: "HSBO House Consumption 2-3 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_2_3_energy
+    unique_id: "hsbo_house_consumption_2_3_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+
+  - platform: statistics
+    name: "HSBO House Consumption 3-4 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_3_4_energy
+    unique_id: "hsbo_house_consumption_3_4_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+
+  - platform: statistics
+    name: "HSBO House Consumption 4-5 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_4_5_energy
+    unique_id: "hsbo_house_consumption_4_5_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+
+  - platform: statistics
+    name: "HSBO House Consumption 5-6 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_5_6_energy
+    unique_id: "hsbo_house_consumption_5_6_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
   - platform: statistics
     name: "HSBO House Consumption 6-7 Energy Average"
     entity_id: sensor.hsbo_house_consumption_6_7_energy
@@ -267,6 +508,69 @@ sensor:
     name: "HSBO House Consumption 16-17 Energy Average"
     entity_id: sensor.hsbo_house_consumption_16_17_energy
     unique_id: "hsbo_house_consumption_16_17_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 17-18 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_17_18_energy
+    unique_id: "hsbo_house_consumption_17_18_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 18-19 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_18_19_energy
+    unique_id: "hsbo_house_consumption_18_19_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 19-20 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_19_20_energy
+    unique_id: "hsbo_house_consumption_19_20_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 20-21 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_20_21_energy
+    unique_id: "hsbo_house_consumption_20_21_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 21-22 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_21_22_energy
+    unique_id: "hsbo_house_consumption_21_22_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 22-23 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_22_23_energy
+    unique_id: "hsbo_house_consumption_22_23_energy_average"
+    state_characteristic: mean
+    sampling_size: 3600
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 23-00 Energy Average"
+    entity_id: sensor.hsbo_house_consumption_23_00_energy
+    unique_id: "hsbo_house_consumption_23_00_energy_average"
     state_characteristic: mean
     sampling_size: 3600
     max_age:
