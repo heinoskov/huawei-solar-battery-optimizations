@@ -25,6 +25,7 @@ Perfect for homeowners looking to make the most of their solar investment while 
   - Avoids exporting during negative price periods
 - Next-day charging strategy calculation:
   - Runs at 9:00 PM to prepare for the following day
+  - Using 14days average power sensors to calculate house consumption in the late evening and early morning 
   - Determines required grid charging and recommends working mode
 - EV charging optimization:
   - Switches to a special TOU mode during EV charging to prioritize vehicle charging
@@ -62,7 +63,7 @@ For more information on using packages in Home Assistant, see the [official docu
 
 ## Configuration
 
-You may need to adjust the following input sensors in the package file to match your setup:
+You need to adjust the following input sensors in the package file to match your setup:
 
 - `sensor.solcast_pv_forecast_forecast_today` (from Solcast integration)
 - `sensor.solcast_pv_forecast_forecast_tomorrow` (from Solcast integration)
@@ -213,6 +214,8 @@ These default periods are set to optimize battery usage based on typical daily e
 - During periods of consistently high electricity spot prices
 - If there's a need to reduce battery cycling to extend its lifespan
 
+Note: This working mode is not in use by any automations at the moment, but script is added if needed.
+
 ### Grid Export Management
 
 **Description**: This feature allows you to enable or disable the export of excess energy to the grid based on current electricity spot prices.
@@ -267,6 +270,16 @@ Please note, if you already has existing automations configuring the Huawai work
 ## What's New
 
 This section highlights key updates and new features added to the Huawei Solar Battery Optimization package.
+
+### October 2, 2024
+- Updated calculation logic for the hsbo_calculate_next_day_charging automation to use power statistics sensors for more accurate calculations to determine AC Charge cutoff SOC for night charging.
+- Updated this readme
+
+### September 30, 2024
+- Splittet yaml package into 3 different packages by [woopstar](https://github.com/woopstar)
+  - huawei_solar_battery_optimization.yaml is the main package with scripts and automations
+  - huawei_solar_battery_optimization_input.yaml contains the user configured input parameters
+  - huawei_solar_battery_optimization_power.yaml contains all power and statisticks sensors
 
 ### September 28, 2024
 - Added EV charging optimization feature
