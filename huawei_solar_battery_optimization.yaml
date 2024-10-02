@@ -1207,8 +1207,5 @@ sensor:
         friendly_name: "HSBO Differential EMA"
         unique_id: hsbo_differential_ema
         value_template: >
-          {{ (states('sensor.hsbo_ema_solar_production') | float(0) - 
-            states('sensor.hsbo_ema_house_load') | float) | round(2) }}
-        availability_template: >
-          {{ states('sensor.hsbo_ema_solar_production') | is_number and
-            states('sensor.hsbo_ema_house_load') | is_number }}
+          {{ (states('sensor.hsbo_ema_solar_production') | float(0) -
+            states('sensor.hsbo_ema_house_load') | float(0)) | round(2) }}
