@@ -634,16 +634,15 @@ script:
       
       - action: system_log.write
         data:
-          message: "HSBO Debug: Current battery SoC: {{ current_battery_soc }}%, Capacity: {{ current_battery_capacity }} kWh, Current month: {{ current_month }}"
+          message: >
+            HSBO Debug: Current battery SoC: {{ current_battery_soc }}%, 
+            Capacity: {{ current_battery_capacity }} kWh, 
+            Max Capacity: {{ battery_max_capacity }} kWh, 
+            Current month: {{ current_month }}
       
-      # Get tomorrow's solar forecast with debug logging
+      # Get tomorrow's solar forecast
       - variables:
           tomorrow_forecast_raw: "{{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'estimate') }}"
-      - action: system_log.write
-        data:
-          message: "HSBO Debug: Raw tomorrow forecast: {{ tomorrow_forecast_raw }}"
-      
-      - variables:
           tomorrow_forecast: >
             {% if tomorrow_forecast_raw is not none and tomorrow_forecast_raw | float(-1) >= 0 %}
               {{ tomorrow_forecast_raw | float(0) }}
@@ -658,41 +657,59 @@ script:
         data:
           message: "HSBO: Tomorrow's forecast: {{ tomorrow_forecast }} kWh"
       
-      # Calculate estimated solar charging capacity (assuming 90% efficiency)
+      # Calculate solar charging capacity and energy needs
       - variables:
-          solar_charging_capacity: "{{ (tomorrow_forecast | float(0) * 0.9) | round(2) }}"
-      
-      - action: system_log.write
-        data:
-          message: "HSBO Debug: Solar charging capacity: {{ solar_charging_capacity }} kWh"
-      
-      # Calculate energy needed for morning usage (6am to 9am), only for September to April
-      - variables:
+          solar_charging_capacity: "{{ (tomorrow_forecast * 0.9) | round(2) }}"
           morning_energy_need: >
-            {% if current_month in [1, 2, 3, 4, 9, 10, 11, 12] %}
-              {{ states('input_number.hsbo_morning_energy_need') | float(1.5) }}
-            {% else %}
-              0
-            {% endif %}
+            {% set morning_consumption = 
+              states('sensor.hsbo_house_consumption_6_7_energy_average') | float(0) +
+              states('sensor.hsbo_house_consumption_7_8_energy_average') | float(0) +
+              states('sensor.hsbo_house_consumption_8_9_energy_average') | float(0) +
+              states('sensor.hsbo_house_consumption_9_10_energy_average') | float(0)
+            %}
+            {{ morning_consumption | round(2) }}
+          late_evening_energy_need: >
+            {% set late_evening_consumption = 
+              states('sensor.hsbo_house_consumption_21_22_energy_average') | float(0) +
+              states('sensor.hsbo_house_consumption_22_23_energy_average') | float(0) +
+              states('sensor.hsbo_house_consumption_23_00_energy_average') | float(0)
+            %}
+            {{ late_evening_consumption | round(2) }}
       
       - action: system_log.write
         data:
-          message: "HSBO Debug: Morning energy need: {{ morning_energy_need }} kWh (Considered: {{ current_month in [1, 2, 3, 4, 9, 10, 11, 12] }})"
+          message: >
+            HSBO Debug: Solar charging capacity: {{ solar_charging_capacity }} kWh, 
+            Morning energy need (6am - 10am): {{ morning_energy_need }} kWh,
+            Late evening energy need (9pm - midnight): {{ late_evening_energy_need }} kWh
       
-      # Calculate required charging from grid
+      # Calculate charge strategy
       - variables:
-          target_capacity: "{{ battery_max_capacity * 0.9 }}"
-          solar_charging_capacity_float: "{{ solar_charging_capacity | float(0) }}"
-          required_energy: "{{ (target_capacity - current_battery_capacity) | float(0) }}"
-          solar_excess: "{{ (solar_charging_capacity_float - required_energy) | float(0) }}"
-          required_grid_charging: >
-            {% if solar_excess < 0 %}
-              {{ ((-solar_excess) | abs + morning_energy_need) | round(2) }}
+          capacity_after_night: "{{ (current_battery_capacity - late_evening_energy_need - morning_energy_need) | float(0) }}"
+          required_charge: "{{ (battery_max_capacity - capacity_after_night) | float(0) }}"
+          required_grid_charge: "{{ [required_charge - solar_charging_capacity, 0] | max | float(0) }}"
+          ac_charge_cutoff_percentage: "{{ ((required_grid_charge / battery_max_capacity * 100) | round(0)) | float(0) }}"
+      
+      - action: system_log.write
+        data:
+          message: >
+            HSBO Debug: Capacity after night: {{ capacity_after_night }} kWh, 
+            Required charge: {{ required_charge }} kWh, 
+            Required grid charge: {{ required_grid_charge }} kWh, 
+            AC charge cutoff percentage (pre-adjustment): {{ ac_charge_cutoff_percentage }}%
+      
+      # Determine final AC charge cutoff SOC and working mode
+      - variables:
+          ac_charge_cutoff_soc: >
+            {% if ac_charge_cutoff_percentage > 100 %}
+              100
+            {% elif ac_charge_cutoff_percentage < 20 %}
+              20
             {% else %}
-              {{ morning_energy_need | round(2) }}
+              {{ ac_charge_cutoff_percentage | round(0) }}
             {% endif %}
           recommended_working_mode: >
-            {% if required_grid_charging > 0 %}
+            {% if required_grid_charge > 0 %}
               TOU
             {% else %}
               Maximise Self Consumption
@@ -701,52 +718,27 @@ script:
       - action: system_log.write
         data:
           message: >
-            HSBO Debug: Charging strategy calculation:
-            Max capacity: {{ battery_max_capacity }} kWh,
-            Target capacity: {{ target_capacity }} kWh,
-            Current battery capacity: {{ current_battery_capacity }} kWh,
-            Solar charging capacity: {{ solar_charging_capacity_float }} kWh,
-            Required energy: {{ required_energy }} kWh,
-            Solar excess: {{ solar_excess }} kWh,
-            Morning energy need: {{ morning_energy_need }} kWh,
-            Required grid charging: {{ required_grid_charging }} kWh,
+            HSBO Debug: Final AC charge cutoff SOC: {{ ac_charge_cutoff_soc }}%, 
             Recommended working mode: {{ recommended_working_mode }}
-
-      # Calculate AC charge cutoff SOC (for TOU mode) with error handling
-      - variables:
-          ac_charge_cutoff_soc: >
-            {% if required_grid_charging > 0 %}
-              {% set cutoff_percentage = (((target_capacity + morning_energy_need) / battery_max_capacity) * 100) | round(0) %}
-              {{ [[cutoff_percentage, 100] | min, 20] | max | float(0) }}
-            {% else %}
-              {{ 20.0 }}
-            {% endif %}
       
-      - action: system_log.write
-        data:
-          message: >
-            HSBO Debug: AC charge cutoff SOC calculation:
-            AC charge cutoff SOC: {{ ac_charge_cutoff_soc }}%
-            (Note: Only relevant if TOU mode is used)
-
-      # Set the calculated values with error handling
+      # Set the calculated values
       - action: input_number.set_value
         target:
           entity_id: input_number.hsbo_solar_charging_capacity
         data:
-          value: "{{ solar_charging_capacity_float | float(0) }}"
+          value: "{{ solar_charging_capacity }}"
       
       - action: input_number.set_value
         target:
           entity_id: input_number.hsbo_required_grid_charging
         data:
-          value: "{{ required_grid_charging | float(0) }}"
+          value: "{{ required_grid_charge }}"
       
       - action: number.set_value
         target:
           entity_id: "{{ states('input_text.hsbo_batteries_grid_charge_cutoff_soc') }}"
         data:
-          value: "{{ ac_charge_cutoff_soc | float(0) }}"
+          value: "{{ ac_charge_cutoff_soc }}"
       
       - action: input_text.set_value
         target:
@@ -758,11 +750,11 @@ script:
         data:
           message: >
             HSBO: Next day charging calculation complete. 
-            Solar charging capacity: {{ solar_charging_capacity_float | float(0) }} kWh, 
-            Required grid charging: {{ required_grid_charging | float(0) }} kWh,
-            AC charge cutoff SOC: {{ ac_charge_cutoff_soc | float(0) }}%,
+            Solar charging capacity: {{ solar_charging_capacity }} kWh, 
+            Required grid charging: {{ required_grid_charge }} kWh,
+            AC charge cutoff SOC: {{ ac_charge_cutoff_soc }}%,
             Recommended working mode: {{ recommended_working_mode }}
-
+            
 # Automations
 automation:
   - id: hsbo_daily_battery_optimization
