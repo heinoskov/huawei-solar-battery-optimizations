@@ -72,7 +72,7 @@ You need to adjust the following input sensors in the package file to match your
 - `sensor.batteries_state_of_capacity` (from Huawei Solar Integration)
 - `sensor.inverter_active_power_control` (from Huawei Solar Integration) <br><br>
 
-You need to add your specific input sensors to the input file. You can either do this in Developer tools > States or you can use the Lovelace card described below.
+You need to map your specific user-provided sensors to the input sensors. You can either do this in Developer tools > States or you can use the Lovelace card described below.
 
 ## Automations
 
