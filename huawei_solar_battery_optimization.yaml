@@ -996,7 +996,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
+                          message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # When solar production > house load, before optimal battery charge time
                   - conditions:
@@ -1019,7 +1019,7 @@ automation:
                           entity_id: script.hsbo_set_morning_tou_mode_disable_battery_charge
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to TOU with battery charge disabled at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
+                          message: "HSBO: Changed to TOU with battery charge disabled at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # At or after optimal battery charge time, but before 5 PM
                   - conditions:
@@ -1041,7 +1041,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
+                          message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # After 5 PM (Winter/Spring months: September to April)
                   - conditions:
@@ -1057,7 +1057,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
+                          message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # After 5 PM (Summer months: May to August)
                   - conditions:
@@ -1073,7 +1073,7 @@ automation:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
                       - action: system_log.write
                         data:
-                          message: "HSBO: Changed to Maximise Self Consumption (Summer months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} kW)"
+                          message: "HSBO: Changed to Maximise Self Consumption (Summer months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
               # Check and manage inverter export during regular checks
               - choose:
