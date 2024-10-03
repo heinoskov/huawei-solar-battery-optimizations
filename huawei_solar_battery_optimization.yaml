@@ -1206,6 +1206,7 @@ sensor:
       hsbo_differential_ema:
         friendly_name: "HSBO Differential EMA"
         unique_id: hsbo_differential_ema
+        unit_of_measurement: "W"
         value_template: >
           {{ (states('sensor.hsbo_ema_solar_production') | float(0) -
             states('sensor.hsbo_ema_house_load') | float(0)) | round(2) }}
