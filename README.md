@@ -155,6 +155,28 @@ You can use the following lovelace card to show all entities related to HSBO usi
       - entity_id: '*hsbo*'
     exclude: []
 ```
+...or you can use this lovelace card directly in an enteties card.
+
+```yaml
+type: entities
+entities:
+  - entity: input_text.hsbo_device_id_inverter
+  - entity: input_text.hsbo_device_id_inverter_2
+  - entity: input_text.hsbo_device_id_batteries
+  - entity: input_text.hsbo_batteries_grid_charge_cutoff_soc
+  - entity: input_text.hsbo_batteries_working_mode
+  - entity: input_text.hsbo_batteries_excess_pv_energy_use_in_tou
+  - entity: input_text.hsbo_energi_data_service_total_price
+  - entity: input_text.hsbo_energi_data_service_spot_price
+  - entity: input_text.hsbo_solcast_pv_forecast_forecast_today
+  - entity: input_text.hsbo_solcast_pv_forecast_forecast_tomorrow
+  - entity: input_text.hsbo_batteries_state_of_capacity
+  - entity: input_text.hsbo_inverter_active_power_control
+  - entity: input_text.hsbo_house_consumption_power
+  - entity: input_text.hsbo_solar_production_power
+  - entity: input_text.hsbo_ev_charger_status
+title: HSBO Battery Optimization
+```
 <br><br>
 
 ## How It Works
