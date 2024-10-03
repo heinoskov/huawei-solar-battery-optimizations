@@ -1,5 +1,8 @@
-# Huawei Solar Battery Optimization
-# huawei_solar_battery_optimization.yaml
+# Huawei Solar Battery Optimization - HSBO
+# version:
+# branch:
+# domain: huawei_solar_battery_optimization.yaml
+
 # Place this file in your packages directory (usually /config/packages/)
 # See Home Assistant Packages documentation for further details on how to use this
 # Packages in Home Assistant: https://www.home-assistant.io/docs/configuration/packages/
@@ -10,6 +13,9 @@
 # The scripts and automations in this package is setup for a 10kWh inverter and 10kW battery from Huawei.
 # It aims to maximize self-consumption, optimize charging/discharging of Huawei Battery based on electricity prices,
 # and manage grid export based on spot prices.
+
+# Har inverterens størrelse nogen betydning?
+# Jeg ved at der arbejdes på at trække batteriets kapacitet ud som entity. Troede det var sket, men kan ikke finde den.
 
 # --------------------------------------------------------------------------------------
 # Brief explanation
@@ -50,7 +56,12 @@
 # sensor.energi_data_service_total_price (from Energi Data Service integration)
 # sensor.energi_data_service_spot_price (from Energi Data Service integration)
 # sensor.batteries_state_of_capacity (from Huawei Solar Integration)
-# sensor.inverter_active_power_control (from Huawei Solar Integration)
+# sensor.inverter_active_power_control (from Huawei Solar Integration) 
+# Hvis jeg forstår denne entity korrekt, så oplyser den blot om "state" / status. 
+# Kan ikke se at den anvendes "aktivt" til at trigge noget? 
+# Jeg tænker derfor ikke at det er relevant at medtage en slaveinverter, da den følger master.
+# Hvis jeg tager fejl...
+# sensor.inverter_active_power_control_2 (from Huawei Solar Integration, if you have a setup with two inverters)
 # --------------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------------
@@ -588,15 +599,19 @@ script:
     mode: single
     description: "This script enables TOU and disables use of battery for both discharging and charging. Excess power produced will be fed to grid"
 
-  hsbo_disable_grid_export:
+  hsbo_disable_grid_export: #Her bør man lave en konsekvensrettelse og ændre "disable" til "limit"
     alias: "HSBO - Disable Grid Export"
-    # This script disables exporting power to the grid. It's typically used when electricity
-    # prices are negative to avoid selling power at a loss.
+    # This script disables exporting power to the grid. It's typically used when the electricity
+    # sales prices is negative to avoid selling power at a loss.
     sequence:
-      - action: huawei_solar.set_maximum_feed_grid_power_percent
+      - action: huawei_solar.set_maximum_feed_grid_power #Foretrækker denne da man med denne sætter et antal W der må sendes til grid i stedet for en % sats af ???
         data:
           device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
-          power_percentage: 0
+          power: "{{ states (states(input_number.hsbo_limit_feed_grid_power_inverter) | float(200)) }}"
+      - action: huawei_solar.set_maximum_feed_grid_power
+        data:
+          device_id: "{{ states('input_text.hsbo_device_id_inverter_2') }}"
+          power: "{{ states (states(input_number.hsbo_limit_feed_grid_power_inverter) | float(100)) }}"
       - action: notify.notify
         data:
           message: "HSBO: Solar Inverter GRID EXPORT disabled"
@@ -606,12 +621,14 @@ script:
   hsbo_enable_grid_export:
     alias: "HSBO - Enable Grid Export"
     # This script enables exporting power to the grid. It's used when electricity prices
-    # are positive and it's beneficial to sell excess power.
+    # are positive and when it's beneficial to sell excess power.
     sequence:
-      - action: huawei_solar.set_maximum_feed_grid_power_percent
+      - action: huawei_solar.reset_maximum_feed_grid_power #Foretrækker denne, da den resetter anlægget til default export.
         data:
           device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
-          power_percentage: 100
+      - action: huawei_solar.reset_maximum_feed_grid_power
+        data:
+          device_id: "{{ states('input_text.hsbo_device_id_inverter_2') }}"
       - action: notify.notify
         data:
           message: "HSBO: Solar Inverter GRID EXPORT enabled"
