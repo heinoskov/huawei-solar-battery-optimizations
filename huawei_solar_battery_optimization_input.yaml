@@ -11,9 +11,9 @@ input_number:
   # This is a user configured helper to configure your solar plants max battery capacity
   hsbo_battery_max_capacity:
     name: HSBO Battery Max Capacity
-    min: 1
-    max: 100
-    step: 0.1
+    min: 0
+    max: 42
+    step: 1
     unit_of_measurement: kWh
     icon: mdi:battery
 
