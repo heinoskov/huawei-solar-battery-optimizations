@@ -987,7 +987,7 @@ automation:
                       - condition: time
                         before: "10:00:00"
                       - condition: template
-                        value_template: "{{ differential_ema <= -100 }}"
+                        value_template: "{{ differential_ema <= -200 }}"
                       - condition: template
                         value_template: "{{ current_mode != 'default_tou' }}"
                     sequence:
@@ -1006,7 +1006,7 @@ automation:
                         value_template: >
                           {% if is_battery_charge_datetime_valid %}
                             {% set charge_start = strptime(battery_charge_datetime, '%Y-%m-%d %H:%M:%S') %}
-                            {{ differential_ema > 100 and
+                            {{ differential_ema > 200 and
                               now() | as_timestamp < charge_start | as_timestamp }}
                           {% else %}
                             false
@@ -1203,8 +1203,8 @@ sensor:
           {%- set ema_house_load = states('sensor.hsbo_ema_house_load') %}
           {%- set solar_production = states('sensor.hsbo_solar_production') | float(0) %}
           {%- set house_load = states('sensor.hsbo_house_consumption') | float(0) %}
-          {%- if is_number(ema_solar_production) and is_number(ema_house_load) %}
-            {{ (ema_solar_production | float(0) - ema_house_load | float(0)) | round(0) }}
+          {%- if ema_solar_production | is_number and ema_house_load | is_number %}
+            {{ (ema_solar_production - ema_house_load) | round(0) }}
           {% else %}
             {{ (solar_production - house_load) | round(0) }}
           {% endif %}
