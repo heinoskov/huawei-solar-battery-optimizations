@@ -1204,7 +1204,7 @@ sensor:
           {%- set solar_production = states('sensor.hsbo_solar_production') | float(0) %}
           {%- set house_load = states('sensor.hsbo_house_consumption') | float(0) %}
           {%- if ema_solar_production | is_number and ema_house_load | is_number %}
-            {{ (ema_solar_production - ema_house_load) | round(0) }}
+            {{ (ema_solar_production | float - ema_house_load | float) | round(0) }}
           {% else %}
             {{ (solar_production - house_load) | round(0) }}
           {% endif %}
