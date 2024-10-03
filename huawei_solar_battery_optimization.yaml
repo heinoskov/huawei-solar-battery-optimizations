@@ -972,7 +972,7 @@ automation:
                         state: 'on'
                       - condition: template
                         value_template: >
-                          {{ states(inverter_entity) != "Limited to 0.0%" }}
+                          {{ states(inverter_entity) != "Limited to 0.0%" }} #Forslag: Blot kald det for "Limit Export"
                     sequence:
                       - action: script.turn_on
                         target:
@@ -983,7 +983,7 @@ automation:
                         state: 'off'
                       - condition: template
                         value_template: >
-                          {{ states(inverter_entity) != "Limited to 100.0%" }}
+                          {{ states(inverter_entity) != "Limited to 100.0%" }} #Forslag: Blot kald det for "Reset Export"
                     sequence:
                       - action: script.turn_on
                         target:
