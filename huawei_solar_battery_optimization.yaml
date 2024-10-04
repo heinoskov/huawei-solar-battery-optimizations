@@ -771,11 +771,6 @@ automation:
           entity_id: input_number.hsbo_charge_start_time
         data:
           value: 0
-      - action: number.set_value
-        target:
-          entity_id: "{{ states('input_text.hsbo_batteries_grid_charge_cutoff_soc') }}"
-        data:
-          value: "{{ states('input_number.hsbo_ac_charge_cutoff_soc') | int(0) }}"
       - action: script.hsbo_calculate_energy_thresholds
       - action: script.hsbo_analyze_hourly_data
       - action: script.hsbo_generate_summary
