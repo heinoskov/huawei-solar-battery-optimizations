@@ -841,6 +841,10 @@ automation:
           - binary_sensor.hsbo_ev_charging
         to: 'off'
         id: ev_charging_stop
+        for:
+          hours: 0
+          minutes: 1
+          seconds: 0
     action:
       - variables:
           current_mode: "{{ states('input_text.hsbo_current_priority_mode') }}"
@@ -873,24 +877,12 @@ automation:
               - condition: trigger
                 id: ev_charging_stop
             sequence:
-              - choose:
-                  - conditions:
-                      - condition: template
-                        value_template: "{{ recommended_working_mode == 'TOU' }}"
-                    sequence:
-                      - action: script.turn_on
-                        target:
-                          entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-                  - conditions:
-                      - condition: template
-                        value_template: "{{ recommended_working_mode == 'Maximise Self Consumption' }}"
-                    sequence:
-                      - action: script.turn_on
-                        target:
-                          entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+              - action: script.turn_on
+                target:
+                  entity_id: script.hsbo_set_working_mode_to_default_tou_periods
               - action: system_log.write
                 data:
-                  message: "HSBO: Reverted to {{ recommended_working_mode }} mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
+                  message: "HSBO: Reverted to Default TOU mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
 
           # Midnight: Set mode based on evening calculation (only if not EV charging)
           - conditions:
