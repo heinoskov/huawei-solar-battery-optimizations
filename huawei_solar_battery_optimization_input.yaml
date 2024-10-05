@@ -55,3 +55,9 @@ input_text:
     name: HSBO Sensor for solar production power
   hsbo_ev_charger_status:
     name: HSBO Sensor for EV charging status
+
+input_boolean:
+  # This is used to switch between Production and Beta version for the hourly analysis and recommendations
+  hsbo_use_beta_version:
+    name: "HSBO Use Beta Version"
+    icon: mdi:beta

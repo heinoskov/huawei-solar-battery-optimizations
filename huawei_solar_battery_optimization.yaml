@@ -214,6 +214,90 @@ script:
 
   hsbo_analyze_hourly_data:
     alias: "HSBO Analyze Hourly Data"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'on'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_beta_analyze_hourly_data
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'off'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_production_analyze_hourly_data
+
+  hsbo_process_hourly_data:
+    alias: "HSBO Process Hourly Data"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'on'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_beta_process_hourly_data
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'off'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_production_process_hourly_data
+
+  hsbo_update_hourly_recommendation:
+    alias: "HSBO Update Hourly Recommendation"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'on'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_beta_update_hourly_recommendation
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'off'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_production_update_hourly_recommendation
+
+  hsbo_generate_summary:
+    alias: "HSBO Generate Battery Optimization Summary"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'on'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_beta_generate_summary
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.hsbo_use_beta_version
+                state: 'off'
+            sequence:
+              - service: script.turn_on
+                target:
+                  entity_id: script.hsbo_production_generate_summary
+
+  hsbo_production_analyze_hourly_data:
+    alias: "HSBO Production Analyze Hourly Data"
     # This script analyzes the hourly solar production forecast and electricity prices.
     # It makes decisions about whether to charge the battery, sell to the grid, or use the energy
     # for each hour of the day, and updates the relevant input numbers and texts.
@@ -274,8 +358,8 @@ script:
                 hour: "{{ current_hour }}"
                 hour_forecast: "{{ hour_forecast }}"
 
-  hsbo_process_hourly_data:
-    alias: "HSBO Process Hourly Data"
+  hsbo_production_process_hourly_data:
+    alias: "HSBO Production Process Hourly Data"
     # This script processes the data for a specific hour, determining whether to sell to the grid,
     # charge the battery, or use the energy based on the current price and battery state.
     sequence:
@@ -345,8 +429,8 @@ script:
             data:
               value: "Sell to Grid (Battery Full)"
 
-  hsbo_update_hourly_recommendation:
-    alias: "HSBO Update Hourly Recommendation"
+  hsbo_production_update_hourly_recommendation:
+    alias: "HSBO Production Update Hourly Recommendation"
     # This script updates the recommendation for a specific hour based on the decision made
     # in the hsbo_process_hourly_data script.
     sequence:
@@ -362,8 +446,8 @@ script:
             - Potential to sell {{ hour_forecast|round(2) }} kWh
             {% endif %}
 
-  hsbo_generate_summary:
-    alias: "HSBO Generate Battery Optimization Summary"
+  hsbo_production_generate_summary:
+    alias: "HSBO Production Generate Battery Optimization Summary"
     # This script generates a summary of the battery optimization analysis, including
     # potential grid selling, battery charging, and recommendations for each hour.
     # It also determines the optimal time to start charging the battery.
@@ -442,6 +526,238 @@ script:
       - action: system_log.write
         data:
           message: "HSBO: Hourly analysis complete. Final charge start time: {{ states('input_number.hsbo_charge_start_time') }}:00"
+
+  hsbo_beta_analyze_hourly_data:
+    alias: "HSBO Beta Analyze Hourly Data"
+    # This script analyzes the hourly solar production forecast and electricity prices.
+    # It makes decisions about whether to charge the battery, sell to the grid, or use the energy
+    # for each hour of the day, and updates the relevant input numbers and texts.
+    sequence:
+      - action: system_log.write
+        data:
+          message: "HSBO: Beta Starting hourly data analysis"
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.hsbo_grid_selling
+        data:
+          value: 0
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.hsbo_battery_charging
+        data:
+          value: 0
+      - action: system_log.write
+        data:
+          message: "HSBO: Beta Battery capacity sensor value: states(states('input_text.hsbo_batteries_state_of_capacity'))"
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.hsbo_remaining_charge
+        data:
+          value: >
+            {% set battery_capacity = states(states('input_text.hsbo_batteries_state_of_capacity')) | float(0) %}
+            {% set max_capacity = states('input_number.hsbo_battery_max_capacity') | float(0) %}
+            {% if battery_capacity != 'unknown' and battery_capacity != 'unavailable' %}
+              {{ ((100 - battery_capacity) / 100 * max_capacity) | round(2) }}
+            {% else %}
+              {{ max_capacity | round(2) }}
+            {% endif %}
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.hsbo_simulated_remaining_charge
+        data:
+          value: "{{ states('input_number.hsbo_remaining_charge') }}"
+      - action: homeassistant.update_entity
+        target:
+          entity_id: input_number.hsbo_remaining_charge
+      - action: system_log.write
+        data:
+          message: "HSBO: Beta Actual remaining charge set to: {{ states('input_number.hsbo_remaining_charge') }} kWh (Battery at states(states('input_text.hsbo_batteries_state_of_capacity')) %)"
+      - repeat:
+          count: 11
+          sequence:
+            - variables:
+                current_hour: "{{ repeat.index + 5 }}"
+                hour_forecast: >
+                  {% set forecast = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_today'), 'detailedHourly') %}
+                  {{ forecast[current_hour].pv_estimate * 0.9 | float(0) if forecast != None else 0.0 }}
+            - action: script.hsbo_process_hourly_data
+              data:
+                hour: "{{ current_hour }}"
+                hour_forecast: "{{ hour_forecast }}"
+            - action: script.hsbo_update_hourly_recommendation
+              data:
+                hour: "{{ current_hour }}"
+                hour_forecast: "{{ hour_forecast }}"
+
+  hsbo_beta_process_hourly_data:
+    alias: "HSBO Beta Process Hourly Data"
+    # This script processes the data for a specific hour, determining whether to sell to the grid,
+    # charge the battery, or use the energy based on the current price and battery state.
+    sequence:
+      - variables:
+          hour_price: "{{ state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'raw_today')[hour].price }}"
+          charging_amount: "{{ [hour_forecast, 5, states('input_number.hsbo_simulated_remaining_charge') | float(0)] | min }}"
+      - choose:
+          - conditions:
+              - "{{ hour < 12 or hour_price > states('input_number.hsbo_energy_high_threshold') | float(0) }}"
+            sequence:
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.hsbo_grid_selling
+                data:
+                  value: "{{ states('input_number.hsbo_grid_selling') | float(0) + hour_forecast }}"
+              - action: input_text.set_value
+                target:
+                  entity_id: input_text.hsbo_hourly_decision
+                data:
+                  value: "Sell to Grid"
+          - conditions:
+              - "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) > 0 }}"
+              - "{{ hour_price < states('input_number.hsbo_energy_low_threshold') | float(0) }}"
+            sequence:
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.hsbo_battery_charging
+                data:
+                  value: "{{ states('input_number.hsbo_battery_charging') | float(0) + charging_amount }}"
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.hsbo_simulated_remaining_charge
+                data:
+                  value: "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) - charging_amount }}"
+              - action: input_text.set_value
+                target:
+                  entity_id: input_text.hsbo_hourly_decision
+                data:
+                  value: "Charge Battery"
+          - conditions:
+              - "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) > 0 }}"
+            sequence:
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.hsbo_battery_charging
+                data:
+                  value: "{{ states('input_number.hsbo_battery_charging') | float(0) + charging_amount }}"
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.hsbo_simulated_remaining_charge
+                data:
+                  value: "{{ states('input_number.hsbo_simulated_remaining_charge') | float(0) - charging_amount }}"
+              - action: input_text.set_value
+                target:
+                  entity_id: input_text.hsbo_hourly_decision
+                data:
+                  value: "Charge Battery (if needed)"
+        default:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.hsbo_grid_selling
+            data:
+              value: "{{ states('input_number.hsbo_grid_selling') | float(0) + hour_forecast }}"
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.hsbo_hourly_decision
+            data:
+              value: "Sell to Grid (Battery Full)"
+
+  hsbo_beta_update_hourly_recommendation:
+    alias: "HSBO Beta Update Hourly Recommendation"
+    # This script updates the recommendation for a specific hour based on the decision made
+    # in the hsbo_process_hourly_data script.
+    sequence:
+      - action: input_text.set_value
+        target:
+          entity_id: "input_text.hsbo_recommendation_{{ hour }}"
+        data:
+          value: >
+            {{ hour }}:00: {{ states('input_text.hsbo_hourly_decision') }}
+            {% if states('input_text.hsbo_hourly_decision') == 'Charge Battery' %}
+            - Charge up to {{ [hour_forecast, 5]|min|round(2) }} kWh
+            {% elif states('input_text.hsbo_hourly_decision') == 'Sell to Grid' %}
+            - Potential to sell {{ hour_forecast|round(2) }} kWh
+            {% endif %}
+
+  hsbo_beta_generate_summary:
+    alias: "HSBO Beta Generate Battery Optimization Summary"
+    # This script generates a summary of the battery optimization analysis, including
+    # potential grid selling, battery charging, and recommendations for each hour.
+    # It also determines the optimal time to start charging the battery.
+    sequence:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.hsbo_charge_start_time
+        data:
+          value: 0
+      - action: system_log.write
+        data:
+          message: "HSBO: Beta Starting hourly analysis to determine charge start time"
+      - repeat:
+          count: 11
+          sequence:
+            - variables:
+                current_hour: "{{ repeat.index + 5 }}"
+                current_recommendation: "{{ states('input_text.hsbo_recommendation_' ~ current_hour) }}"
+            - action: system_log.write
+              data:
+                message: >
+                  HSBO: Beta Analyzing hour {{ current_hour }}:00 - Recommendation: {{ current_recommendation }}
+            - choose:
+                - conditions:
+                    - condition: template
+                      value_template: >
+                        {{ 'Charge Battery' in current_recommendation and
+                          'if needed' not in current_recommendation and
+                          states('input_number.hsbo_charge_start_time') | float(0) == 0 }}
+                  sequence:
+                    - action: input_number.set_value
+                      target:
+                        entity_id: input_number.hsbo_charge_start_time
+                      data:
+                        value: "{{ current_hour }}"
+                    - action: system_log.write
+                      data:
+                        message: "HSBO: Beta Charge start time set to {{ current_hour }}:00 (First occurrence of 'Charge Battery')"
+      - action: persistent_notification.create
+        data:
+          title: "HSBO Beta Battery Optimization Summary"
+          message: >
+            {% set grid_selling = states('input_number.hsbo_grid_selling') | float(0) %}
+            {% set battery_charging = states('input_number.hsbo_battery_charging') | float(0) %}
+            {% set actual_remaining_charge = states('input_number.hsbo_remaining_charge') | float(0) %}
+            {% set simulated_remaining_charge = states('input_number.hsbo_simulated_remaining_charge') | float(0) %}
+            {% set charge_start_hour = states('input_number.hsbo_charge_start_time') | int(0) %}
+
+            Beta Battery Optimization Summary:{{ '\n' -}}
+            --------------------------------{{ '\n' -}}
+            Current remaining charge: {{ actual_remaining_charge | round(2) }} kWh{{ '\n' -}}
+            Simulated remaining charge after optimizations: {{ simulated_remaining_charge | round(2) }} kWh{{ '\n' -}}
+            Total potential grid selling: {{ grid_selling | round(2) }} kWh{{ '\n' -}}
+            Total potential battery charging: {{ battery_charging | round(2) }} kWh{{ '\n' -}}
+            {{ '\n' -}}
+            {% if simulated_remaining_charge <= 0 %}
+            The battery can be fully charged to 100% by 17:00 based on the simulation.{{ '\n' -}}
+            {% else %}
+            Warning: The simulation shows the battery may not be fully charged by 17:00.{{ '\n' -}}
+            Consider adjusting the charging strategy or using grid power during the lowest-priced hours.{{ '\n' -}}
+            {% endif %}
+            {{ '\n' -}}
+            Beta Hourly Recommendations:{{ '\n' -}}
+            --------------------------------{{ '\n' -}}
+            {% for hour in range(6, 17) %}
+            {{ states('input_text.hsbo_recommendation_' ~ hour) | replace(hour | string ~ ':00: ', hour | string ~ ':00 - ') }}{{ '\n' -}}
+            {% endfor %}
+            {{ '\n' -}}
+            Beta Conclusion:{{ '\n' -}}
+            --------------------------------{{ '\n' -}}
+            {% if charge_start_hour > 0 %}
+            Beta Recommended battery charging start time: {{ charge_start_hour }}:00{{ '\n' -}}
+            {% else %}
+            No specific battery charging time recommended. Consider selling to grid or manual adjustment.{{ '\n' -}}
+            {% endif %}
+      - action: system_log.write
+        data:
+          message: "HSBO: Beta Hourly analysis complete. Final charge start time: {{ states('input_number.hsbo_charge_start_time') }}:00"
+
 
   hsbo_set_working_mode_to_default_tou_periods:
     alias: "HSBO - Set Working Mode to Default TOU Periods"
@@ -841,6 +1157,10 @@ automation:
           - binary_sensor.hsbo_ev_charging
         to: 'off'
         id: ev_charging_stop
+        for:
+          hours: 0
+          minutes: 1
+          seconds: 0
     action:
       - variables:
           current_mode: "{{ states('input_text.hsbo_current_priority_mode') }}"
@@ -873,24 +1193,12 @@ automation:
               - condition: trigger
                 id: ev_charging_stop
             sequence:
-              - choose:
-                  - conditions:
-                      - condition: template
-                        value_template: "{{ recommended_working_mode == 'TOU' }}"
-                    sequence:
-                      - action: script.turn_on
-                        target:
-                          entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-                  - conditions:
-                      - condition: template
-                        value_template: "{{ recommended_working_mode == 'Maximise Self Consumption' }}"
-                    sequence:
-                      - action: script.turn_on
-                        target:
-                          entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
+              - action: script.turn_on
+                target:
+                  entity_id: script.hsbo_set_working_mode_to_default_tou_periods
               - action: system_log.write
                 data:
-                  message: "HSBO: Reverted to {{ recommended_working_mode }} mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
+                  message: "HSBO: Reverted to Default TOU mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
 
           # Midnight: Set mode based on evening calculation (only if not EV charging)
           - conditions:
