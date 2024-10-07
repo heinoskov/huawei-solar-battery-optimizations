@@ -355,9 +355,10 @@ This package is created by Heino Skov. While no official support is provided, yo
 
 A big thank you to all the contributors who have helped improve this project:
 
-- [woopstar](https://github.com/woopstar): For numerous pull requests, bug fixes, and feature implementations.
+- [woopstar](https://github.com/woopstar): For numerous valuable input, pull requests, bug fixes, and feature implementations.
+- [JensenNick](https://github.com/JensenNick): For valuable input and discussions around the topic
 
-Your contributions, whether through code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!<br><br>
+Your contributions, whether through discussons, code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!<br><br>
 
 
 ## License
