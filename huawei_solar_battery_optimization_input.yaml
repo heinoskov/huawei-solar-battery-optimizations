@@ -16,6 +16,18 @@ input_number:
     step: 1
     unit_of_measurement: kWh
     icon: mdi:battery
+  hsbo_limit_feed_grid_power_inverter:
+    name: HSBO Limit Feed Grid Power Inverter
+    min: 0
+    max: 500
+    step: 50
+    unit_of_measurement: W
+  hsbo_limit_feed_grid_power_inverter_2:
+    name: HSBO Limit Feed Grid Power Inverter 2
+    min: 0
+    max: 500
+    step: 50
+    unit_of_measurement: W
 
   # This is a user configured helper to configure your house load between 6am and 9am (for which battery should have enough capacity to cover)
   hsbo_morning_energy_need:
@@ -27,8 +39,12 @@ input_number:
     icon: mdi:flash
 
 input_text:
+# Replace with your specific input.
+# Eller tænker i at man gør det et andet sted?
   hsbo_device_id_inverter:
     name: HSBO Device ID for Huawei Solar device - Inverter
+  hsbo_device_id_inverter_2:
+    name: HSBO Device ID for Huawei Solar device - Inverter 2
   hsbo_device_id_batteries:
     name: HSBO Device ID for Huawei Solar device - Batteries
   hsbo_batteries_grid_charge_cutoff_soc:
@@ -46,9 +62,12 @@ input_text:
   hsbo_solcast_pv_forecast_forecast_tomorrow:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_tomorrow
   hsbo_batteries_state_of_capacity:
-    name: HSBO Sensor for batteries_state_of_capacity
+    name: HSBO Sensor for sensor.batteries_state_of_capacity
   hsbo_inverter_active_power_control:
     name: HSBO Sensor for sensor.inverter_active_power_control
+# hsbo_inverter_active_power_control_2:
+#   name: HSBO Sensor for sensor.inverter_active_power_control_2
+# Tror ikke at disse er nødvendige, hvis det sensoren blot anvendes til at trække status - slaven følger master.
   hsbo_house_consumption_power:
     name: HSBO Sensor for house consumption power
   hsbo_solar_production_power:
