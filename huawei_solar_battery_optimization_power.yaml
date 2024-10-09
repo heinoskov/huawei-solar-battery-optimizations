@@ -3,8 +3,20 @@
 # Place this file in your packages directory (usually /config/packages/)
 # See Home Assistant Packages documentation for further details on how to use this
 # Packages in Home Assistant: https://www.home-assistant.io/docs/configuration/packages/
-# This packages is created by Heino Skov. I do not provide any support on this but its free to use and
-# edit to your needs
+# I do not provide any support on this but its free to use and edit to your needs
+
+###############################################################################################################
+#
+# !!IMPORTANT INSTRUCTION!!!
+#
+# As this provides a fix to the power sensors average values, please follow below instructions to clean out 
+# old sensors.
+#
+# 1. Make sure you remove the previous _power package file, restart home assistant and delete out any 
+#    hsbo_ entities in status "Unprovided"
+# 2. Also go to developer tools, statistisk and delete any hsbo_ entities that requires a fix.
+# 3. Then add this file back into your packages directory and reboot
+###############################################################################################################
 
 template:
   - sensor:
@@ -136,8 +148,7 @@ template:
         state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 23 else 0.0 }}"
 
 sensor:
-
-# integration
+  # integration
   - platform: integration
     source: sensor.hsbo_house_consumption_0_1_power
     name: "HSBO House Consumption 0-1 Energy"
@@ -354,667 +365,751 @@ sensor:
     unit_time: h
     method: left
 
-# statistics sensors
-
-# 14d avg power consumption
+  # 14d avg energy consumption
   - platform: statistics
-    name: "HSBO House Consumption 0-1 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_0_1_energy
-    unique_id: "hsbo_house_consumption_0_1_energy_average"
+    name: "HSBO House Consumption 0-1 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_0_1_energy_meter
+    unique_id: "hsbo_house_consumption_0_1_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 1-2 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_1_2_energy
-    unique_id: "hsbo_house_consumption_1_2_energy_average"
+    name: "HSBO House Consumption 1-2 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_1_2_energy_meter
+    unique_id: "hsbo_house_consumption_1_2_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
-    max_age:
-      days: 14
-
-
-  - platform: statistics
-    name: "HSBO House Consumption 2-3 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_2_3_energy
-    unique_id: "hsbo_house_consumption_2_3_energy_average"
-    state_characteristic: mean
-    sampling_size: 3600
-    max_age:
-      days: 14
-
-
-  - platform: statistics
-    name: "HSBO House Consumption 3-4 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_3_4_energy
-    unique_id: "hsbo_house_consumption_3_4_energy_average"
-    state_characteristic: mean
-    sampling_size: 3600
-    max_age:
-      days: 14
-
-
-  - platform: statistics
-    name: "HSBO House Consumption 4-5 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_4_5_energy
-    unique_id: "hsbo_house_consumption_4_5_energy_average"
-    state_characteristic: mean
-    sampling_size: 3600
-    max_age:
-      days: 14
-
-
-  - platform: statistics
-    name: "HSBO House Consumption 5-6 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_5_6_energy
-    unique_id: "hsbo_house_consumption_5_6_energy_average"
-    state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 6-7 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_6_7_energy
-    unique_id: "hsbo_house_consumption_6_7_energy_average"
+    name: "HSBO House Consumption 2-3 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_2_3_energy_meter
+    unique_id: "hsbo_house_consumption_2_3_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 7-8 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_7_8_energy
-    unique_id: "hsbo_house_consumption_7_8_energy_average"
+    name: "HSBO House Consumption 3-4 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_3_4_energy_meter
+    unique_id: "hsbo_house_consumption_3_4_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 8-9 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_8_9_energy
-    unique_id: "hsbo_house_consumption_8_9_energy_average"
+    name: "HSBO House Consumption 4-5 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_4_5_energy_meter
+    unique_id: "hsbo_house_consumption_4_5_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 9-10 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_9_10_energy
-    unique_id: "hsbo_house_consumption_9_10_energy_average"
+    name: "HSBO House Consumption 5-6 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_5_6_energy_meter
+    unique_id: "hsbo_house_consumption_5_6_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 10-11 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_10_11_energy
-    unique_id: "hsbo_house_consumption_10_11_energy_average"
+    name: "HSBO House Consumption 6-7 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_6_7_energy_meter
+    unique_id: "hsbo_house_consumption_6_7_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 11-12 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_11_12_energy
-    unique_id: "hsbo_house_consumption_11_12_energy_average"
+    name: "HSBO House Consumption 7-8 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_7_8_energy_meter
+    unique_id: "hsbo_house_consumption_7_8_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 12-13 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_12_13_energy
-    unique_id: "hsbo_house_consumption_12_13_energy_average"
+    name: "HSBO House Consumption 8-9 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_8_9_energy_meter
+    unique_id: "hsbo_house_consumption_8_9_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 13-14 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_13_14_energy
-    unique_id: "hsbo_house_consumption_13_14_energy_average"
+    name: "HSBO House Consumption 9-10 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_9_10_energy_meter
+    unique_id: "hsbo_house_consumption_9_10_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 14-15 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_14_15_energy
-    unique_id: "hsbo_house_consumption_14_15_energy_average"
+    name: "HSBO House Consumption 10-11 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_10_11_energy_meter
+    unique_id: "hsbo_house_consumption_10_11_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 15-16 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_15_16_energy
-    unique_id: "hsbo_house_consumption_15_16_energy_average"
+    name: "HSBO House Consumption 11-12 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_11_12_energy_meter
+    unique_id: "hsbo_house_consumption_11_12_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 16-17 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_16_17_energy
-    unique_id: "hsbo_house_consumption_16_17_energy_average"
+    name: "HSBO House Consumption 12-13 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_12_13_energy_meter
+    unique_id: "hsbo_house_consumption_12_13_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 17-18 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_17_18_energy
-    unique_id: "hsbo_house_consumption_17_18_energy_average"
+    name: "HSBO House Consumption 13-14 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_13_14_energy_meter
+    unique_id: "hsbo_house_consumption_13_14_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 18-19 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_18_19_energy
-    unique_id: "hsbo_house_consumption_18_19_energy_average"
+    name: "HSBO House Consumption 14-15 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_14_15_energy_meter
+    unique_id: "hsbo_house_consumption_14_15_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 19-20 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_19_20_energy
-    unique_id: "hsbo_house_consumption_19_20_energy_average"
+    name: "HSBO House Consumption 15-16 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_15_16_energy_meter
+    unique_id: "hsbo_house_consumption_15_16_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 20-21 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_20_21_energy
-    unique_id: "hsbo_house_consumption_20_21_energy_average"
+    name: "HSBO House Consumption 16-17 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_16_17_energy_meter
+    unique_id: "hsbo_house_consumption_16_17_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 21-22 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_21_22_energy
-    unique_id: "hsbo_house_consumption_21_22_energy_average"
+    name: "HSBO House Consumption 17-18 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_17_18_energy_meter
+    unique_id: "hsbo_house_consumption_17_18_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 22-23 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_22_23_energy
-    unique_id: "hsbo_house_consumption_22_23_energy_average"
+    name: "HSBO House Consumption 18-19 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_18_19_energy_meter
+    unique_id: "hsbo_house_consumption_18_19_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
   - platform: statistics
-    name: "HSBO House Consumption 23-00 Energy Average"
-    entity_id: sensor.hsbo_house_consumption_23_00_energy
-    unique_id: "hsbo_house_consumption_23_00_energy_average"
+    name: "HSBO House Consumption 19-20 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_19_20_energy_meter
+    unique_id: "hsbo_house_consumption_19_20_energy_average_14d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 10080
     max_age:
       days: 14
 
-# 7d avg power consumption
+  - platform: statistics
+    name: "HSBO House Consumption 20-21 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_20_21_energy_meter
+    unique_id: "hsbo_house_consumption_20_21_energy_average_14d"
+    state_characteristic: mean
+    sampling_size: 10080
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 21-22 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_21_22_energy_meter
+    unique_id: "hsbo_house_consumption_21_22_energy_average_14d"
+    state_characteristic: mean
+    sampling_size: 10080
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 22-23 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_22_23_energy_meter
+    unique_id: "hsbo_house_consumption_22_23_energy_average_14d"
+    state_characteristic: mean
+    sampling_size: 10080
+    max_age:
+      days: 14
+
+  - platform: statistics
+    name: "HSBO House Consumption 23-00 Energy Average 14d"
+    entity_id: sensor.hsbo_house_consumption_23_00_energy_meter
+    unique_id: "hsbo_house_consumption_23_00_energy_average_14d"
+    state_characteristic: mean
+    sampling_size: 10080
+    max_age:
+      days: 14
+
+  # 7d avg energy consumption
   - platform: statistics
     name: "HSBO House Consumption 0-1 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_0_1_energy
+    entity_id: sensor.hsbo_house_consumption_0_1_energy_meter
     unique_id: "hsbo_house_consumption_0_1_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 1-2 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_1_2_energy
+    entity_id: sensor.hsbo_house_consumption_1_2_energy_meter
     unique_id: "hsbo_house_consumption_1_2_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
-
 
   - platform: statistics
     name: "HSBO House Consumption 2-3 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_2_3_energy
+    entity_id: sensor.hsbo_house_consumption_2_3_energy_meter
     unique_id: "hsbo_house_consumption_2_3_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
-
 
   - platform: statistics
     name: "HSBO House Consumption 3-4 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_3_4_energy
+    entity_id: sensor.hsbo_house_consumption_3_4_energy_meter
     unique_id: "hsbo_house_consumption_3_4_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
-
 
   - platform: statistics
     name: "HSBO House Consumption 4-5 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_4_5_energy
+    entity_id: sensor.hsbo_house_consumption_4_5_energy_meter
     unique_id: "hsbo_house_consumption_4_5_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
-
   - platform: statistics
     name: "HSBO House Consumption 5-6 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_5_6_energy
+    entity_id: sensor.hsbo_house_consumption_5_6_energy_meter
     unique_id: "hsbo_house_consumption_5_6_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 6-7 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_6_7_energy
+    entity_id: sensor.hsbo_house_consumption_6_7_energy_meter
     unique_id: "hsbo_house_consumption_6_7_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 7-8 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_7_8_energy
+    entity_id: sensor.hsbo_house_consumption_7_8_energy_meter
     unique_id: "hsbo_house_consumption_7_8_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 8-9 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_8_9_energy
+    entity_id: sensor.hsbo_house_consumption_8_9_energy_meter
     unique_id: "hsbo_house_consumption_8_9_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 9-10 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_9_10_energy
+    entity_id: sensor.hsbo_house_consumption_9_10_energy_meter
     unique_id: "hsbo_house_consumption_9_10_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 10-11 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_10_11_energy
+    entity_id: sensor.hsbo_house_consumption_10_11_energy_meter
     unique_id: "hsbo_house_consumption_10_11_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 11-12 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_11_12_energy
+    entity_id: sensor.hsbo_house_consumption_11_12_energy_meter
     unique_id: "hsbo_house_consumption_11_12_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 12-13 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_12_13_energy
+    entity_id: sensor.hsbo_house_consumption_12_13_energy_meter
     unique_id: "hsbo_house_consumption_12_13_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 13-14 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_13_14_energy
+    entity_id: sensor.hsbo_house_consumption_13_14_energy_meter
     unique_id: "hsbo_house_consumption_13_14_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 14-15 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_14_15_energy
+    entity_id: sensor.hsbo_house_consumption_14_15_energy_meter
     unique_id: "hsbo_house_consumption_14_15_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 15-16 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_15_16_energy
+    entity_id: sensor.hsbo_house_consumption_15_16_energy_meter
     unique_id: "hsbo_house_consumption_15_16_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 16-17 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_16_17_energy
+    entity_id: sensor.hsbo_house_consumption_16_17_energy_meter
     unique_id: "hsbo_house_consumption_16_17_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 17-18 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_17_18_energy
+    entity_id: sensor.hsbo_house_consumption_17_18_energy_meter
     unique_id: "hsbo_house_consumption_17_18_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 18-19 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_18_19_energy
+    entity_id: sensor.hsbo_house_consumption_18_19_energy_meter
     unique_id: "hsbo_house_consumption_18_19_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 19-20 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_19_20_energy
+    entity_id: sensor.hsbo_house_consumption_19_20_energy_meter
     unique_id: "hsbo_house_consumption_19_20_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 20-21 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_20_21_energy
+    entity_id: sensor.hsbo_house_consumption_20_21_energy_meter
     unique_id: "hsbo_house_consumption_20_21_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 21-22 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_21_22_energy
+    entity_id: sensor.hsbo_house_consumption_21_22_energy_meter
     unique_id: "hsbo_house_consumption_21_22_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 22-23 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_22_23_energy
+    entity_id: sensor.hsbo_house_consumption_22_23_energy_meter
     unique_id: "hsbo_house_consumption_22_23_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
   - platform: statistics
     name: "HSBO House Consumption 23-00 Energy Average 7d"
-    entity_id: sensor.hsbo_house_consumption_23_00_energy
+    entity_id: sensor.hsbo_house_consumption_23_00_energy_meter
     unique_id: "hsbo_house_consumption_23_00_energy_average_7d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 5040
     max_age:
       days: 7
 
-# 3d avg power consumption
+  # 3d avg energy consumption
   - platform: statistics
     name: "HSBO House Consumption 0-1 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_0_1_energy
+    entity_id: sensor.hsbo_house_consumption_0_1_energy_meter
     unique_id: "hsbo_house_consumption_0_1_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 1-2 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_1_2_energy
+    entity_id: sensor.hsbo_house_consumption_1_2_energy_meter
     unique_id: "hsbo_house_consumption_1_2_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
-
 
   - platform: statistics
     name: "HSBO House Consumption 2-3 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_2_3_energy
+    entity_id: sensor.hsbo_house_consumption_2_3_energy_meter
     unique_id: "hsbo_house_consumption_2_3_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
-
 
   - platform: statistics
     name: "HSBO House Consumption 3-4 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_3_4_energy
+    entity_id: sensor.hsbo_house_consumption_3_4_energy_meter
     unique_id: "hsbo_house_consumption_3_4_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
-
 
   - platform: statistics
     name: "HSBO House Consumption 4-5 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_4_5_energy
+    entity_id: sensor.hsbo_house_consumption_4_5_energy_meter
     unique_id: "hsbo_house_consumption_4_5_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
-
   - platform: statistics
     name: "HSBO House Consumption 5-6 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_5_6_energy
+    entity_id: sensor.hsbo_house_consumption_5_6_energy_meter
     unique_id: "hsbo_house_consumption_5_6_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 6-7 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_6_7_energy
+    entity_id: sensor.hsbo_house_consumption_6_7_energy_meter
     unique_id: "hsbo_house_consumption_6_7_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 7-8 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_7_8_energy
+    entity_id: sensor.hsbo_house_consumption_7_8_energy_meter
     unique_id: "hsbo_house_consumption_7_8_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 8-9 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_8_9_energy
+    entity_id: sensor.hsbo_house_consumption_8_9_energy_meter
     unique_id: "hsbo_house_consumption_8_9_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 9-10 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_9_10_energy
+    entity_id: sensor.hsbo_house_consumption_9_10_energy_meter
     unique_id: "hsbo_house_consumption_9_10_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 10-11 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_10_11_energy
+    entity_id: sensor.hsbo_house_consumption_10_11_energy_meter
     unique_id: "hsbo_house_consumption_10_11_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 11-12 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_11_12_energy
+    entity_id: sensor.hsbo_house_consumption_11_12_energy_meter
     unique_id: "hsbo_house_consumption_11_12_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 12-13 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_12_13_energy
+    entity_id: sensor.hsbo_house_consumption_12_13_energy_meter
     unique_id: "hsbo_house_consumption_12_13_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 13-14 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_13_14_energy
+    entity_id: sensor.hsbo_house_consumption_13_14_energy_meter
     unique_id: "hsbo_house_consumption_13_14_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 14-15 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_14_15_energy
+    entity_id: sensor.hsbo_house_consumption_14_15_energy_meter
     unique_id: "hsbo_house_consumption_14_15_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 15-16 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_15_16_energy
+    entity_id: sensor.hsbo_house_consumption_15_16_energy_meter
     unique_id: "hsbo_house_consumption_15_16_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 16-17 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_16_17_energy
+    entity_id: sensor.hsbo_house_consumption_16_17_energy_meter
     unique_id: "hsbo_house_consumption_16_17_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 17-18 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_17_18_energy
+    entity_id: sensor.hsbo_house_consumption_17_18_energy_meter
     unique_id: "hsbo_house_consumption_17_18_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 18-19 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_18_19_energy
+    entity_id: sensor.hsbo_house_consumption_18_19_energy_meter
     unique_id: "hsbo_house_consumption_18_19_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 19-20 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_19_20_energy
+    entity_id: sensor.hsbo_house_consumption_19_20_energy_meter
     unique_id: "hsbo_house_consumption_19_20_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
-  - platform: statistics
+  - platform: statistics  
     name: "HSBO House Consumption 20-21 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_20_21_energy
+    entity_id: sensor.hsbo_house_consumption_20_21_energy_meter
     unique_id: "hsbo_house_consumption_20_21_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 21-22 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_21_22_energy
+    entity_id: sensor.hsbo_house_consumption_21_22_energy_meter
     unique_id: "hsbo_house_consumption_21_22_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 22-23 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_22_23_energy
+    entity_id: sensor.hsbo_house_consumption_22_23_energy_meter
     unique_id: "hsbo_house_consumption_22_23_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
 
   - platform: statistics
     name: "HSBO House Consumption 23-00 Energy Average 3d"
-    entity_id: sensor.hsbo_house_consumption_23_00_energy
+    entity_id: sensor.hsbo_house_consumption_23_00_energy_meter
     unique_id: "hsbo_house_consumption_23_00_energy_average_3d"
     state_characteristic: mean
-    sampling_size: 3600
+    sampling_size: 2160
     max_age:
       days: 3
+
+
+utility_meter:
+  hsbo_house_consumption_0_1_energy_meter:
+    source: sensor.hsbo_house_consumption_0_1_energy
+    cycle: daily
+
+  hsbo_house_consumption_1_2_energy_meter:
+    source: sensor.hsbo_house_consumption_1_2_energy
+    cycle: daily
+
+  hsbo_house_consumption_2_3_energy_meter:
+    source: sensor.hsbo_house_consumption_2_3_energy
+    cycle: daily
+
+  hsbo_house_consumption_3_4_energy_meter:
+    source: sensor.hsbo_house_consumption_3_4_energy
+    cycle: daily
+
+  hsbo_house_consumption_4_5_energy_meter:
+    source: sensor.hsbo_house_consumption_4_5_energy
+    cycle: daily
+
+  hsbo_house_consumption_5_6_energy_meter:
+    source: sensor.hsbo_house_consumption_5_6_energy
+    cycle: daily
+
+  hsbo_house_consumption_6_7_energy_meter:
+    source: sensor.hsbo_house_consumption_6_7_energy
+    cycle: daily
+
+  hsbo_house_consumption_7_8_energy_meter:
+    source: sensor.hsbo_house_consumption_7_8_energy
+    cycle: daily
+
+  hsbo_house_consumption_8_9_energy_meter:
+    source: sensor.hsbo_house_consumption_8_9_energy
+    cycle: daily
+
+  hsbo_house_consumption_9_10_energy_meter:
+    source: sensor.hsbo_house_consumption_9_10_energy
+    cycle: daily
+
+  hsbo_house_consumption_10_11_energy_meter:
+    source: sensor.hsbo_house_consumption_10_11_energy
+    cycle: daily
+
+  hsbo_house_consumption_11_12_energy_meter:
+    source: sensor.hsbo_house_consumption_11_12_energy
+    cycle: daily
+
+  hsbo_house_consumption_12_13_energy_meter:
+    source: sensor.hsbo_house_consumption_12_13_energy
+    cycle: daily
+
+  hsbo_house_consumption_13_14_energy_meter:
+    source: sensor.hsbo_house_consumption_13_14_energy
+    cycle: daily
+
+  hsbo_house_consumption_14_15_energy_meter:
+    source: sensor.hsbo_house_consumption_14_15_energy
+    cycle: daily
+
+  hsbo_house_consumption_15_16_energy_meter:
+    source: sensor.hsbo_house_consumption_15_16_energy
+    cycle: daily
+
+  hsbo_house_consumption_16_17_energy_meter:
+    source: sensor.hsbo_house_consumption_16_17_energy
+    cycle: daily
+
+  hsbo_house_consumption_17_18_energy_meter:
+    source: sensor.hsbo_house_consumption_17_18_energy
+    cycle: daily
+
+  hsbo_house_consumption_18_19_energy_meter:
+    source: sensor.hsbo_house_consumption_18_19_energy
+    cycle: daily
+
+  hsbo_house_consumption_19_20_energy_meter:
+    source: sensor.hsbo_house_consumption_19_20_energy
+    cycle: daily
+
+  hsbo_house_consumption_20_21_energy_meter:
+    source: sensor.hsbo_house_consumption_20_21_energy
+    cycle: daily
+
+  hsbo_house_consumption_21_22_energy_meter:
+    source: sensor.hsbo_house_consumption_21_22_energy
+    cycle: daily
+
+  hsbo_house_consumption_22_23_energy_meter:
+    source: sensor.hsbo_house_consumption_22_23_energy
+    cycle: daily
+
+  hsbo_house_consumption_23_00_energy_meter:
+    source: sensor.hsbo_house_consumption_23_00_energy
+    cycle: daily
