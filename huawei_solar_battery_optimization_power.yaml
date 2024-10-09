@@ -1016,7 +1016,6 @@ sensor:
     max_age:
       days: 3
 
-
 utility_meter:
   hsbo_house_consumption_00_01_energy_meter:
     source: sensor.hsbo_house_consumption_00_01_energy
