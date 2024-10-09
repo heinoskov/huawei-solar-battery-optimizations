@@ -1020,96 +1020,120 @@ sensor:
 utility_meter:
   hsbo_house_consumption_0_1_energy_meter:
     source: sensor.hsbo_house_consumption_0_1_energy
+    unique_id: hsbo_house_consumption_0_1_energy_meter
     cycle: daily
 
   hsbo_house_consumption_1_2_energy_meter:
     source: sensor.hsbo_house_consumption_1_2_energy
+    unique_id: hsbo_house_consumption_1_2_energy_meter
     cycle: daily
 
   hsbo_house_consumption_2_3_energy_meter:
     source: sensor.hsbo_house_consumption_2_3_energy
+    unique_id: hsbo_house_consumption_2_3_energy_meter
     cycle: daily
 
   hsbo_house_consumption_3_4_energy_meter:
     source: sensor.hsbo_house_consumption_3_4_energy
+    unique_id: hsbo_house_consumption_3_4_energy_meter
     cycle: daily
 
   hsbo_house_consumption_4_5_energy_meter:
     source: sensor.hsbo_house_consumption_4_5_energy
+    unique_id: hsbo_house_consumption_4_5_energy_meter
     cycle: daily
 
   hsbo_house_consumption_5_6_energy_meter:
     source: sensor.hsbo_house_consumption_5_6_energy
+    unique_id: hsbo_house_consumption_5_6_energy_meter
     cycle: daily
 
   hsbo_house_consumption_6_7_energy_meter:
     source: sensor.hsbo_house_consumption_6_7_energy
+    unique_id: hsbo_house_consumption_6_7_energy_meter
     cycle: daily
 
   hsbo_house_consumption_7_8_energy_meter:
     source: sensor.hsbo_house_consumption_7_8_energy
+    unique_id: hsbo_house_consumption_7_8_energy_meter
     cycle: daily
 
   hsbo_house_consumption_8_9_energy_meter:
     source: sensor.hsbo_house_consumption_8_9_energy
+    unique_id: hsbo_house_consumption_8_9_energy_meter
     cycle: daily
 
   hsbo_house_consumption_9_10_energy_meter:
     source: sensor.hsbo_house_consumption_9_10_energy
+    unique_id: hsbo_house_consumption_9_10_energy_meter
     cycle: daily
 
   hsbo_house_consumption_10_11_energy_meter:
     source: sensor.hsbo_house_consumption_10_11_energy
+    unique_id: hsbo_house_consumption_10_11_energy_meter
     cycle: daily
 
   hsbo_house_consumption_11_12_energy_meter:
     source: sensor.hsbo_house_consumption_11_12_energy
+    unique_id: hsbo_house_consumption_11_12_energy_meter
     cycle: daily
 
   hsbo_house_consumption_12_13_energy_meter:
     source: sensor.hsbo_house_consumption_12_13_energy
+    unique_id: hsbo_house_consumption_12_13_energy_meter
     cycle: daily
 
   hsbo_house_consumption_13_14_energy_meter:
     source: sensor.hsbo_house_consumption_13_14_energy
+    unique_id: hsbo_house_consumption_13_14_energy_meter
     cycle: daily
 
   hsbo_house_consumption_14_15_energy_meter:
     source: sensor.hsbo_house_consumption_14_15_energy
+    unique_id: hsbo_house_consumption_14_15_energy_meter
     cycle: daily
 
   hsbo_house_consumption_15_16_energy_meter:
     source: sensor.hsbo_house_consumption_15_16_energy
+    unique_id: hsbo_house_consumption_15_16_energy_meter
     cycle: daily
 
   hsbo_house_consumption_16_17_energy_meter:
     source: sensor.hsbo_house_consumption_16_17_energy
+    unique_id: hsbo_house_consumption_16_17_energy_meter
     cycle: daily
 
   hsbo_house_consumption_17_18_energy_meter:
     source: sensor.hsbo_house_consumption_17_18_energy
+    unique_id: hsbo_house_consumption_17_18_energy_meter
     cycle: daily
 
   hsbo_house_consumption_18_19_energy_meter:
     source: sensor.hsbo_house_consumption_18_19_energy
+    unique_id: hsbo_house_consumption_18_19_energy_meter
     cycle: daily
 
   hsbo_house_consumption_19_20_energy_meter:
     source: sensor.hsbo_house_consumption_19_20_energy
+    unique_id: hsbo_house_consumption_19_20_energy_meter
     cycle: daily
 
   hsbo_house_consumption_20_21_energy_meter:
     source: sensor.hsbo_house_consumption_20_21_energy
+    unique_id: hsbo_house_consumption_20_21_energy_meter
     cycle: daily
 
   hsbo_house_consumption_21_22_energy_meter:
     source: sensor.hsbo_house_consumption_21_22_energy
+    unique_id: hsbo_house_consumption_21_22_energy_meter
     cycle: daily
 
   hsbo_house_consumption_22_23_energy_meter:
     source: sensor.hsbo_house_consumption_22_23_energy
+    unique_id: hsbo_house_consumption_22_23_energy_meter
     cycle: daily
 
   hsbo_house_consumption_23_00_energy_meter:
     source: sensor.hsbo_house_consumption_23_00_energy
+    unique_id: hsbo_house_consumption_23_00_energy_meter
     cycle: daily
