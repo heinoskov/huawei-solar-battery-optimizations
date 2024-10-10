@@ -1019,144 +1019,144 @@ sensor:
 utility_meter:
   hsbo_house_consumption_00_01_energy_meter:
     source: sensor.hsbo_house_consumption_00_01_energy
-    name: "HSO House Consumption 00-01 Energy Meter"
+    name: "HSBO House Consumption 00-01 Energy Meter"
     unique_id: hsbo_house_consumption_00_01_energy_meter
     cycle: daily
 
   hsbo_house_consumption_01_02_energy_meter:
     source: sensor.hsbo_house_consumption_01_02_energy
-    name: "HSO House Consumption 01-02 Energy Meter"
+    name: "HSBO House Consumption 01-02 Energy Meter"
     unique_id: hsbo_house_consumption_01_02_energy_meter
     cycle: daily
 
   hsbo_house_consumption_02_03_energy_meter:
     source: sensor.hsbo_house_consumption_02_03_energy
-    name: "HSO House Consumption 02-03 Energy Meter"
+    name: "HSBO House Consumption 02-03 Energy Meter"
     unique_id: hsbo_house_consumption_02_03_energy_meter
     cycle: daily
 
   hsbo_house_consumption_03_04_energy_meter:
     source: sensor.hsbo_house_consumption_03_04_energy
-    name: "HSO House Consumption 03-04 Energy Meter"
+    name: "HSBO House Consumption 03-04 Energy Meter"
     unique_id: hsbo_house_consumption_03_04_energy_meter
     cycle: daily
 
   hsbo_house_consumption_04_05_energy_meter:
     source: sensor.hsbo_house_consumption_04_05_energy
-    name: "HSO House Consumption 04-05 Energy Meter"
+    name: "HSBO House Consumption 04-05 Energy Meter"
     unique_id: hsbo_house_consumption_04_05_energy_meter
     cycle: daily
 
   hsbo_house_consumption_05_06_energy_meter:
     source: sensor.hsbo_house_consumption_05_06_energy
-    name: "HSO House Consumption 05-06 Energy Meter"
+    name: "HSBO House Consumption 05-06 Energy Meter"
     unique_id: hsbo_house_consumption_05_06_energy_meter
     cycle: daily
 
   hsbo_house_consumption_06_07_energy_meter:
     source: sensor.hsbo_house_consumption_06_07_energy
-    name: "HSO House Consumption 06-07 Energy Meter"
+    name: "HSBO House Consumption 06-07 Energy Meter"
     unique_id: hsbo_house_consumption_06_07_energy_meter
     cycle: daily
 
   hsbo_house_consumption_07_08_energy_meter:
     source: sensor.hsbo_house_consumption_07_08_energy
-    name: "HSO House Consumption 07-08 Energy Meter"
+    name: "HSBO House Consumption 07-08 Energy Meter"
     unique_id: hsbo_house_consumption_07_08_energy_meter
     cycle: daily
 
   hsbo_house_consumption_08_09_energy_meter:
     source: sensor.hsbo_house_consumption_08_09_energy
-    name: "HSO House Consumption 08-09 Energy Meter"
+    name: "HSBO House Consumption 08-09 Energy Meter"
     unique_id: hsbo_house_consumption_08_09_energy_meter
     cycle: daily
 
   hsbo_house_consumption_09_10_energy_meter:
     source: sensor.hsbo_house_consumption_09_10_energy
-    name: "HSO House Consumption 09-10 Energy Meter"
+    name: "HSBO House Consumption 09-10 Energy Meter"
     unique_id: hsbo_house_consumption_09_10_energy_meter
     cycle: daily
 
   hsbo_house_consumption_10_11_energy_meter:
     source: sensor.hsbo_house_consumption_10_11_energy
-    name: "HSO House Consumption 10-11 Energy Meter"
+    name: "HSBO House Consumption 10-11 Energy Meter"
     unique_id: hsbo_house_consumption_10_11_energy_meter
     cycle: daily
 
   hsbo_house_consumption_11_12_energy_meter:
     source: sensor.hsbo_house_consumption_11_12_energy
-    name: "HSO House Consumption 11-12 Energy Meter"
+    name: "HSBO House Consumption 11-12 Energy Meter"
     unique_id: hsbo_house_consumption_11_12_energy_meter
     cycle: daily
 
   hsbo_house_consumption_12_13_energy_meter:
     source: sensor.hsbo_house_consumption_12_13_energy
-    name: "HSO House Consumption 12-13 Energy Meter"
+    name: "HSBO House Consumption 12-13 Energy Meter"
     unique_id: hsbo_house_consumption_12_13_energy_meter
     cycle: daily
 
   hsbo_house_consumption_13_14_energy_meter:
     source: sensor.hsbo_house_consumption_13_14_energy
-    name: "HSO House Consumption 13-14 Energy Meter"
+    name: "HSBO House Consumption 13-14 Energy Meter"
     unique_id: hsbo_house_consumption_13_14_energy_meter
     cycle: daily
 
   hsbo_house_consumption_14_15_energy_meter:
     source: sensor.hsbo_house_consumption_14_15_energy
-    name: "HSO House Consumption 14-15 Energy Meter"
+    name: "HSBO House Consumption 14-15 Energy Meter"
     unique_id: hsbo_house_consumption_14_15_energy_meter
     cycle: daily
 
   hsbo_house_consumption_15_16_energy_meter:
     source: sensor.hsbo_house_consumption_15_16_energy
-    name: "HSO House Consumption 15-16 Energy Meter"
+    name: "HSBO House Consumption 15-16 Energy Meter"
     unique_id: hsbo_house_consumption_15_16_energy_meter
     cycle: daily
 
   hsbo_house_consumption_16_17_energy_meter:
     source: sensor.hsbo_house_consumption_16_17_energy
-    name: "HSO House Consumption 16-17 Energy Meter"
+    name: "HSBO House Consumption 16-17 Energy Meter"
     unique_id: hsbo_house_consumption_16_17_energy_meter
     cycle: daily
 
   hsbo_house_consumption_17_18_energy_meter:
     source: sensor.hsbo_house_consumption_17_18_energy
-    name: "HSO House Consumption 17-18 Energy Meter"
+    name: "HSBO House Consumption 17-18 Energy Meter"
     unique_id: hsbo_house_consumption_17_18_energy_meter
     cycle: daily
 
   hsbo_house_consumption_18_19_energy_meter:
     source: sensor.hsbo_house_consumption_18_19_energy
-    name: "HSO House Consumption 18-19 Energy Meter"
+    name: "HSBO House Consumption 18-19 Energy Meter"
     unique_id: hsbo_house_consumption_18_19_energy_meter
     cycle: daily
 
   hsbo_house_consumption_19_20_energy_meter:
     source: sensor.hsbo_house_consumption_19_20_energy
-    name: "HSO House Consumption 19-20 Energy Meter"
+    name: "HSBO House Consumption 19-20 Energy Meter"
     unique_id: hsbo_house_consumption_19_20_energy_meter
     cycle: daily
 
   hsbo_house_consumption_20_21_energy_meter:
     source: sensor.hsbo_house_consumption_20_21_energy
-    name: "HSO House Consumption 20-21 Energy Meter"
+    name: "HSBO House Consumption 20-21 Energy Meter"
     unique_id: hsbo_house_consumption_20_21_energy_meter
     cycle: daily
 
   hsbo_house_consumption_21_22_energy_meter:
     source: sensor.hsbo_house_consumption_21_22_energy
-    name: "HSO House Consumption 21-22 Energy Meter"
+    name: "HSBO House Consumption 21-22 Energy Meter"
     unique_id: hsbo_house_consumption_21_22_energy_meter
     cycle: daily
 
   hsbo_house_consumption_22_23_energy_meter:
     source: sensor.hsbo_house_consumption_22_23_energy
-    name: "HSO House Consumption 22-23 Energy Meter"
+    name: "HSBO House Consumption 22-23 Energy Meter"
     unique_id: hsbo_house_consumption_22_23_energy_meter
     cycle: daily
 
   hsbo_house_consumption_23_00_energy_meter:
     source: sensor.hsbo_house_consumption_23_00_energy
-    name: "HSO House Consumption 23-00 Energy Meter"
+    name: "HSBO House Consumption 23-00 Energy Meter"
     unique_id: hsbo_house_consumption_23_00_energy_meter
     cycle: daily
