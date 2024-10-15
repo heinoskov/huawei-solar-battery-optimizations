@@ -191,6 +191,49 @@ binary_sensor:
 
 # Scripts
 script:
+  hsbo_reset_power_entities:
+    alias: HSBO - Reset Power Entities
+    sequence:
+      - action: recorder.purge_entities
+        data:
+          entity_globs:
+            - sensor.hsbo_house_consumption_*_energy*
+            - sensor.hsbo_house_consumption_*_power_sensor
+            - sensor.hsbo_house_consumption_*_energy_average_3d
+            - sensor.hsbo_house_consumption_*_energy_average_7d
+            - sensor.hsbo_house_consumption_*_energy_average_14d
+          keep_days: 0
+      - action: utility_meter.calibrate
+        metadata: {}
+        data:
+          value: "0"
+        target:
+          entity_id:
+            - sensor.hsbo_house_consumption_00_01_energy_meter
+            - sensor.hsbo_house_consumption_01_02_energy_meter
+            - sensor.hsbo_house_consumption_02_03_energy_meter
+            - sensor.hsbo_house_consumption_03_04_energy_meter
+            - sensor.hsbo_house_consumption_04_05_energy_meter
+            - sensor.hsbo_house_consumption_05_06_energy_meter
+            - sensor.hsbo_house_consumption_06_07_energy_meter
+            - sensor.hsbo_house_consumption_07_08_energy_meter
+            - sensor.hsbo_house_consumption_08_09_energy_meter
+            - sensor.hsbo_house_consumption_09_10_energy_meter
+            - sensor.hsbo_house_consumption_10_11_energy_meter
+            - sensor.hsbo_house_consumption_11_12_energy_meter
+            - sensor.hsbo_house_consumption_12_13_energy_meter
+            - sensor.hsbo_house_consumption_13_14_energy_meter
+            - sensor.hsbo_house_consumption_14_15_energy_meter
+            - sensor.hsbo_house_consumption_15_16_energy_meter
+            - sensor.hsbo_house_consumption_16_17_energy_meter
+            - sensor.hsbo_house_consumption_17_18_energy_meter
+            - sensor.hsbo_house_consumption_18_19_energy_meter
+            - sensor.hsbo_house_consumption_19_20_energy_meter
+            - sensor.hsbo_house_consumption_20_21_energy_meter
+            - sensor.hsbo_house_consumption_21_22_energy_meter
+            - sensor.hsbo_house_consumption_22_23_energy_meter
+            - sensor.hsbo_house_consumption_23_00_energy_meter
+
   hsbo_calculate_energy_thresholds:
     alias: "HSBO Calculate Energy Thresholds"
     # This script calculates the average, high, and low energy price thresholds for the day.
