@@ -705,17 +705,17 @@ script:
           solar_charging_capacity: "{{ (tomorrow_forecast * 0.9) | round(2) }}"
           morning_energy_need: >
             {% set morning_consumption =
-              states('sensor.hsbo_house_consumption_6_7_energy_average') | float(0) +
-              states('sensor.hsbo_house_consumption_7_8_energy_average') | float(0) +
-              states('sensor.hsbo_house_consumption_8_9_energy_average') | float(0) +
-              states('sensor.hsbo_house_consumption_9_10_energy_average') | float(0)
+              states('sensor.hsbo_house_consumption_06_07_energy_average_7d') | float(0) +
+              states('sensor.hsbo_house_consumption_07_08_energy_average_7d') | float(0) +
+              states('sensor.hsbo_house_consumption_08_09_energy_average_7d') | float(0) +
+              states('sensor.hsbo_house_consumption_09_10_energy_average_7d') | float(0)
             %}
             {{ morning_consumption | round(2) }}
           late_evening_energy_need: >
             {% set late_evening_consumption =
-              states('sensor.hsbo_house_consumption_21_22_energy_average') | float(0) +
-              states('sensor.hsbo_house_consumption_22_23_energy_average') | float(0) +
-              states('sensor.hsbo_house_consumption_23_00_energy_average') | float(0)
+              states('sensor.hsbo_house_consumption_21_22_energy_average_7d') | float(0) +
+              states('sensor.hsbo_house_consumption_22_23_energy_average_7d') | float(0) +
+              states('sensor.hsbo_house_consumption_23_00_energy_average_7d') | float(0)
             %}
             {{ late_evening_consumption | round(2) }}
 
