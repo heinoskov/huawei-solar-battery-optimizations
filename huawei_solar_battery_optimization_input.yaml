@@ -38,9 +38,11 @@ input_text:
   hsbo_batteries_excess_pv_energy_use_in_tou:
     name: HSBO Sensor for select.batteries_excess_pv_energy_use_in_tou
   hsbo_energi_data_service_total_price:
-    name: HSBO Sensor for sensor.energi_data_service
+    name: HSBO Sensor for sensor.energi_data_service_total_price
   hsbo_energi_data_service_spot_price:
-    name: HSBO Sensor for sensor.energi_data_service_produktion
+    name: HSBO Sensor for sensor.energi_data_service_spot_price
+  hsbo_energi_data_service_sales_price:
+    name: HSBO Sensor for sensor.energi_data_service_sales_price
   hsbo_solcast_pv_forecast_forecast_today:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_today
   hsbo_solcast_pv_forecast_forecast_tomorrow:

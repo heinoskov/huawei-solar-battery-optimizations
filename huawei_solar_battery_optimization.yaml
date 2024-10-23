@@ -673,6 +673,7 @@ script:
           current_battery_soc: "{{ states(states('input_text.hsbo_batteries_state_of_capacity')) | float(0) }}"
           battery_max_capacity: "{{ states('input_number.hsbo_battery_max_capacity') | float(10) }}"
           current_battery_capacity: "{{ (current_battery_soc / 100 * battery_max_capacity) | round(2) }}"
+          battery_min_capacity: "{{ battery_max_capacity * 0.05 }}"  # 5% minimum capacity
           current_month: "{{ now().month }}"
 
       - action: system_log.write
@@ -681,7 +682,12 @@ script:
             HSBO Debug: Current battery SoC: {{ current_battery_soc }}%,
             Capacity: {{ current_battery_capacity }} kWh,
             Max Capacity: {{ battery_max_capacity }} kWh,
+            Min Capacity: {{ battery_min_capacity }} kWh,
             Current month: {{ current_month }}
+
+      # Get Electricity prices for the next day
+
+
 
       # Get tomorrow's solar forecast
       - variables:
@@ -695,49 +701,499 @@ script:
             {% else %}
               5
             {% endif %}
+      
+          forecast_data: "{{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') }}"
 
+          surplus_hour_00: >
+            {% set consumption = states('sensor.hsbo_house_consumption_00_01_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 0 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_01: >
+            {% set consumption = states('sensor.hsbo_house_consumption_01_02_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 1 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_02: >
+            {% set consumption = states('sensor.hsbo_house_consumption_02_03_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 2 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_03: >
+            {% set consumption = states('sensor.hsbo_house_consumption_03_04_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 3 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_04: >
+            {% set consumption = states('sensor.hsbo_house_consumption_04_05_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 4 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_05: >
+            {% set consumption = states('sensor.hsbo_house_consumption_05_06_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 5 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_06: >
+            {% set consumption = states('sensor.hsbo_house_consumption_06_07_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 6 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_07: >
+            {% set consumption = states('sensor.hsbo_house_consumption_07_08_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 7 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_08: >
+            {% set consumption = states('sensor.hsbo_house_consumption_08_09_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 8 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_09: >
+            {% set consumption = states('sensor.hsbo_house_consumption_09_10_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 9 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_10: >
+            {% set consumption = states('sensor.hsbo_house_consumption_10_11_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 10 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_11: >
+            {% set consumption = states('sensor.hsbo_house_consumption_11_12_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 11 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_12: >
+            {% set consumption = states('sensor.hsbo_house_consumption_12_13_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 12 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_13: >
+            {% set consumption = states('sensor.hsbo_house_consumption_13_14_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 13 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_14: >
+            {% set consumption = states('sensor.hsbo_house_consumption_14_15_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 14 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_15: >
+            {% set consumption = states('sensor.hsbo_house_consumption_15_16_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 15 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_16: >
+            {% set consumption = states('sensor.hsbo_house_consumption_16_17_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 16 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_17: >
+            {% set consumption = states('sensor.hsbo_house_consumption_17_18_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 17 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_18: >
+            {% set consumption = states('sensor.hsbo_house_consumption_18_19_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 18 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_19: >
+            {% set consumption = states('sensor.hsbo_house_consumption_19_20_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 19 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_20: >
+            {% set consumption = states('sensor.hsbo_house_consumption_20_21_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 20 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_21: >
+            {% set consumption = states('sensor.hsbo_house_consumption_21_22_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 21 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_22: >
+            {% set consumption = states('sensor.hsbo_house_consumption_22_23_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 22 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+          surplus_hour_23: >
+            {% set consumption = states('sensor.hsbo_house_consumption_23_00_energy_average_3d') | float(0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% set solar = namespace(value=0) %}
+            {% for entry in forecast_data if entry is defined %}
+              {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+              {% if period_start == 23 %}
+                {% set solar.value = entry.pv_estimate | float(0) %}
+              {% endif %}
+            {% endfor %}
+            {{ [(solar.value - consumption), 0] | max | round(3) }}
+
+          # Summarize certain periods of surplus energy
+          surplus_energy_6am_10am: >
+            {% set total = namespace(value=0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% for hour in range(6, 10) %}
+              {% set consumption = states('sensor.hsbo_house_consumption_%02d_%02d_energy_average_3d' | format(hour, hour+1)) | float(0) %}
+              {% set solar = namespace(value=0) %}
+              {% for entry in forecast_data if entry is defined %}
+                {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+                {% if period_start == hour %}
+                  {% set solar.value = entry.pv_estimate | float(0) %}
+                {% endif %}
+              {% endfor %}
+              {% set hour_surplus = [(solar.value - consumption), 0] | max %}
+              {% set total.value = total.value + hour_surplus %}
+            {% endfor %}
+            {{ total.value | round(3) }}
+          surplus_energy_10am_5pm: >
+            {% set total = namespace(value=0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% for hour in range(10, 17) %}
+              {% set consumption = states('sensor.hsbo_house_consumption_%02d_%02d_energy_average_3d' | format(hour, hour+1)) | float(0) %}
+              {% set solar = namespace(value=0) %}
+              {% for entry in forecast_data if entry is defined %}
+                {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+                {% if period_start == hour %}
+                  {% set solar.value = entry.pv_estimate | float(0) %}
+                {% endif %}
+              {% endfor %}
+              {% set hour_surplus = [(solar.value - consumption), 0] | max %}
+              {% set total.value = total.value + hour_surplus %}
+            {% endfor %}
+            {{ total.value | round(3) }}
+          surplus_energy_5am_9pm: >
+            {% set total = namespace(value=0) %}
+            {% set forecast_data = state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'detailedHourly') %}
+            {% for hour in range(17, 21) %}
+              {% set consumption = states('sensor.hsbo_house_consumption_%02d_%02d_energy_average_3d' | format(hour, hour+1)) | float(0) %}
+              {% set solar = namespace(value=0) %}
+              {% for entry in forecast_data if entry is defined %}
+                {% set period_start = as_timestamp(entry.period_start) | timestamp_custom('%H', true) | int %}
+                {% if period_start == hour %}
+                  {% set solar.value = entry.pv_estimate | float(0) %}
+                {% endif %}
+              {% endfor %}
+              {% set hour_surplus = [(solar.value - consumption), 0] | max %}
+              {% set total.value = total.value + hour_surplus %}
+            {% endfor %}
+            {{ total.value | round(3) }}
+
+      # Debug logging
       - action: system_log.write
         data:
-          message: "HSBO: Tomorrow's forecast: {{ tomorrow_forecast }} kWh"
+          message: >
+            HSBO Debug: Hourly surplus values (solar forecast tomorrow - average consumption):{{ '\n' -}}
+            00:00: {{ surplus_hour_00 }} kWh,{{ '\n' -}}
+            01:00: {{ surplus_hour_01 }} kWh,{{ '\n' -}}
+            02:00: {{ surplus_hour_02 }} kWh,{{ '\n' -}}
+            03:00: {{ surplus_hour_03 }} kWh,{{ '\n' -}}
+            04:00: {{ surplus_hour_04 }} kWh,{{ '\n' -}}
+            05:00: {{ surplus_hour_05 }} kWh,{{ '\n' -}}
+            06:00: {{ surplus_hour_06 }} kWh,{{ '\n' -}}
+            07:00: {{ surplus_hour_07 }} kWh,{{ '\n' -}}
+            08:00: {{ surplus_hour_08 }} kWh,{{ '\n' -}}
+            09:00: {{ surplus_hour_09 }} kWh,{{ '\n' -}}
+            10:00: {{ surplus_hour_10 }} kWh,{{ '\n' -}}
+            11:00: {{ surplus_hour_11 }} kWh,{{ '\n' -}}
+            12:00: {{ surplus_hour_12 }} kWh,{{ '\n' -}}
+            13:00: {{ surplus_hour_13 }} kWh,{{ '\n' -}}
+            14:00: {{ surplus_hour_14 }} kWh,{{ '\n' -}}
+            15:00: {{ surplus_hour_15 }} kWh,{{ '\n' -}}
+            16:00: {{ surplus_hour_16 }} kWh,{{ '\n' -}}
+            17:00: {{ surplus_hour_17 }} kWh,{{ '\n' -}}
+            18:00: {{ surplus_hour_18 }} kWh,{{ '\n' -}}
+            19:00: {{ surplus_hour_19 }} kWh,{{ '\n' -}}
+            20:00: {{ surplus_hour_20 }} kWh,{{ '\n' -}}
+            21:00: {{ surplus_hour_21 }} kWh,{{ '\n' -}}
+            22:00: {{ surplus_hour_22 }} kWh,{{ '\n' -}}
+            23:00: {{ surplus_hour_23 }} kWh,{{ '\n' -}}
+            HSBO: Tomorrow's total forecast: {{ tomorrow_forecast }} kWh{{ '\n' -}}{{ '\n' -}}
+            Surplus PV energy between 6am-10am: {{ surplus_energy_6am_10am }} kWh
+            Surplus PV energy between 10am-5pm: {{ surplus_energy_10am_5pm }} kWh
+            Surplus PV energy between 5pm-9pm: {{ surplus_energy_5pm_9pm }} kWh
+
 
       # Calculate solar charging capacity and energy needs
       - variables:
           solar_charging_capacity: "{{ (tomorrow_forecast * 0.9) | round(2) }}"
-          morning_energy_need: >
-            {% set morning_consumption =
-              states('sensor.hsbo_house_consumption_06_07_energy_average_7d') | float(0) +
-              states('sensor.hsbo_house_consumption_07_08_energy_average_7d') | float(0) +
-              states('sensor.hsbo_house_consumption_08_09_energy_average_7d') | float(0) +
-              states('sensor.hsbo_house_consumption_09_10_energy_average_7d') | float(0)
+          energy_need_0am_6am: >
+            {% set energy_need_0am_6am =
+              states('sensor.hsbo_house_consumption_00_01_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_01_02_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_02_03_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_03_04_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_04_05_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_05_06_energy_average_3d') | float(0)
             %}
-            {{ morning_consumption | round(2) }}
-          late_evening_energy_need: >
-            {% set late_evening_consumption =
-              states('sensor.hsbo_house_consumption_21_22_energy_average_7d') | float(0) +
-              states('sensor.hsbo_house_consumption_22_23_energy_average_7d') | float(0) +
-              states('sensor.hsbo_house_consumption_23_00_energy_average_7d') | float(0)
+            {{ energy_need_0am_6am | round(2) }}
+          energy_need_6am_10am: >
+            {% set energy_need_6am_10am =
+              states('sensor.hsbo_house_consumption_06_07_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_07_08_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_08_09_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_09_10_energy_average_3d') | float(0)
             %}
-            {{ late_evening_consumption | round(2) }}
+            {{ energy_need_6am_10am | round(2) }}
+          energy_need_10am_5pm: >
+            {% set energy_need_10am_5pm =
+              states('sensor.hsbo_house_consumption_09_10_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_10_11_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_11_12_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_12_13_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_14_15_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_15_16_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_16_17_energy_average_3d') | float(0) 
+            %}
+            {{ energy_need_10am_5pm | round(2) }}
+          energy_need_5pm_9pm: >
+            {% set energy_need_5pm_9pm =
+              states('sensor.hsbo_house_consumption_17_18_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_18_19_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_19_20_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_20_21_energy_average_3d') | float(0) 
+            %}
+            {{ energy_need_5pm_9pm | round(2) }}
+          energy_need_9pm_midnight: >
+            {% set energy_need_9pm_midnight =
+              states('sensor.hsbo_house_consumption_21_22_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_22_23_energy_average_3d') | float(0) +
+              states('sensor.hsbo_house_consumption_23_00_energy_average_3d') | float(0)
+            %}
+            {{ energy_need_9pm_midnight | round(2) }}
+          total_energy_need: "{{ energy_need_0am_6am + energy_need_6am_10am + energy_need_10am_5pm + energy_need_5pm_9pm + energy_need_9pm_midnight}}"
 
       - action: system_log.write
         data:
           message: >
             HSBO Debug: Solar charging capacity: {{ solar_charging_capacity }} kWh,
-            Morning energy need (6am - 10am): {{ morning_energy_need }} kWh,
-            Late evening energy need (9pm - midnight): {{ late_evening_energy_need }} kWh
+            Energy need between 0am-6am: {{ energy_need_0am_6am }} kWh,
+            Energy need between 6am-10am: {{ energy_need_6am_10am }} kWh,
+            Energy need between 10am-5pm: {{ energy_need_10am_5pm }} kWh,
+            Energy need between 5pm-9pm: {{ energy_need_5pm_9pm }} kWh,
+            Energy need between 9pm-midnight: {{ energy_need_9pm_midnight }} kWh,
+            Total Energy: {{ total_energy_need }} kWh
+
+      # Price checks (is total price + conversion loss in lower tariff period higher than purchase price in a higher tariff period)
+      - variables:
+          # is_night_price_lower_than_morning:   # lowest two hours during night + conversion loss (20%) compared to prices between 6am and 10am
+          # is_night_price_lower_than_afternoon:  # lowest two hours during night + conversion loss (20%) compared to prices between 10am and 5pm
+          # is_night_price_lower_than_evening:  # lowest two hours during night + conversion loss (20%) compared to prices between 5pm and 9pm
+          # is_night_price_lower_than_late_evening: # lowest two hours during night + conversion loss (20%) compared to prices between 9pm and midnight
+          # is_afternoon_price_lower_than_evening: # lowest two hours during afternoon + conversion loss (20%) compared to prices between 5pm and 9pm
+          # is_afternoon_price_lower_than_late_evening: # lowest two hours during afternoon + conversion loss (20%) compared to prices between 9pm and midnight
+          is_night_price_lower_than_morning: >
+            {% set night_hours = next_day_total_prices_hourly[0:6] %}
+            {% set morning_hours = next_day_total_prices_hourly[6:10] %}
+            {% set lowest_night_prices = (night_hours | sort)[:2] %}
+            {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+            {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+            {% set avg_morning_price = (morning_hours | sum) / morning_hours | length %}
+            {{ night_price_with_loss < avg_morning_price }}
+
+          is_night_price_lower_than_afternoon: >
+            {% set night_hours = next_day_total_prices_hourly[0:6] %}
+            {% set afternoon_hours = next_day_total_prices_hourly[10:17] %}
+            {% set lowest_night_prices = (night_hours | sort)[:2] %}
+            {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+            {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+            {% set avg_afternoon_price = (afternoon_hours | sum) / afternoon_hours | length %}
+            {{ night_price_with_loss < avg_afternoon_price }}
+
+          is_night_price_lower_than_evening: >
+            {% set night_hours = next_day_total_prices_hourly[0:6] %}
+            {% set evening_hours = next_day_total_prices_hourly[17:21] %}
+            {% set lowest_night_prices = (night_hours | sort)[:2] %}
+            {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+            {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+            {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+            {{ night_price_with_loss < avg_evening_price }}
+
+          is_night_price_lower_than_late_evening: >
+            {% set night_hours = next_day_total_prices_hourly[0:6] %}
+            {% set late_evening_hours = next_day_total_prices_hourly[21:] %}
+            {% set lowest_night_prices = (night_hours | sort)[:2] %}
+            {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+            {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+            {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
+            {{ night_price_with_loss < avg_late_evening_price }}
+
+          is_afternoon_price_lower_than_evening: >
+            {% set afternoon_hours = next_day_total_prices_hourly[10:17] %}
+            {% set evening_hours = next_day_total_prices_hourly[17:21] %}
+            {% set lowest_afternoon_prices = (afternoon_hours | sort)[:2] %}
+            {% set avg_lowest_afternoon_price = (lowest_afternoon_prices | sum) / 2 %}
+            {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
+            {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+            {{ afternoon_price_with_loss < avg_evening_price }}
+
+          is_afternoon_price_lower_than_late_evening: >
+            {% set afternoon_hours = next_day_total_prices_hourly[10:17] %}
+            {% set late_evening_hours = next_day_total_prices_hourly[21:] %}
+            {% set lowest_afternoon_prices = (afternoon_hours | sort)[:2] %}
+            {% set avg_lowest_afternoon_price = (lowest_afternoon_prices | sum) / 2 %}
+            {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
+            {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
+            {{ afternoon_price_with_loss < avg_late_evening_price }}
+
 
       # Calculate charge strategy
       - variables:
-          capacity_after_night: "{{ (current_battery_capacity - late_evening_energy_need - morning_energy_need) | float(0) }}"
-          required_charge: "{{ (battery_max_capacity - capacity_after_night) | float(0) }}"
-          required_grid_charge: "{{ [required_charge - solar_charging_capacity, 0] | max | float(0) }}"
-          ac_charge_cutoff_percentage: "{{ ((required_grid_charge / battery_max_capacity * 100) | round(0)) | float(0) }}"
+          total_energy_need: "{{ energy_need_6am_10am + energy_need_10am_5pm + energy_need_5pm_9pm }}"
+          minimum_energy_need_for_battery: "{{ energy_need_6am_10am + energy_need_10am_5pm + energy_need_5pm_9pm }}"
+          usable_battery_capacity: "{{ battery_max_capacity - battery_min_capacity }}"
+          required_charge: "{{ [total_energy_need - current_battery_capacity + battery_min_capacity, 0] | max }}"
+          required_charge_adjusted: "{{ [required_charge, usable_battery_capacity] | min }}"
+          required_grid_charge: "{{ [required_charge_adjusted - solar_charging_capacity, 0] | max | float(0) }}"
+          ac_charge_cutoff_percentage: "{{ ((required_grid_charge / battery_max_capacity * 100) + (battery_min_capacity / battery_max_capacity * 100)) | round(0) | float(0) }}"
 
       - action: system_log.write
         data:
           message: >
-            HSBO Debug: Capacity after night: {{ capacity_after_night }} kWh,
+            HSBO Debug: Total energy need: {{ total_energy_need }} kWh,
+            Usable battery capacity: {{ usable_battery_capacity }} kWh,
             Required charge: {{ required_charge }} kWh,
+            Required charge (adjusted): {{ required_charge_adjusted }} kWh,
             Required grid charge: {{ required_grid_charge }} kWh,
             AC charge cutoff percentage (pre-adjustment): {{ ac_charge_cutoff_percentage }}%
 
@@ -752,7 +1208,8 @@ script:
               {{ ac_charge_cutoff_percentage | round(0) }}
             {% endif %}
           recommended_working_mode: >
-            {% if required_grid_charge > 0 %}
+            {% set current_month = now().month %}
+            {% if current_month in [9, 10, 11, 12, 1, 2, 3, 4] or required_grid_charge > 0 %}
               TOU
             {% else %}
               Maximise Self Consumption
@@ -956,10 +1413,6 @@ automation:
                       - action: system_log.write
                         data:
                           message: "HSBO: Set to Maximise Self Consumption at midnight based on evening calculation"
-                default:
-                  - action: system_log.write
-                    data:
-                      message: "HSBO: No change needed at midnight. Current mode: {{ current_mode }}"
 
           # Manage inverter export based on spot price
           - conditions:
@@ -992,13 +1445,6 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_enable_grid_export
-              - action: system_log.write
-                data:
-                  message: >
-                    HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh,
-                    Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
-                    Current export state: {{ states(inverter_entity) }},
-                    Action taken: {{ trigger.id if trigger is defined else 'Manual check' }}
 
           # Regular checks throughout the day (only if not EV charging)
           - conditions:
@@ -1129,13 +1575,6 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_enable_grid_export
-              - action: system_log.write
-                data:
-                  message: >
-                    HSBO: Inverter export check - Energi Data Service price: {{ spot_price }} DKK/kWh,
-                    Negative price: {{ states('binary_sensor.hsbo_negative_spot_price') }},
-                    Current export state: {{ states(inverter_entity) }},
-                    Action taken: Regular check
     trace:
       stored_traces: 300
     mode: single
