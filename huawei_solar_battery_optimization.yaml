@@ -687,8 +687,6 @@ script:
 
       # Get Electricity prices for the next day
 
-
-
       # Get tomorrow's solar forecast
       - variables:
           tomorrow_forecast_raw: "{{ state_attr(states('input_text.hsbo_solcast_pv_forecast_forecast_tomorrow'), 'estimate') }}"
@@ -1053,7 +1051,6 @@ script:
             Surplus PV energy between 10am-5pm: {{ surplus_energy_10am_5pm }} kWh
             Surplus PV energy between 5pm-9pm: {{ surplus_energy_5pm_9pm }} kWh
 
-
       # Calculate solar charging capacity and energy needs
       - variables:
           solar_charging_capacity: "{{ (tomorrow_forecast * 0.9) | round(2) }}"
@@ -1122,7 +1119,9 @@ script:
           # is_night_price_lower_than_late_evening: # lowest two hours during night + conversion loss (20%) compared to prices between 9pm and midnight
           # is_afternoon_price_lower_than_evening: # lowest two hours during afternoon + conversion loss (20%) compared to prices between 5pm and 9pm
           # is_afternoon_price_lower_than_late_evening: # lowest two hours during afternoon + conversion loss (20%) compared to prices between 9pm and midnight
+          
           is_night_price_lower_than_morning: >
+            {% set next_day_total_prices_hourly = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
             {% set night_hours = next_day_total_prices_hourly[0:6] %}
             {% set morning_hours = next_day_total_prices_hourly[6:10] %}
             {% set lowest_night_prices = (night_hours | sort)[:2] %}
@@ -1132,6 +1131,7 @@ script:
             {{ night_price_with_loss < avg_morning_price }}
 
           is_night_price_lower_than_afternoon: >
+            {% set next_day_total_prices_hourly = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
             {% set night_hours = next_day_total_prices_hourly[0:6] %}
             {% set afternoon_hours = next_day_total_prices_hourly[10:17] %}
             {% set lowest_night_prices = (night_hours | sort)[:2] %}
@@ -1141,6 +1141,7 @@ script:
             {{ night_price_with_loss < avg_afternoon_price }}
 
           is_night_price_lower_than_evening: >
+            {% set next_day_total_prices_hourly = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
             {% set night_hours = next_day_total_prices_hourly[0:6] %}
             {% set evening_hours = next_day_total_prices_hourly[17:21] %}
             {% set lowest_night_prices = (night_hours | sort)[:2] %}
@@ -1150,6 +1151,7 @@ script:
             {{ night_price_with_loss < avg_evening_price }}
 
           is_night_price_lower_than_late_evening: >
+            {% set next_day_total_prices_hourly = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
             {% set night_hours = next_day_total_prices_hourly[0:6] %}
             {% set late_evening_hours = next_day_total_prices_hourly[21:] %}
             {% set lowest_night_prices = (night_hours | sort)[:2] %}
@@ -1159,6 +1161,7 @@ script:
             {{ night_price_with_loss < avg_late_evening_price }}
 
           is_afternoon_price_lower_than_evening: >
+            {% set next_day_total_prices_hourly = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
             {% set afternoon_hours = next_day_total_prices_hourly[10:17] %}
             {% set evening_hours = next_day_total_prices_hourly[17:21] %}
             {% set lowest_afternoon_prices = (afternoon_hours | sort)[:2] %}
@@ -1168,6 +1171,7 @@ script:
             {{ afternoon_price_with_loss < avg_evening_price }}
 
           is_afternoon_price_lower_than_late_evening: >
+            {% set next_day_total_prices_hourly = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
             {% set afternoon_hours = next_day_total_prices_hourly[10:17] %}
             {% set late_evening_hours = next_day_total_prices_hourly[21:] %}
             {% set lowest_afternoon_prices = (afternoon_hours | sort)[:2] %}
@@ -1175,7 +1179,6 @@ script:
             {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
             {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
             {{ afternoon_price_with_loss < avg_late_evening_price }}
-
 
       # Calculate charge strategy
       - variables:
