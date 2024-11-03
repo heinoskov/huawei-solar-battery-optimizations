@@ -3,11 +3,11 @@
 
 template:
   - sensor:
-      # Basic price list sensors
-      - name: "HSBO Next Day Total Prices Hourly"
-        unique_id: hsbo_next_day_total_prices_hourly
+      # Basic price list sensors for today
+      - name: "HSBO Price Today Total Hourly"
+        unique_id: hsbo_price_today_total_hourly
         state: >
-          {% set total_prices = state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'raw_tomorrow') %}
+          {% set total_prices = state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'raw_today') %}
           {% if total_prices is not none %}
             {{ total_prices | map(attribute='price') | list }}
           {% else %}
@@ -15,24 +15,24 @@ template:
           {% endif %}
         attributes:
           lowest_price: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {{ prices | min }}
           highest_price: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {{ prices | max }}
           average_price: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {{ (prices | sum) / prices | length }}
           prices_by_hour: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% for price in prices %}
               {{ loop.index0 }}:00 - {{ price }}
             {% endfor %}
 
-      - name: "HSBO Next Day Sales Prices Hourly"
-        unique_id: hsbo_next_day_sales_prices_hourly
+      - name: "HSBO Price Today Sales Hourly"
+        unique_id: hsbo_price_today_sales_hourly
         state: >
-          {% set sales_prices = state_attr(states('input_text.hsbo_energi_data_service_sales_price'), 'raw_tomorrow') %}
+          {% set sales_prices = state_attr(states('input_text.hsbo_energi_data_service_sales_price'), 'raw_today') %}
           {% if sales_prices is not none %}
             {{ sales_prices | map(attribute='price') | list | to_json }}
               {% else %}
@@ -40,28 +40,28 @@ template:
               {% endif %}
         attributes:
           lowest_price: >
-            {% set prices = states('sensor.hsbo_next_day_sales_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_sales_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices | min }}
             {% else %}
               0
             {% endif %}
           highest_price: >
-            {% set prices = states('sensor.hsbo_next_day_sales_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_sales_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices | max }}
             {% else %}
               0
             {% endif %}
           average_price: >
-            {% set prices = states('sensor.hsbo_next_day_sales_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_sales_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ (prices | sum) / prices | length }}
             {% else %}
               0
             {% endif %}
           prices_by_hour: >
-            {% set prices = states('sensor.hsbo_next_day_sales_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_sales_hourly') | from_json | default([]) %}
             {% if prices %}
               {% for price in prices %}
                 {{ loop.index0 }}:00 - {{ price }}
@@ -71,12 +71,12 @@ template:
             {% endif %}
 
       # Lowest price period helper
-      - name: "HSBO Lowest Price Period"
-        unique_id: hsbo_lowest_price_period
+      - name: "HSBO Price Today Lowest Price Period"
+        unique_id: hsbo_price_today_lowest_price_period
         icon: mdi:clock-outline
         state: >
           {% set periods = {} %}
-          {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% set night_avg = prices[0:6] | map('float') | list | average %}
           {% set morning_avg = prices[6:10] | map('float') | list | average %}
           {% set afternoon_avg = prices[10:17] | map('float') | list | average %}
@@ -95,35 +95,35 @@ template:
           {% endif %}
         attributes:
           night_average: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices[0:6] | map('float') | list | average | round(3) }}
             {% else %}
               0
             {% endif %}
           morning_average: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices[6:10] | map('float') | list | average | round(3) }}
             {% else %}
               0
             {% endif %}
           afternoon_average: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices[10:17] | map('float') | list | average | round(3) }}
             {% else %}
               0
             {% endif %}
           evening_average: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices[17:21] | map('float') | list | average | round(3) }}
             {% else %}
               0
             {% endif %}
           late_evening_average: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if prices %}
               {{ prices[21:24] | map('float') | list | average | round(3) }}
             {% else %}
@@ -131,10 +131,10 @@ template:
             {% endif %}
 
       # Price comparison sensors
-      - name: "HSBO Price Comparison Night vs Morning"
-        unique_id: hsbo_price_comparison_night_morning
+      - name: "HSBO Price Today Comparison Night vs Morning"
+        unique_id: hsbo_price_today_comparison_night_morning
         state: >
-          {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if hours %}
             {% set night_hours = hours[0:6] %}
             {% set morning_hours = hours[6:10] %}
@@ -152,7 +152,7 @@ template:
           {% endif %}
         attributes:
           lowest_night_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {{ (night_hours | sort)[:2] }}
@@ -160,7 +160,7 @@ template:
               []
             {% endif %}
           avg_lowest_night_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -169,7 +169,7 @@ template:
               0
             {% endif %}
           night_price_with_loss: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -179,14 +179,14 @@ template:
               0
             {% endif %}
           morning_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {{ hours[6:10] }}
             {% else %}
               []
             {% endif %}
           avg_morning_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set morning_hours = hours[6:10] %}
               {{ ((morning_hours | sum) / morning_hours | length) | round(3) }}
@@ -194,7 +194,7 @@ template:
               0
             {% endif %}
           price_difference: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set morning_hours = hours[6:10] %}
@@ -211,10 +211,10 @@ template:
               0
             {% endif %}
 
-      - name: "HSBO Price Comparison Night vs Afternoon"
-        unique_id: hsbo_price_comparison_night_afternoon
+      - name: "HSBO Price Today Comparison Night vs Afternoon"
+        unique_id: hsbo_price_today_comparison_night_afternoon
         state: >
-          {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if hours %}
             {% set night_hours = hours[0:6] %}
             {% set afternoon_hours = hours[10:17] %}
@@ -232,7 +232,7 @@ template:
           {% endif %}
         attributes:
           lowest_night_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {{ (night_hours | sort)[:2] }}
@@ -240,7 +240,7 @@ template:
               []
             {% endif %}
           avg_lowest_night_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -249,7 +249,7 @@ template:
               0
             {% endif %}
           night_price_with_loss: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -259,14 +259,14 @@ template:
               0
             {% endif %}
           afternoon_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {{ hours[10:17] }}
             {% else %}
               []
             {% endif %}
           avg_afternoon_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {{ ((afternoon_hours | sum) / afternoon_hours | length) | round(3) }}
@@ -274,7 +274,7 @@ template:
               0
             {% endif %}
           price_difference: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set afternoon_hours = hours[10:17] %}
@@ -291,10 +291,10 @@ template:
               0
             {% endif %}
 
-      - name: "HSBO Price Comparison Night vs Evening"
-        unique_id: hsbo_price_comparison_night_evening
+      - name: "HSBO Price Today Comparison Night vs Evening"
+        unique_id: hsbo_price_today_comparison_night_evening
         state: >
-          {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if hours %}
             {% set night_hours = hours[0:6] %}
             {% set evening_hours = hours[17:21] %}
@@ -312,7 +312,7 @@ template:
           {% endif %}
         attributes:
           lowest_night_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {{ (night_hours | sort)[:2] }}
@@ -320,7 +320,7 @@ template:
               []
             {% endif %}
           avg_lowest_night_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -329,7 +329,7 @@ template:
               0
             {% endif %}
           night_price_with_loss: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -340,14 +340,14 @@ template:
               0
             {% endif %}
           evening_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {{ hours[17:21] }}
             {% else %}
               []
             {% endif %}
           avg_evening_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set evening_hours = hours[17:21] %}
               {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
@@ -356,7 +356,7 @@ template:
               0
             {% endif %}
           price_difference: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set evening_hours = hours[17:21] %}
@@ -373,10 +373,10 @@ template:
               0
             {% endif %}
 
-      - name: "HSBO Price Comparison Night vs Late Evening"
-        unique_id: hsbo_price_comparison_night_late_evening
+      - name: "HSBO Price Today Comparison Night vs Late Evening"
+        unique_id: hsbo_price_today_comparison_night_late_evening
         state: >
-          {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if hours %}
             {% set night_hours = hours[0:6] %}
             {% set late_evening_hours = hours[21:24] %}
@@ -394,7 +394,7 @@ template:
           {% endif %}
         attributes:
           lowest_night_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {{ (night_hours | sort)[:2] }}
@@ -402,7 +402,7 @@ template:
               []
             {% endif %}
           avg_lowest_night_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -411,7 +411,7 @@ template:
               0
             {% endif %}
           night_price_with_loss: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set lowest_prices = (night_hours | sort)[:2] %}
@@ -421,14 +421,14 @@ template:
               0
             {% endif %}
           late_evening_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {{ hours[21:24] }}
             {% else %}
               []
             {% endif %}
           avg_late_evening_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set late_evening_hours = hours[21:24] %}
               {{ ((late_evening_hours | sum) / late_evening_hours | length) | round(3) }}
@@ -436,7 +436,7 @@ template:
               0
             {% endif %}
           price_difference: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set night_hours = hours[0:6] %}
               {% set late_evening_hours = hours[21:24] %}
@@ -453,10 +453,10 @@ template:
               0
             {% endif %}
 
-      - name: "HSBO Price Comparison Afternoon vs Evening"
-        unique_id: hsbo_price_comparison_afternoon_evening
+      - name: "HSBO Price Today Comparison Afternoon vs Evening"
+        unique_id: hsbo_price_today_comparison_afternoon_evening
         state: >
-          {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if hours %}
             {% set afternoon_hours = hours[10:17] %}
             {% set evening_hours = hours[17:21] %}
@@ -474,7 +474,7 @@ template:
           {% endif %}
         attributes:
           lowest_afternoon_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {{ (afternoon_hours | sort)[:2] }}
@@ -482,7 +482,7 @@ template:
               []
             {% endif %}
           avg_lowest_afternoon_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {% set lowest_prices = (afternoon_hours | sort)[:2] %}
@@ -491,7 +491,7 @@ template:
               0
             {% endif %}
           afternoon_price_with_loss: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {% set lowest_prices = (afternoon_hours | sort)[:2] %}
@@ -501,14 +501,14 @@ template:
               0
             {% endif %}
           evening_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {{ hours[17:21] }}
             {% else %}
               []
             {% endif %}
           avg_evening_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set evening_hours = hours[17:21] %}
               {{ ((evening_hours | sum) / evening_hours | length) | round(3) }}
@@ -516,7 +516,7 @@ template:
               0
             {% endif %}
           price_difference: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {% set evening_hours = hours[17:21] %}
@@ -533,10 +533,10 @@ template:
               0
             {% endif %}
 
-      - name: "HSBO Price Comparison Afternoon vs Late Evening"
-        unique_id: hsbo_price_comparison_afternoon_late_evening
+      - name: "HSBO Price Today Comparison Afternoon vs Late Evening"
+        unique_id: hsbo_price_today_comparison_afternoon_late_evening
         state: >
-          {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if hours %}
             {% set afternoon_hours = hours[10:17] %}
             {% set late_evening_hours = hours[21:24] %}
@@ -554,7 +554,7 @@ template:
           {% endif %}
         attributes:
           lowest_afternoon_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {{ (afternoon_hours | sort)[:2] }}
@@ -562,7 +562,7 @@ template:
               []
             {% endif %}
           avg_lowest_afternoon_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {% set lowest_prices = (afternoon_hours | sort)[:2] %}
@@ -571,7 +571,7 @@ template:
               0
             {% endif %}
           afternoon_price_with_loss: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {% set lowest_prices = (afternoon_hours | sort)[:2] %}
@@ -581,14 +581,14 @@ template:
               0
             {% endif %}
           late_evening_prices: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {{ hours[21:24] }}
             {% else %}
               []
             {% endif %}
           avg_late_evening_price: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set late_evening_hours = hours[21:24] %}
               {{ ((late_evening_hours | sum) / late_evening_hours | length) | round(3) }}
@@ -596,7 +596,7 @@ template:
               0
             {% endif %}
           price_difference: >
-            {% set hours = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set hours = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if hours %}
               {% set afternoon_hours = hours[10:17] %}
               {% set late_evening_hours = hours[21:24] %}
@@ -616,10 +616,10 @@ template:
 
 
       # Best charging time helper
-      - name: "HSBO Best Charging Time Period"
-        unique_id: hsbo_best_charging_time_period
+      - name: "HSBO Price Today Best Charging Time Period"
+        unique_id: hsbo_price_today_best_charging_time_period
         state: >
-          {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if not prices %}
             Unknown
           {% else %}
@@ -643,7 +643,7 @@ template:
           {% endif %}
         attributes:
           lowest_prices: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {
               "night": {{ prices[0:6] | map('float') | list | min | round(3) if prices else 0 }},
               "morning": {{ prices[6:10] | map('float') | list | min | round(3) if prices else 0 }},
@@ -652,7 +652,7 @@ template:
               "late_evening": {{ prices[21:24] | map('float') | list | min | round(3) if prices else 0 }}
             }
           average_prices: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {
               "night": {{ prices[0:6] | map('float') | list | average | round(3) if prices else 0 }},
               "morning": {{ prices[6:10] | map('float') | list | average | round(3) if prices else 0 }},
@@ -661,7 +661,7 @@ template:
               "late_evening": {{ prices[21:24] | map('float') | list | average | round(3) if prices else 0 }}
             }
           best_hours: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {
               "night": "{% if prices %}{% set night_prices = prices[0:6] | map('float') | list %}{% set hours = range(6) | list %}{% set sorted_hours = (hours | sort(attribute=night_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}",
               "morning": "{% if prices %}{% set morning_prices = prices[6:10] | map('float') | list %}{% set hours = range(6,10) | list %}{% set sorted_hours = (hours | sort(attribute=morning_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}",
@@ -671,10 +671,10 @@ template:
             }
 
       # Price period comparison
-      - name: "HSBO Price Period Comparison"
-        unique_id: hsbo_price_period_comparison
+      - name: "HSBO Price Today Period Comparison"
+        unique_id: hsbo_price_today_period_comparison
         state: >
-          {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+          {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
           {% if not prices %}
             Unknown
           {% else %}
@@ -689,13 +689,13 @@ template:
           {% endif %}
         attributes:
           price_spread: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {
               "min_average": {{ prices | map('float') | list | min | round(3) if prices else 0 }},
               "max_average": {{ prices | map('float') | list | max | round(3) if prices else 0 }}
             }
           charging_recommendation: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
             {% if not prices %}
               No price data available
             {% else %}
@@ -712,7 +712,726 @@ template:
               {% else %}Recommended charging during late evening hours (21:00-00:00){% endif %}
             {% endif %}
           price_trend: >
-            {% set prices = states('sensor.hsbo_next_day_total_prices_hourly') | from_json | default([]) %}
+            {% set prices = states('sensor.hsbo_price_today_total_hourly') | from_json | default([]) %}
+            {% if not prices %}Unknown
+            {% else %}
+              {% set first_half_avg = prices[0:12] | map('float') | list | average %}
+              {% set second_half_avg = prices[12:24] | map('float') | list | average %}
+              {% if first_half_avg < second_half_avg %}Prices trending upward
+              {% elif first_half_avg > second_half_avg %}Prices trending downward
+              {% else %}Prices relatively stable{% endif %}
+            {% endif %}
+
+      # Basic price list sensors for tomorrow
+      - name: "HSBO Price Tomorrow Total Hourly"
+        unique_id: hsbo_price_tomorrow_total_hourly
+        state: >
+          {% set total_prices = state_attr(states('input_text.hsbo_energi_data_service_total_price'), 'raw_tomorrow') %}
+          {% if total_prices is not none %}
+            {{ total_prices | map(attribute='price') | list }}
+          {% else %}
+            []
+          {% endif %}
+        attributes:
+          lowest_price: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {{ prices | min }}
+          highest_price: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {{ prices | max }}
+          average_price: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {{ (prices | sum) / prices | length }}
+          prices_by_hour: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% for price in prices %}
+              {{ loop.index0 }}:00 - {{ price }}
+            {% endfor %}
+
+      - name: "HSBO Price Tomorrow Sales Hourly"
+        unique_id: hsbo_price_tomorrow_sales_hourly
+        state: >
+          {% set sales_prices = state_attr(states('input_text.hsbo_energi_data_service_sales_price'), 'raw_tomorrow') %}
+          {% if sales_prices is not none %}
+            {{ sales_prices | map(attribute='price') | list | to_json }}
+              {% else %}
+            []
+              {% endif %}
+        attributes:
+          lowest_price: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices | min }}
+            {% else %}
+              0
+            {% endif %}
+          highest_price: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices | max }}
+            {% else %}
+              0
+            {% endif %}
+          average_price: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ (prices | sum) / prices | length }}
+            {% else %}
+              0
+            {% endif %}
+          prices_by_hour: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_sales_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {% for price in prices %}
+                {{ loop.index0 }}:00 - {{ price }}
+              {% endfor %}
+            {% else %}
+              No data available
+            {% endif %}
+
+      # Lowest price period helper
+      - name: "HSBO Price Tomorrow Lowest Price Period"
+        unique_id: hsbo_price_tomorrow_lowest_price_period
+        icon: mdi:clock-outline
+        state: >
+          {% set periods = {} %}
+          {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% set night_avg = prices[0:6] | map('float') | list | average %}
+          {% set morning_avg = prices[6:10] | map('float') | list | average %}
+          {% set afternoon_avg = prices[10:17] | map('float') | list | average %}
+          {% set evening_avg = prices[17:21] | map('float') | list | average %}
+          {% set late_evening_avg = prices[21:24] | map('float') | list | average %}
+          {% if night_avg <= morning_avg and night_avg <= afternoon_avg and night_avg <= evening_avg and night_avg <= late_evening_avg %}
+            Night (00-06)
+          {% elif morning_avg <= afternoon_avg and morning_avg <= evening_avg and morning_avg <= late_evening_avg %}
+            Morning (06-10)
+          {% elif afternoon_avg <= evening_avg and afternoon_avg <= late_evening_avg %}
+            Afternoon (10-17)
+          {% elif evening_avg <= late_evening_avg %}
+            Evening (17-21)
+          {% else %}
+            Late Evening (21-00)
+          {% endif %}
+        attributes:
+          night_average: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices[0:6] | map('float') | list | average | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          morning_average: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices[6:10] | map('float') | list | average | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          afternoon_average: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices[10:17] | map('float') | list | average | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          evening_average: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices[17:21] | map('float') | list | average | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          late_evening_average: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if prices %}
+              {{ prices[21:24] | map('float') | list | average | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+
+      # Price comparison sensors
+      - name: "HSBO Price Tomorrow Comparison Night vs Morning"
+        unique_id: hsbo_price_tomorrow_comparison_night_morning
+        state: >
+          {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if hours %}
+            {% set night_hours = hours[0:6] %}
+            {% set morning_hours = hours[6:10] %}
+            {% if night_hours and morning_hours %}
+              {% set lowest_night_prices = (night_hours | sort)[:2] %}
+              {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+              {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+              {% set avg_morning_price = (morning_hours | sum) / morning_hours | length %}
+              {{ night_price_with_loss < avg_morning_price }}
+            {% else %}
+              false
+            {% endif %}
+          {% else %}
+            false
+          {% endif %}
+        attributes:
+          lowest_night_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {{ (night_hours | sort)[:2] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_lowest_night_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {{ ((lowest_prices | sum) / 2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          night_price_with_loss: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {% set avg_price = (lowest_prices | sum) / 2 %}
+              {{ (avg_price * 1.2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          morning_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {{ hours[6:10] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_morning_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set morning_hours = hours[6:10] %}
+              {{ ((morning_hours | sum) / morning_hours | length) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          price_difference: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set morning_hours = hours[6:10] %}
+              {% if night_hours and morning_hours %}
+                {% set lowest_prices = (night_hours | sort)[:2] %}
+                {% set avg_lowest_night_price = (lowest_prices | sum) / 2 %}
+                {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+                {% set avg_morning_price = (morning_hours | sum) / morning_hours | length %}
+                {{ (avg_morning_price - night_price_with_loss) | round(3) }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "HSBO Price Tomorrow Comparison Night vs Afternoon"
+        unique_id: hsbo_price_tomorrow_comparison_night_afternoon
+        state: >
+          {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if hours %}
+            {% set night_hours = hours[0:6] %}
+            {% set afternoon_hours = hours[10:17] %}
+            {% if night_hours and afternoon_hours %}
+              {% set lowest_night_prices = (night_hours | sort)[:2] %}
+              {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+              {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+              {% set avg_afternoon_price = (afternoon_hours | sum) / afternoon_hours | length %}
+              {{ night_price_with_loss < avg_afternoon_price }}
+            {% else %}
+              false
+            {% endif %}
+          {% else %}
+            false
+          {% endif %}
+        attributes:
+          lowest_night_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {{ (night_hours | sort)[:2] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_lowest_night_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {{ ((lowest_prices | sum) / 2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          night_price_with_loss: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {% set avg_price = (lowest_prices | sum) / 2 %}
+              {{ (avg_price * 1.2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          afternoon_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {{ hours[10:17] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_afternoon_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {{ ((afternoon_hours | sum) / afternoon_hours | length) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          price_difference: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% if night_hours and afternoon_hours %}
+                {% set lowest_prices = (night_hours | sort)[:2] %}
+                {% set avg_lowest_night_price = (lowest_prices | sum) / 2 %}
+                {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+                {% set avg_afternoon_price = (afternoon_hours | sum) / afternoon_hours | length %}
+                {{ (avg_afternoon_price - night_price_with_loss) | round(3) }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "HSBO Price Tomorrow Comparison Night vs Evening"
+        unique_id: hsbo_price_tomorrow_comparison_night_evening
+        state: >
+          {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if hours %}
+            {% set night_hours = hours[0:6] %}
+            {% set evening_hours = hours[17:21] %}
+            {% if night_hours and evening_hours %}
+              {% set lowest_night_prices = (night_hours | sort)[:2] %}
+              {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+              {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+              {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+              {{ night_price_with_loss < avg_evening_price }}
+            {% else %}
+              false
+            {% endif %}
+          {% else %}
+            false
+          {% endif %}
+        attributes:
+          lowest_night_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {{ (night_hours | sort)[:2] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_lowest_night_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {{ ((lowest_prices | sum) / 2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          night_price_with_loss: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {% set avg_price = (lowest_prices | sum) / 2 %}
+              {% set night_price_with_loss = avg_price * 1.2 %}
+              {{ night_price_with_loss | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          evening_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {{ hours[17:21] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_evening_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set evening_hours = hours[17:21] %}
+              {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+              {{ avg_evening_price | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          price_difference: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set evening_hours = hours[17:21] %}
+              {% if night_hours and evening_hours %}
+                {% set lowest_prices = (night_hours | sort)[:2] %}
+                {% set avg_lowest_night_price = (lowest_prices | sum) / 2 %}
+                {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+                {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+                {{ (avg_evening_price - night_price_with_loss) | round(3) }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "HSBO Price Tomorrow Comparison Night vs Late Evening"
+        unique_id: hsbo_price_tomorrow_comparison_night_late_evening
+        state: >
+          {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if hours %}
+            {% set night_hours = hours[0:6] %}
+            {% set late_evening_hours = hours[21:24] %}
+            {% if night_hours and late_evening_hours %}
+              {% set lowest_night_prices = (night_hours | sort)[:2] %}
+              {% set avg_lowest_night_price = (lowest_night_prices | sum) / 2 %}
+              {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+              {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
+              {{ night_price_with_loss < avg_late_evening_price }}
+            {% else %}
+              false
+            {% endif %}
+          {% else %}
+            false
+          {% endif %}
+        attributes:
+          lowest_night_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {{ (night_hours | sort)[:2] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_lowest_night_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {{ ((lowest_prices | sum) / 2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          night_price_with_loss: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set lowest_prices = (night_hours | sort)[:2] %}
+              {% set avg_price = (lowest_prices | sum) / 2 %}
+              {{ (avg_price * 1.2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          late_evening_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {{ hours[21:24] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_late_evening_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set late_evening_hours = hours[21:24] %}
+              {{ ((late_evening_hours | sum) / late_evening_hours | length) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          price_difference: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set night_hours = hours[0:6] %}
+              {% set late_evening_hours = hours[21:24] %}
+              {% if night_hours and late_evening_hours %}
+                {% set lowest_prices = (night_hours | sort)[:2] %}
+                {% set avg_lowest_night_price = (lowest_prices | sum) / 2 %}
+                {% set night_price_with_loss = avg_lowest_night_price * 1.2 %}
+                {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
+                {{ (avg_late_evening_price - night_price_with_loss) | round(3) }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "HSBO Price Tomorrow Comparison Afternoon vs Evening"
+        unique_id: hsbo_price_tomorrow_comparison_afternoon_evening
+        state: >
+          {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if hours %}
+            {% set afternoon_hours = hours[10:17] %}
+            {% set evening_hours = hours[17:21] %}
+            {% if afternoon_hours and evening_hours %}
+              {% set lowest_afternoon_prices = (afternoon_hours | sort)[:2] %}
+              {% set avg_lowest_afternoon_price = (lowest_afternoon_prices | sum) / 2 %}
+              {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
+              {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+              {{ afternoon_price_with_loss < avg_evening_price }}
+            {% else %}
+              false
+            {% endif %}
+          {% else %}
+            false
+          {% endif %}
+        attributes:
+          lowest_afternoon_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {{ (afternoon_hours | sort)[:2] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_lowest_afternoon_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% set lowest_prices = (afternoon_hours | sort)[:2] %}
+              {{ ((lowest_prices | sum) / 2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          afternoon_price_with_loss: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% set lowest_prices = (afternoon_hours | sort)[:2] %}
+              {% set avg_price = (lowest_prices | sum) / 2 %}
+              {{ (avg_price * 1.2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          evening_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {{ hours[17:21] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_evening_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set evening_hours = hours[17:21] %}
+              {{ ((evening_hours | sum) / evening_hours | length) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          price_difference: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% set evening_hours = hours[17:21] %}
+              {% if afternoon_hours and evening_hours %}
+                {% set lowest_prices = (afternoon_hours | sort)[:2] %}
+                {% set avg_lowest_afternoon_price = (lowest_prices | sum) / 2 %}
+                {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
+                {% set avg_evening_price = (evening_hours | sum) / evening_hours | length %}
+                {{ (avg_evening_price - afternoon_price_with_loss) | round(3) }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "HSBO Price Tomorrow Comparison Afternoon vs Late Evening"
+        unique_id: hsbo_price_tomorrow_comparison_afternoon_late_evening
+        state: >
+          {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if hours %}
+            {% set afternoon_hours = hours[10:17] %}
+            {% set late_evening_hours = hours[21:24] %}
+            {% if afternoon_hours and late_evening_hours %}
+              {% set lowest_afternoon_prices = (afternoon_hours | sort)[:2] %}
+              {% set avg_lowest_afternoon_price = (lowest_afternoon_prices | sum) / 2 %}
+              {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
+              {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
+              {{ afternoon_price_with_loss < avg_late_evening_price }}
+            {% else %}
+              false
+            {% endif %}
+          {% else %}
+            false
+          {% endif %}
+        attributes:
+          lowest_afternoon_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {{ (afternoon_hours | sort)[:2] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_lowest_afternoon_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% set lowest_prices = (afternoon_hours | sort)[:2] %}
+              {{ ((lowest_prices | sum) / 2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          afternoon_price_with_loss: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% set lowest_prices = (afternoon_hours | sort)[:2] %}
+              {% set avg_price = (lowest_prices | sum) / 2 %}
+              {{ (avg_price * 1.2) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          late_evening_prices: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {{ hours[21:24] }}
+            {% else %}
+              []
+            {% endif %}
+          avg_late_evening_price: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set late_evening_hours = hours[21:24] %}
+              {{ ((late_evening_hours | sum) / late_evening_hours | length) | round(3) }}
+            {% else %}
+              0
+            {% endif %}
+          price_difference: >
+            {% set hours = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if hours %}
+              {% set afternoon_hours = hours[10:17] %}
+              {% set late_evening_hours = hours[21:24] %}
+              {% if afternoon_hours and late_evening_hours %}
+                {% set lowest_prices = (afternoon_hours | sort)[:2] %}
+                {% set avg_lowest_afternoon_price = (lowest_prices | sum) / 2 %}
+                {% set afternoon_price_with_loss = avg_lowest_afternoon_price * 1.2 %}
+                {% set avg_late_evening_price = (late_evening_hours | sum) / late_evening_hours | length %}
+                {{ (avg_late_evening_price - afternoon_price_with_loss) | round(3) }}
+              {% else %}
+                0
+              {% endif %}
+            {% else %}
+              0
+            {% endif %}
+
+
+
+      # Best charging time helper
+      - name: "HSBO Price Tomorrow Best Charging Time Period"
+        unique_id: hsbo_price_tomorrow_best_charging_time_period
+        state: >
+          {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if not prices %}
+            Unknown
+          {% else %}
+            {% set night_min = prices[0:6] | map('float') | list | min %}
+            {% set morning_min = prices[6:10] | map('float') | list | min %}
+            {% set afternoon_min = prices[10:17] | map('float') | list | min %}
+            {% set evening_min = prices[17:21] | map('float') | list | min %}
+            {% set late_evening_min = prices[21:24] | map('float') | list | min %}
+            {% set min_price = [night_min, morning_min, afternoon_min, evening_min, late_evening_min] | min %}
+            {% if min_price == night_min %}
+              Night (00-06)
+            {% elif min_price == morning_min %}
+              Morning (06-10)
+            {% elif min_price == afternoon_min %}
+              Afternoon (10-17)
+            {% elif min_price == evening_min %}
+              Evening (17-21)
+            {% else %}
+              Late Evening (21-00)
+            {% endif %}
+          {% endif %}
+        attributes:
+          lowest_prices: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {
+              "night": {{ prices[0:6] | map('float') | list | min | round(3) if prices else 0 }},
+              "morning": {{ prices[6:10] | map('float') | list | min | round(3) if prices else 0 }},
+              "afternoon": {{ prices[10:17] | map('float') | list | min | round(3) if prices else 0 }},
+              "evening": {{ prices[17:21] | map('float') | list | min | round(3) if prices else 0 }},
+              "late_evening": {{ prices[21:24] | map('float') | list | min | round(3) if prices else 0 }}
+            }
+          average_prices: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {
+              "night": {{ prices[0:6] | map('float') | list | average | round(3) if prices else 0 }},
+              "morning": {{ prices[6:10] | map('float') | list | average | round(3) if prices else 0 }},
+              "afternoon": {{ prices[10:17] | map('float') | list | average | round(3) if prices else 0 }},
+              "evening": {{ prices[17:21] | map('float') | list | average | round(3) if prices else 0 }},
+              "late_evening": {{ prices[21:24] | map('float') | list | average | round(3) if prices else 0 }}
+            }
+          best_hours: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {
+              "night": "{% if prices %}{% set night_prices = prices[0:6] | map('float') | list %}{% set hours = range(6) | list %}{% set sorted_hours = (hours | sort(attribute=night_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}",
+              "morning": "{% if prices %}{% set morning_prices = prices[6:10] | map('float') | list %}{% set hours = range(6,10) | list %}{% set sorted_hours = (hours | sort(attribute=morning_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}",
+              "afternoon": "{% if prices %}{% set afternoon_prices = prices[10:17] | map('float') | list %}{% set hours = range(10,17) | list %}{% set sorted_hours = (hours | sort(attribute=afternoon_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}",
+              "evening": "{% if prices %}{% set evening_prices = prices[17:21] | map('float') | list %}{% set hours = range(17,21) | list %}{% set sorted_hours = (hours | sort(attribute=evening_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}",
+              "late_evening": "{% if prices %}{% set late_evening_prices = prices[21:24] | map('float') | list %}{% set hours = range(21,24) | list %}{% set sorted_hours = (hours | sort(attribute=late_evening_prices[]))[:2] %}{{ sorted_hours | join(',') }}:00{% else %}Unknown{% endif %}"
+            }
+
+      # Price period comparison
+      - name: "HSBO Price Tomorrow Period Comparison"
+        unique_id: hsbo_price_tomorrow_period_comparison
+        state: >
+          {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+          {% if not prices %}
+            Unknown
+          {% else %}
+            {% set night_avg = prices[0:6] | map('float') | list | average %}
+            {% set morning_avg = prices[6:10] | map('float') | list | average %}
+            {% set afternoon_avg = prices[10:17] | map('float') | list | average %}
+            {% set evening_avg = prices[17:21] | map('float') | list | average %}
+            {% set late_evening_avg = prices[21:24] | map('float') | list | average %}
+            {% set min_avg = [night_avg, morning_avg, afternoon_avg, evening_avg, late_evening_avg] | min %}
+            {% set max_avg = [night_avg, morning_avg, afternoon_avg, evening_avg, late_evening_avg] | max %}
+            {{ ((max_avg - min_avg) / min_avg * 100) | round(1) }}% price difference
+          {% endif %}
+        attributes:
+          price_spread: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {
+              "min_average": {{ prices | map('float') | list | min | round(3) if prices else 0 }},
+              "max_average": {{ prices | map('float') | list | max | round(3) if prices else 0 }}
+            }
+          charging_recommendation: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
+            {% if not prices %}
+              No price data available
+            {% else %}
+              {% set night_avg = prices[0:6] | map('float') | list | average %}
+              {% set morning_avg = prices[6:10] | map('float') | list | average %}
+              {% set afternoon_avg = prices[10:17] | map('float') | list | average %}
+              {% set evening_avg = prices[17:21] | map('float') | list | average %}
+              {% set late_evening_avg = prices[21:24] | map('float') | list | average %}
+              {% set min_avg = [night_avg, morning_avg, afternoon_avg, evening_avg, late_evening_avg] | min %}
+              {% if min_avg == night_avg %}Recommended charging during night hours (00:00-06:00)
+              {% elif min_avg == morning_avg %}Recommended charging during morning hours (06:00-10:00)
+              {% elif min_avg == afternoon_avg %}Recommended charging during afternoon hours (10:00-17:00)
+              {% elif min_avg == evening_avg %}Recommended charging during evening hours (17:00-21:00)
+              {% else %}Recommended charging during late evening hours (21:00-00:00){% endif %}
+            {% endif %}
+          price_trend: >
+            {% set prices = states('sensor.hsbo_price_tomorrow_total_hourly') | from_json | default([]) %}
             {% if not prices %}Unknown
             {% else %}
               {% set first_half_avg = prices[0:12] | map('float') | list | average %}
