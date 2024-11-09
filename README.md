@@ -102,7 +102,7 @@ homeassistant:
 - Locate the input boolean `input_boolean.hsbo_logging_enabled` in your Home Assistant instance
 - Set this to ON to enable the logging functionality
 
-> ⚠️ **Note**: The logging system won't function until this boolean is enabled.
+> ⚠️ **Note**: The new logging system won't function until this boolean is enabled.
 
 ## Installation
 
