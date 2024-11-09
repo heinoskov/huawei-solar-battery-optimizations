@@ -102,12 +102,22 @@ homeassistant:
 - Locate the input boolean `input_boolean.hsbo_logging_enabled` in your Home Assistant instance
 - Set this to ON to enable the logging functionality
 
-> ⚠️ **Note**: The new logging system won't function until this boolean is enabled.
+> ⚠️ **Note**: The new logging system won't function until this boolean is enabled.<br><br>
 
 ## Installation
 
-1. Place the `huawei_solar_battery_optimization.yaml` file in your Home Assistant packages directory (usually `/config/packages/`).
-2. Restart Home Assistant to load the new package.
+1. Place the following YAML files in your Home Assistant packages directory (usually `/config/packages/`):
+   - `huawei_solar_battery_optimization.yaml` (main package with scripts and automations)
+   - `huawei_solar_battery_optimization_input.yaml` (user-configured input parameters)
+   - `huawei_solar_battery_optimization_power.yaml` (power and statistics sensors)
+   - `huawei_solar_battery_optimization_logging.yaml` (logging configuration)
+   - `huawei_solar_battery_optimization_pricing.yaml` (pricing-related configurations)
+
+2. Ensure all files are properly placed and named exactly as shown above.
+
+3. Restart Home Assistant to load the new packages.
+
+> ⚠️ **Important**: All five package files are required for the system to function properly. Make sure to install all of them.
 
 For more information on using packages in Home Assistant, see the [official documentation](https://www.home-assistant.io/docs/configuration/packages/).<br><br>
 
