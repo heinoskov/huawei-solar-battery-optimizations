@@ -59,41 +59,50 @@ To use this package, you need the following integrations:
 
 > ⚠️ **CRITICAL**: These steps must be completed before installing the package.
 
-1. Create a logging directory under your Home Assistant config folder:
+#### 1. Directory Setup
+Create a logging directory under your Home Assistant config folder:
 ```bash
 mkdir /config/hsbo_logging
 ```
 
-2. Add the following to your `configuration.yaml`:
+#### 2. Configuration Update
+1. Add the following to your `configuration.yaml`:
 ```yaml
 homeassistant:
   allowlist_external_dirs:
     - "/config/hsbo_logging"
 ```
+2. Reboot Home Assistant
 
-3. Ensure the File integration is properly configured in Home Assistant.
-a. In Home Assistant --> Settings --> Devices & Services
-b. Add Integration
-c. Type File
-d. Select "Set up a notification service"
-e. In the file path type /config/hsbo_logging/hsbo_system.log (do NOT select timestamp. Leave it OFF)
-f. Click Submit (you will be notifed with Success! and that the configuration for the file is created pointed to the path)
+#### 3. File Integration Setup
+1. Navigate to Home Assistant Settings:
+   - Go to Settings → Devices & Services
+   - Click "Add Integration"
+   - Search for and select "File"
+   - Choose "Set up a notification service"
 
-Now, Home Assistant will not create a proper naming for this notify entity. So we edit the this and give it a proper name:
+2. Configure the notification service:
+   - File path: `/config/hsbo_logging/hsbo_system.log`
+   - Leave "Timestamp" OFF
+   - Click Submit
+   - Click Finish when complete
 
-g: Click Finish
-h: In Home Assistant --> Settings --> Devices & Services --> Entities
-i: Search for file (if this is your first file integration you will find an file entitiy with entity ID fo notify.file. If you already have the file integration - it may be named notify.file2
-j: click on the entity to open it up
-k: Click the wheel icon
-l: Edit the entity ID and add _hsbo_system_log (so the full entity ID must be notify.file_hsbo_system_log)
-m: Click Update to update the entity. 
+3. Set the correct entity name:
+   - Go to Settings → Devices & Services → Entities
+   - Search for "file"
+   - Find the newly created file entity (will be either `notify.file` or `notify.file2` if you have existing file integrations)
+   - Click on the entity to open it
+   - Click the settings (wheel) icon
+   - Edit the entity ID to: `notify.file_hsbo_system_log`
+   - Click Update to save changes
 
-Make sure the notify file is exactly:  notify.file_hsbo_system_log
+> ⚠️ **Important**: The entity ID must be exactly `notify.file_hsbo_system_log` for the system to work properly.
 
-4. To enable using the file logging for this project an input boolean (input_boolean.hsbo_logging_enabled) need to be turned ON - in order for this this logging functionality to work. 
+#### 4. Enable Logging
+- Locate the input boolean `input_boolean.hsbo_logging_enabled` in your Home Assistant instance
+- Set this to ON to enable the logging functionality
 
-> ⚠️ **Important**: The logging configuration is required for this project to function properly. The system uses file-based logging to track events and system state changes.
+> ⚠️ **Note**: The logging system won't function until this boolean is enabled.
 
 ## Installation
 
