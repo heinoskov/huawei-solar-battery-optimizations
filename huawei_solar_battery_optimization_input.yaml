@@ -57,3 +57,9 @@ input_text:
     name: HSBO Sensor for solar production power
   hsbo_ev_charger_status:
     name: HSBO Sensor for EV charging status
+
+# Define the input_boolean to enable/disable the logging to use the file integration for logging to a file
+input_boolean:
+  hsbo_logging_enabled:
+    name: HSBO Logging Enabled
+

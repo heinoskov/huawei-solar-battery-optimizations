@@ -1,0 +1,92 @@
+# hsbo_logging.yaml
+
+script:
+  hsbo_log_event:
+    alias: "HSBO Logging Event"
+    fields:
+      level:
+        description: "Log level (debug, info, warning, error)"
+        example: "info"
+      message:
+        description: "Message to log"
+        example: "Test message"
+      component:
+        description: "Component name"
+        example: "Battery Management"
+    sequence:
+      - variables:
+          # Check if the file notification entity exists
+          logging_enabled: "{{ states('input_boolean.hsbo_logging_enabled') == 'on' }}"
+      - choose:
+          # If file logging is available
+          - conditions: "{{ logging_enabled }}"
+            sequence:
+              - service: notify.send_message
+                data:
+                  entity_id: notify.file_hsbo_system_log
+                  message: '{"{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}", "{{ level | upper }}", "{{ component }}", "{{ message }}"}'
+          # Fallback to system_log
+        default:
+          - service: system_log.write
+            data:
+              message: "[{{ component }}] {{ message }}"
+              level: "{{ level }}"
+              logger: "hsbo"
+
+  hsbo_log_information:
+    alias: "HSBO Logging Information"
+    fields:
+      level:
+        description: "Log level (debug, info, warning, error)"
+        example: "info"
+      message:
+        description: "Message to log"
+        example: "Test message"
+      component:
+        description: "Component name"
+        example: "Battery Management"
+    sequence:
+      - variables:
+          # Check if the file notification entity exists
+          logging_enabled: "{{ states('input_boolean.hsbo_logging_enabled') == 'on' }}"
+      - choose:
+          # If file logging is available
+          - conditions: "{{ logging_enabled }}"
+            sequence:
+              - service: notify.send_message
+                data:
+                  entity_id: notify.file_hsbo_system_log
+                  message: | 
+                    { 
+                      "timestamp": "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}", 
+                      "level": "{{ level | upper }}", 
+                      "component": "{{ component }}", 
+                      "message": "{{ message }}" 
+                    }
+
+          # Fallback to system_log
+        default:
+          - service: system_log.write
+            data:
+              message: "[{{ component }}] {{ message }}"
+              level: "{{ level }}"
+              logger: "hsbo"
+
+
+# Test automation
+automation:
+  - id: hsbo_test_logging_event
+    alias: "HSBO Test Logging Event"
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition: []
+    action:
+      - delay:
+          minutes: 5
+      - service: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "Test Component"
+          message: "This is a test log message"
+    mode: single

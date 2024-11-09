@@ -203,6 +203,11 @@ script:
             - sensor.hsbo_house_consumption_*_energy_average_7d
             - sensor.hsbo_house_consumption_*_energy_average_14d
           keep_days: 0
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_reset_power_entities"
+          message: "HSBO: Purged entities in Recorder"
       - action: utility_meter.calibrate
         metadata: {}
         data:
@@ -233,6 +238,11 @@ script:
             - sensor.hsbo_house_consumption_21_22_energy_meter
             - sensor.hsbo_house_consumption_22_23_energy_meter
             - sensor.hsbo_house_consumption_23_00_energy_meter
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_reset_power_entities"
+          message: "HSBO: Calibrated Power Utility Meters"
 
   hsbo_calculate_energy_thresholds:
     alias: "HSBO Calculate Energy Thresholds"
@@ -261,8 +271,10 @@ script:
     # It makes decisions about whether to charge the battery, sell to the grid, or use the energy
     # for each hour of the day, and updates the relevant input numbers and texts.
     sequence:
-      - action: system_log.write
+      - action: script.hsbo_log_event
         data:
+          level: "info"
+          component: "hsbo_analyze_hourly_data"
           message: "HSBO: Starting hourly data analysis"
       - action: input_number.set_value
         target:
@@ -274,8 +286,10 @@ script:
           entity_id: input_number.hsbo_battery_charging
         data:
           value: 0
-      - action: system_log.write
+      - action: script.hsbo_log_event
         data:
+          level: "info"
+          component: "hsbo_analyze_hourly_data"
           message: "HSBO: Battery capacity sensor value: states(states('input_text.hsbo_batteries_state_of_capacity'))"
       - action: input_number.set_value
         target:
@@ -297,8 +311,10 @@ script:
       - action: homeassistant.update_entity
         target:
           entity_id: input_number.hsbo_remaining_charge
-      - action: system_log.write
+      - action: script.hsbo_log_event
         data:
+          level: "info"
+          component: "hsbo_analyze_hourly_data"
           message: "HSBO: Actual remaining charge set to: {{ states('input_number.hsbo_remaining_charge') }} kWh (Battery at states(states('input_text.hsbo_batteries_state_of_capacity')) %)"
       - repeat:
           count: 11
@@ -416,8 +432,10 @@ script:
           entity_id: input_number.hsbo_charge_start_time
         data:
           value: 0
-      - action: system_log.write
+      - action: script.hsbo_log_event
         data:
+          level: "info"
+          component: "hsbo_generate_summary"
           message: "HSBO: Starting hourly analysis to determine charge start time"
       - repeat:
           count: 11
@@ -425,8 +443,10 @@ script:
             - variables:
                 current_hour: "{{ repeat.index + 5 }}"
                 current_recommendation: "{{ states('input_text.hsbo_recommendation_' ~ current_hour) }}"
-            - action: system_log.write
+            - action: script.hsbo_log_event
               data:
+                level: "info"
+                component: "hsbo_generate_summary"
                 message: >
                   HSBO: Analyzing hour {{ current_hour }}:00 - Recommendation: {{ current_recommendation }}
             - choose:
@@ -442,9 +462,12 @@ script:
                         entity_id: input_number.hsbo_charge_start_time
                       data:
                         value: "{{ current_hour }}"
-                    - action: system_log.write
+                    - action: script.hsbo_log_event
                       data:
+                        level: "info"
+                        component: "hsbo_generate_summary"
                         message: "HSBO: Charge start time set to {{ current_hour }}:00 (First occurrence of 'Charge Battery')"
+
       - action: persistent_notification.create
         data:
           title: "HSBO Battery Optimization Summary"
@@ -482,8 +505,27 @@ script:
             {% else %}
             No specific battery charging time recommended. Consider selling to grid or manual adjustment.{{ '\n' -}}
             {% endif %}
-      - action: system_log.write
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_generate_summary"
+          message: >-
+            {% set grid_selling = states('input_number.hsbo_grid_selling') | float(0) %}
+            {% set battery_charging = states('input_number.hsbo_battery_charging') | float(0) %}
+            {% set actual_remaining_charge = states('input_number.hsbo_remaining_charge') | float(0) %}
+            {% set simulated_remaining_charge = states('input_number.hsbo_simulated_remaining_charge') | float(0) %}
+            {% set charge_start_hour = states('input_number.hsbo_charge_start_time') | int(0) %}
+            {
+              "summary": {"current_charge": "{{ actual_remaining_charge | round(2) }} kWh", "simulated_charge": "{{ simulated_remaining_charge | round(2) }} kWh", "grid_selling": "{{ grid_selling | round(2) }} kWh", "battery_charging": "{{ battery_charging | round(2) }} kWh"},
+              "status": {% if simulated_remaining_charge <= 0 %}"OPTIMAL"{% else %}"WARNING"{% endif %},
+              "warning_message": {% if simulated_remaining_charge <= 0 %}"Battery can be fully charged by 17:00"{% else %}"Battery may not be fully charged by 17:00"{% endif %},
+              "recommendations": [{% for hour in range(6, 17) %}"{{ states('input_text.hsbo_recommendation_' ~ hour) | replace(hour | string ~ ':00: ', hour | string ~ ':00 - ') }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+              "conclusion": {% if charge_start_hour > 0 %}"Start charging at {{ charge_start_hour }}:00"{% else %}"No specific charging time recommended"{% endif %}
+            }
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_generate_summary"
           message: "HSBO: Hourly analysis complete. Final charge start time: {{ states('input_number.hsbo_charge_start_time') }}:00"
 
   hsbo_set_working_mode_to_default_tou_periods:
@@ -516,6 +558,11 @@ script:
           entity_id: input_text.hsbo_current_priority_mode
         data:
           value: default_tou
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_set_working_mode_to_default_tou_periods"
+          message: "Huawei Solar Working Mode set to Default TOU with following periods: Charge 00:01-05:59, Discharge 06:00-10:00 and 17:00-23:59"
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to Default TOU
@@ -538,6 +585,11 @@ script:
           entity_id: input_text.hsbo_current_priority_mode
         data:
           value: fully_fed_to_grid
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_set_working_mode_to_fully_fed_to_grid"
+          message: "Huawei Solar Working Mode set to Fully Fed to Grid"
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to Fully Fed to Grid
@@ -559,6 +611,11 @@ script:
           entity_id: input_text.hsbo_current_priority_mode
         data:
           value: maximise_self_consumption
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_set_working_mode_to_maximise_self_consumption"
+          message: "Huawei Solar Working Mode set to Maximise Self Consumption"
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to Maximise Self Consumption
@@ -591,6 +648,11 @@ script:
           entity_id: input_text.hsbo_current_priority_mode
         data:
           value: tou_battery_charge_disabled
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_set_morning_tou_mode_disable_battery_charge"
+          message: "Huawei Solar set to Morning TOU Mode with Disabled Battery Discharge"
       - action: notify.notify
         data:
           message: Huawei Solar set to Morning TOU Mode with Disabled Battery Discharge
@@ -625,6 +687,11 @@ script:
           entity_id: input_text.hsbo_current_priority_mode
         data:
           value: tou_battery_charge_discharge_disabled
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_set_working_mode_to_tou_and_disable_battery_charging_and_discharging"
+          message: "Huawei Solar Working Mode set to TOU with Disabled Battery Charging and Discharging"
       - action: notify.notify
         data:
           message: Huawei Solar Working Mode set to TOU with Disabled Battery Charging and Discharging
@@ -640,6 +707,11 @@ script:
         data:
           device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
           power_percentage: 0
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_disable_grid_export"
+          message: "HSBO: Solar Inverter GRID EXPORT disabled"
       - action: notify.notify
         data:
           message: "HSBO: Solar Inverter GRID EXPORT disabled"
@@ -655,6 +727,11 @@ script:
         data:
           device_id: "{{ states('input_text.hsbo_device_id_inverter') }}"
           power_percentage: 100
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_enable_grid_export"
+          message: "HSBO: Solar Inverter GRID EXPORT enabled"
       - action: notify.notify
         data:
           message: "HSBO: Solar Inverter GRID EXPORT enabled"
@@ -664,8 +741,10 @@ script:
   hsbo_calculate_next_day_charging:
     alias: "HSBO Calculate Next Day Charging Strategy"
     sequence:
-      - action: system_log.write
+      - action: script.hsbo_log_event
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: "HSBO: Starting next day charging calculation"
 
       # Get current battery SoC and system parameters
@@ -675,9 +754,10 @@ script:
           current_battery_capacity: "{{ (current_battery_soc / 100 * battery_max_capacity) | round(2) }}"
           battery_min_capacity: "{{ battery_max_capacity * 0.05 }}"  # 5% minimum capacity
           current_month: "{{ now().month }}"
-
-      - action: system_log.write
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: >
             HSBO Debug: Current battery SoC: {{ current_battery_soc }}%,
             Capacity: {{ current_battery_capacity }} kWh,
@@ -1018,38 +1098,40 @@ script:
             {{ total.value | round(3) }}
 
       # Debug logging
-      - action: system_log.write
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: >
-            HSBO Debug: Hourly surplus values (solar forecast tomorrow - average consumption):{{ '\n' -}}
-            00:00: {{ surplus_hour_00 }} kWh,{{ '\n' -}}
-            01:00: {{ surplus_hour_01 }} kWh,{{ '\n' -}}
-            02:00: {{ surplus_hour_02 }} kWh,{{ '\n' -}}
-            03:00: {{ surplus_hour_03 }} kWh,{{ '\n' -}}
-            04:00: {{ surplus_hour_04 }} kWh,{{ '\n' -}}
-            05:00: {{ surplus_hour_05 }} kWh,{{ '\n' -}}
-            06:00: {{ surplus_hour_06 }} kWh,{{ '\n' -}}
-            07:00: {{ surplus_hour_07 }} kWh,{{ '\n' -}}
-            08:00: {{ surplus_hour_08 }} kWh,{{ '\n' -}}
-            09:00: {{ surplus_hour_09 }} kWh,{{ '\n' -}}
-            10:00: {{ surplus_hour_10 }} kWh,{{ '\n' -}}
-            11:00: {{ surplus_hour_11 }} kWh,{{ '\n' -}}
-            12:00: {{ surplus_hour_12 }} kWh,{{ '\n' -}}
-            13:00: {{ surplus_hour_13 }} kWh,{{ '\n' -}}
-            14:00: {{ surplus_hour_14 }} kWh,{{ '\n' -}}
-            15:00: {{ surplus_hour_15 }} kWh,{{ '\n' -}}
-            16:00: {{ surplus_hour_16 }} kWh,{{ '\n' -}}
-            17:00: {{ surplus_hour_17 }} kWh,{{ '\n' -}}
-            18:00: {{ surplus_hour_18 }} kWh,{{ '\n' -}}
-            19:00: {{ surplus_hour_19 }} kWh,{{ '\n' -}}
-            20:00: {{ surplus_hour_20 }} kWh,{{ '\n' -}}
-            21:00: {{ surplus_hour_21 }} kWh,{{ '\n' -}}
-            22:00: {{ surplus_hour_22 }} kWh,{{ '\n' -}}
-            23:00: {{ surplus_hour_23 }} kWh,{{ '\n' -}}
-            HSBO: Tomorrow's total forecast: {{ tomorrow_forecast }} kWh{{ '\n' -}}{{ '\n' -}}
-            Surplus PV energy between 6am-10am: {{ surplus_energy_6am_10am }} kWh
-            Surplus PV energy between 10am-5pm: {{ surplus_energy_10am_5pm }} kWh
-            Surplus PV energy between 5pm-9pm: {{ surplus_energy_5pm_9pm }} kWh
+            HSBO Debug: Hourly surplus values (solar forecast tomorrow - average consumption):,
+            00:00: {{ surplus_hour_00 }} kWh,
+            01:00: {{ surplus_hour_01 }} kWh,
+            02:00: {{ surplus_hour_02 }} kWh,
+            03:00: {{ surplus_hour_03 }} kWh,
+            04:00: {{ surplus_hour_04 }} kWh,
+            05:00: {{ surplus_hour_05 }} kWh,
+            06:00: {{ surplus_hour_06 }} kWh,
+            07:00: {{ surplus_hour_07 }} kWh,
+            08:00: {{ surplus_hour_08 }} kWh,
+            09:00: {{ surplus_hour_09 }} kWh,
+            10:00: {{ surplus_hour_10 }} kWh,
+            11:00: {{ surplus_hour_11 }} kWh,
+            12:00: {{ surplus_hour_12 }} kWh,
+            13:00: {{ surplus_hour_13 }} kWh,
+            14:00: {{ surplus_hour_14 }} kWh,
+            15:00: {{ surplus_hour_15 }} kWh,
+            16:00: {{ surplus_hour_16 }} kWh,
+            17:00: {{ surplus_hour_17 }} kWh,
+            18:00: {{ surplus_hour_18 }} kWh,
+            19:00: {{ surplus_hour_19 }} kWh,
+            20:00: {{ surplus_hour_20 }} kWh,
+            21:00: {{ surplus_hour_21 }} kWh,
+            22:00: {{ surplus_hour_22 }} kWh,
+            23:00: {{ surplus_hour_23 }} kWh,
+            HSBO: Tomorrow's total forecast: {{ tomorrow_forecast }} kWh,
+            Surplus PV energy between 6am-10am: {{ surplus_energy_6am_10am }} kWh,
+            Surplus PV energy between 10am-5pm: {{ surplus_energy_10am_5pm }} kWh,
+            Surplus PV energy between 5pm-9pm: {{ surplus_energy_5pm_9pm }} kWh,
 
       # Calculate solar charging capacity and energy needs
       - variables:
@@ -1100,8 +1182,10 @@ script:
             {{ energy_need_9pm_midnight | round(2) }}
           total_energy_need: "{{ energy_need_0am_6am + energy_need_6am_10am + energy_need_10am_5pm + energy_need_5pm_9pm + energy_need_9pm_midnight}}"
 
-      - action: system_log.write
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: >
             HSBO Debug: Solar charging capacity: {{ solar_charging_capacity }} kWh,
             Energy need between 0am-6am: {{ energy_need_0am_6am }} kWh,
@@ -1190,8 +1274,10 @@ script:
           required_grid_charge: "{{ [required_charge_adjusted - solar_charging_capacity, 0] | max | float(0) }}"
           ac_charge_cutoff_percentage: "{{ ((required_grid_charge / battery_max_capacity * 100) + (battery_min_capacity / battery_max_capacity * 100)) | round(0) | float(0) }}"
 
-      - action: system_log.write
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: >
             HSBO Debug: Total energy need: {{ total_energy_need }} kWh,
             Usable battery capacity: {{ usable_battery_capacity }} kWh,
@@ -1217,9 +1303,10 @@ script:
             {% else %}
               Maximise Self Consumption
             {% endif %}
-
-      - action: system_log.write
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: >
             HSBO Debug: Final AC charge cutoff SOC: {{ ac_charge_cutoff_soc }}%,
             Recommended working mode: {{ recommended_working_mode }}
@@ -1248,9 +1335,11 @@ script:
           entity_id: input_text.hsbo_recommended_working_mode
         data:
           value: "{{ recommended_working_mode }}"
-
-      - action: system_log.write
+          
+      - action: script.hsbo_log_information
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging"
           message: >
             HSBO: Next day charging calculation complete.
             Solar charging capacity: {{ solar_charging_capacity }} kWh,
@@ -1275,8 +1364,24 @@ automation:
         data:
           value: 0
       - action: script.hsbo_calculate_energy_thresholds
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_daily_battery_optimization"
+          message: "HSBO: Executed Calculate Energy Threshold script at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
       - action: script.hsbo_analyze_hourly_data
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_daily_battery_optimization"
+          message: "HSBO: Executed Analyse Hourly Data script at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
       - action: script.hsbo_generate_summary
+      - action: script.hsbo_log_event
+        data:
+          level: "info"
+          component: "hsbo_daily_battery_optimization"
+          message: "HSBO: Executed Generate Summary script at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
 
   - id: hsbo_set_battery_charge_time
     alias: "HSBO Set Battery Charge Date and Time"
@@ -1296,15 +1401,20 @@ automation:
                   entity_id: input_datetime.hsbo_battery_charge_datetime
                 data:
                   datetime: "{{ states('sensor.hsbo_battery_charge_datetime') }}"
-              - action: system_log.write
+              - action: script.hsbo_log_information
                 data:
+                  level: "info"
+                  component: "hsbo_set_battery_charge_time"
                   message: >
                     HSBO: Set battery charge date and time to {{ states('sensor.hsbo_battery_charge_datetime') }}.
                     Current time: {{ now().strftime('%Y-%m-%d %H:%M:%S') }}
         default:
-          - action: system_log.write
+          - action: script.hsbo_log_event
             data:
+              level: "info"
+              component: "hsbo_set_battery_charge_time"
               message: "HSBO: No specific charge start time set, staying with Default TOU settings"
+
 
   - id: hsbo_calculate_next_day_charging_at_9_pm
     alias: "HSBO Calculate Next Day Charging at 9 PM"
@@ -1315,8 +1425,10 @@ automation:
       - action: script.turn_on
         target:
           entity_id: script.hsbo_calculate_next_day_charging
-      - action: system_log.write
+      - action: script.hsbo_log_event
         data:
+          level: "info"
+          component: "hsbo_calculate_next_day_charging_at_9_pm"
           message: "HSBO: Executed Calculate Next Day Charging script at {{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
     mode: single
 
@@ -1334,11 +1446,19 @@ automation:
           - binary_sensor.hsbo_negative_spot_price
         to:
         id: price_change
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 10
       - platform: state
         entity_id:
           - binary_sensor.hsbo_ev_charging
         to: 'on'
         id: ev_charging_start
+        for:
+          hours: 0
+          minutes: 0
+          seconds: 15
       - platform: state
         entity_id:
           - binary_sensor.hsbo_ev_charging
@@ -1346,7 +1466,7 @@ automation:
         id: ev_charging_stop
         for:
           hours: 0
-          minutes: 1
+          minutes: 2
           seconds: 0
     action:
       - variables:
@@ -1371,8 +1491,10 @@ automation:
               - action: script.turn_on
                 target:
                   entity_id: script.hsbo_set_working_mode_to_tou_and_disable_battery_charging_and_discharging
-              - action: system_log.write
+              - action: script.hsbo_log_event
                 data:
+                  level: "info"
+                  component: "hsbo_comprehensive_daily_mode_management"
                   message: "HSBO: Changed to TOU with Disabled Battery Charging and Discharging due to EV charging start at {{ now().strftime('%H:%M:%S') }}"
 
           # EV Charging Stop: Revert to recommended mode
@@ -1383,8 +1505,10 @@ automation:
               - action: script.turn_on
                 target:
                   entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-              - action: system_log.write
+              - action: script.hsbo_log_event
                 data:
+                  level: "info"
+                  component: "hsbo_comprehensive_daily_mode_management"
                   message: "HSBO: Reverted to Default TOU mode due to EV charging stop at {{ now().strftime('%H:%M:%S') }}"
 
           # Midnight: Set mode based on evening calculation (only if not EV charging)
@@ -1403,8 +1527,10 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Set to Default TOU Mode at midnight based on evening calculation"
                   - conditions:
                       - condition: template
@@ -1413,9 +1539,18 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Set to Maximise Self Consumption at midnight based on evening calculation"
+                  - conditions:
+                    sequence:
+                      - action: script.hsbo_log_event
+                        data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
+                          message: "HSBO: changes in midnight check required at {{ now().strftime('%H:%M:%S') }}"
 
           # Manage inverter export based on spot price
           - conditions:
@@ -1448,6 +1583,13 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_enable_grid_export
+                  - conditions:
+                    sequence:
+                      - action: script.hsbo_log_event
+                        data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
+                          message: "HSBO: changes in price check required at {{ now().strftime('%H:%M:%S') }}"
 
           # Regular checks throughout the day (only if not EV charging)
           - conditions:
@@ -1473,8 +1615,10 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Changed to Default TOU mode at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # When solar production > house load, before optimal battery charge time
@@ -1496,8 +1640,10 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_morning_tou_mode_disable_battery_charge
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Changed to TOU with battery charge disabled at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # At or after optimal battery charge time, but before 5 PM
@@ -1518,8 +1664,10 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Changed to Maximise Self Consumption at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # After 5 PM (Winter/Spring months: September to April)
@@ -1534,8 +1682,10 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_default_tou_periods
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Changed to Default TOU Mode (Winter/Spring months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
 
                   # After 5 PM (Summer months: May to August)
@@ -1550,9 +1700,18 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_set_working_mode_to_maximise_self_consumption
-                      - action: system_log.write
+                      - action: script.hsbo_log_event
                         data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
                           message: "HSBO: Changed to Maximise Self Consumption (Summer months) at {{ now().strftime('%H:%M:%S') }} (Differential EMA: {{ differential_ema }} W)"
+                  - conditions:
+                    sequence:
+                      - action: script.hsbo_log_event
+                        data:
+                          level: "info"
+                          component: "hsbo_comprehensive_daily_mode_management"
+                          message: "HSBO: changes in regular check required at {{ now().strftime('%H:%M:%S') }}"
 
               # Check and manage inverter export during regular checks
               - choose:
@@ -1578,6 +1737,12 @@ automation:
                       - action: script.turn_on
                         target:
                           entity_id: script.hsbo_enable_grid_export
+        default:
+          - action: script.hsbo_log_event
+            data:
+              level: "info"
+              component: "hsbo_comprehensive_daily_mode_management"
+              message: "HSBO: No changes required at {{ now().strftime('%H:%M:%S') }}"
     trace:
       stored_traces: 300
     mode: single

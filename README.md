@@ -1,5 +1,7 @@
 # Huawei Solar Battery Optimization
 
+> ⚠️ **IMPORTANT**: Before installing, please ensure you complete all steps in the [Required Configuration](#required-configuration) section. The system requires specific logging setup to function properly.
+
 Maximize the potential of your Huawei solar battery system with this powerful Home Assistant package. By intelligently optimizing battery usage, solar production, and grid interaction, this solution helps you:
 
 - Significantly reduce your energy costs
@@ -47,11 +49,51 @@ To use this package, you need the following integrations:
 - [Huawei Solar integration by wlcrs](https://github.com/wlcrs/huawei_solar)
 - [Solcast integration by oziee](https://github.com/BJReplay/ha-solcast-solar)
 - [Energi Data Service integration by MTrab](https://github.com/MTrab/energidataservice)
+- [File integration](https://www.home-assistant.io/integrations/file/) for system logging
 
 ### Optional integrations 
 - [Huawei Solar PEES package by JensenNick](https://github.com/JensenNick/huawei_solar_pees) (optional but recommended)
-- [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)<br><br>
+- [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)
 
+### Required Configuration
+
+> ⚠️ **CRITICAL**: These steps must be completed before installing the package.
+
+1. Create a logging directory under your Home Assistant config folder:
+```bash
+mkdir /config/hsbo_logging
+```
+
+2. Add the following to your `configuration.yaml`:
+```yaml
+homeassistant:
+  allowlist_external_dirs:
+    - "/config/hsbo_logging"
+```
+
+3. Ensure the File integration is properly configured in Home Assistant.
+a. In Home Assistant --> Settings --> Devices & Services
+b. Add Integration
+c. Type File
+d. Select "Set up a notification service"
+e. In the file path type /config/hsbo_logging/hsbo_system.log (do NOT select timestamp. Leave it OFF)
+f. Click Submit (you will be notifed with Success! and that the configuration for the file is created pointed to the path)
+
+Now, Home Assistant will not create a proper naming for this notify entity. So we edit the this and give it a proper name:
+
+g: Click Finish
+h: In Home Assistant --> Settings --> Devices & Services --> Entities
+i: Search for file (if this is your first file integration you will find an file entitiy with entity ID fo notify.file. If you already have the file integration - it may be named notify.file2
+j: click on the entity to open it up
+k: Click the wheel icon
+l: Edit the entity ID and add _hsbo_system_log (so the full entity ID must be notify.file_hsbo_system_log)
+m: Click Update to update the entity. 
+
+Make sure the notify file is exactly:  notify.file_hsbo_system_log
+
+4. To enable using the file logging for this project an input boolean (input_boolean.hsbo_logging_enabled) need to be turned ON - in order for this this logging functionality to work. 
+
+> ⚠️ **Important**: The logging configuration is required for this project to function properly. The system uses file-based logging to track events and system state changes.
 
 ## Installation
 
@@ -293,6 +335,12 @@ Please note, if you already has existing automations configuring the Huawai work
 ## What's New
 
 This section highlights key updates and new features added to the Huawei Solar Battery Optimization package.
+
+### November 9, 2024
+- Implemented new file-based logging system
+  - Replaced system_log.write with notify.send_message for improved logging capabilities
+  - Added new logging configuration requirements
+  - Created hsbo_logging.yaml package for centralized logging management
 
 ### October 2, 2024
 - Updated calculation logic for the hsbo_calculate_next_day_charging automation to use power statistics sensors for more accurate calculations to determine AC Charge cutoff SOC for night charging.
