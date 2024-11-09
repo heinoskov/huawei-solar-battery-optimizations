@@ -1711,7 +1711,7 @@ automation:
                         data:
                           level: "info"
                           component: "hsbo_comprehensive_daily_mode_management"
-                          message: "HSBO: changes in regular check required at {{ now().strftime('%H:%M:%S') }}"
+                          message: "HSBO: No changes in regular check required at {{ now().strftime('%H:%M:%S') }}"
 
               # Check and manage inverter export during regular checks
               - choose:
