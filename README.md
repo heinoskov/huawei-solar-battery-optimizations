@@ -106,18 +106,34 @@ homeassistant:
 
 ## Installation
 
-1. Place the following YAML files in your Home Assistant packages directory (usually `/config/packages/`):
+### 1. Enable Packages in Home Assistant
+First, ensure your Home Assistant instance is configured to use packages by adding the following to your `configuration.yaml`:
+
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+If you don't have a `packages` directory in your Home Assistant configuration directory, create it:
+```bash
+mkdir /config/packages
+```
+
+### 2. Install Package Files
+Place the following YAML files in your Home Assistant packages directory (`/config/packages/`):
    - `huawei_solar_battery_optimization.yaml` (main package with scripts and automations)
    - `huawei_solar_battery_optimization_input.yaml` (user-configured input parameters)
    - `huawei_solar_battery_optimization_power.yaml` (power and statistics sensors)
    - `huawei_solar_battery_optimization_logging.yaml` (logging configuration)
    - `huawei_solar_battery_optimization_pricing.yaml` (pricing-related configurations)
 
-2. Ensure all files are properly placed and named exactly as shown above.
+### 3. Restart Home Assistant
+After placing all files and updating the configuration, restart Home Assistant to load the new packages.
 
-3. Restart Home Assistant to load the new packages.
-
-> ⚠️ **Important**: All five package files are required for the system to function properly. Make sure to install all of them.
+> ⚠️ **Important**: 
+> - All five package files are required for the system to function properly
+> - The packages configuration in `configuration.yaml` is mandatory
+> - Restart Home Assistant after making these changes
 
 For more information on using packages in Home Assistant, see the [official documentation](https://www.home-assistant.io/docs/configuration/packages/).<br><br>
 
