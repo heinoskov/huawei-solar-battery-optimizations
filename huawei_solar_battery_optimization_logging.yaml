@@ -90,3 +90,28 @@ automation:
           component: "Test Component"
           message: "This is a test log message"
     mode: single
+  
+  # Rotate log file automation when its surpasses 5 MB
+  - id: hsbo_rotate_log_file
+    alias: "HSBO Rotate Log File"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.hsbo_log_file_size
+        above: 5000000  # Trigger if file is above 5 MB aka 5000000 bytes
+    condition:
+      - condition: state
+        entity_id: input_boolean.hsbo_logging_enabled
+        state: "on"  # Only run if logging is enabled
+    action:
+      - action: shell_command.rotate_hsbo_log_file
+    mode: single
+
+# sensor:
+#   - platform: command_line
+#     name: hsbo_log_file_size
+#     command: 'stat -c %s /config/hsbo_logging/hsbo_system.log'
+#     unit_of_measurement: "bytes"
+#     scan_interval: 60  # Polls every 60 seconds, adjust as needed
+
+# shell_command:
+#   rotate_hsbo_log_file: "mv /config/hsbo_logging/hsbo_system.log /config/hsbo_logging/hsbo_system_$(date +'%Y%m%d%H%M%S').log && touch /config/hsbo_logging/hsbo_system.log && find /config/hsbo_logging -name 'hsbo_system_*.log' -mtime +30 -exec rm {} \\;"

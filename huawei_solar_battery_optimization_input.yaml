@@ -26,40 +26,198 @@ input_number:
     unit_of_measurement: kWh
     icon: mdi:flash
 
+  # Consumption Weight Parameters - Used to calculate weighted average consumption predictions
+  # These weights determine how much influence each time period has on the prediction
+  # The weights should sum to 100%
+  hsbo_consumption_weight_3d:
+    name: "HSBO 3-Day Consumption Weight"
+    min: 0
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 60   # Recent consumption has highest weight
+    icon: mdi:percent
+    mode: box
+  
+  hsbo_consumption_weight_7d:
+    name: "HSBO 7-Day Consumption Weight"
+    min: 0
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 30   # Medium-term patterns have moderate influence
+    icon: mdi:percent
+    mode: box
+  
+  hsbo_consumption_weight_14d:
+    name: "HSBO 14-Day Consumption Weight"
+    min: 0
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 10   # Long-term patterns have lowest weight
+    icon: mdi:percent
+    mode: box
+
+  # Battery Configuration
+  # Defines the energy loss during battery charge/discharge cycles
+  # Used to calculate whether grid charging is economically beneficial
+  hsbo_battery_conversion_loss:
+    name: "HSBO Battery Conversion Loss"
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    initial: 20   # Typical conversion loss for battery systems
+    icon: mdi:battery-negative
+    mode: box
+
+  # Dynamic Update Thresholds - Solar Production
+  # Triggers strategy updates when solar forecast deviates significantly
+  hsbo_solar_deviation_threshold:
+    name: "HSBO Solar Forecast Deviation Threshold"
+    min: 0
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 20   # Triggers update if forecast changes by 20% or more
+    icon: mdi:solar-power
+    mode: box
+
+  hsbo_solar_deviation_duration:
+    name: "HSBO Solar Deviation Duration"
+    min: 1
+    max: 12
+    step: 1
+    unit_of_measurement: "hours"
+    initial: 2    # Minimum duration of deviation before triggering update
+    icon: mdi:clock-outline
+    mode: box
+
+  # Dynamic Update Thresholds - Consumption Pattern
+  # Triggers strategy updates when consumption patterns deviate from predictions
+  hsbo_consumption_deviation_threshold:
+    name: "HSBO Consumption Deviation Threshold"
+    min: 0
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 30   # Triggers update if consumption deviates by 30% or more
+    icon: mdi:chart-bell-curve-cumulative
+    mode: box
+
+  hsbo_consumption_deviation_duration:
+    name: "HSBO Consumption Deviation Duration"
+    min: 1
+    max: 12
+    step: 1
+    unit_of_measurement: "hours"
+    initial: 1    # Minimum duration of deviation before triggering update
+    icon: mdi:clock-alert-outline
+    mode: box
+
+  # Dynamic Update Thresholds - Price Changes
+  # Triggers strategy updates when electricity prices change significantly
+  hsbo_price_deviation_threshold:
+    name: "HSBO Price Deviation Threshold"
+    min: 0
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    initial: 25   # Triggers update if price changes by 25% or more
+    icon: mdi:currency-eur
+    mode: box
+
+  # Price Thresholds - Used to determine optimal charging and selling periods
+  hsbo_price_threshold_high:
+    name: "HSBO Price Threshold High"
+    min: 0
+    max: 10
+    step: 0.1
+    unit_of_measurement: "DKK/kWh"
+    initial: 3.0  # Price above which selling to grid is highly favorable
+    icon: mdi:trending-up
+    mode: box
+
+  hsbo_price_threshold_low:
+    name: "HSBO Price Threshold Low"
+    min: 0
+    max: 10
+    step: 0.1
+    unit_of_measurement: "DKK/kWh"
+    initial: 0.5  # Price below which grid charging is favorable
+    icon: mdi:trending-down
+    mode: box
+
+  # Used to adjust solar production forecasts for more conservative estimates
+  # Default 0.9 means using 90% of forecasted production for calculations
+  hsbo_solar_production_factor:
+    name: "HSBO Solar Production Factor"
+    min: 0.5
+    max: 1
+    step: 0.05
+    unit_of_measurement: ""
+    initial: 0.9
+    icon: mdi:solar-power
+    mode: box
+
 input_text:
   hsbo_device_id_inverter:
     name: HSBO Device ID for Huawei Solar device - Inverter
+    icon: mdi:solar-panel
   hsbo_device_id_batteries:
     name: HSBO Device ID for Huawei Solar device - Batteries
+    icon: mdi:home-battery
   hsbo_batteries_grid_charge_cutoff_soc:
     name: HSBO Sensor for number.batteries_grid_charge_cutoff_soc
+    icon: mdi:battery-80
+  hsbo_batteries_maximum_charging_power:
+    name: "HSBO Sensor for number.batteries_maximum_charging_power"
+    icon: mdi:battery-plus
+  hsbo_batteries_maximum_discharging_power:
+    name: "HSBO Sensor for number.batteries_maximum_discharging_power"
+    icon: mdi:battery-minus
   hsbo_batteries_working_mode:
     name: HSBO Sensor for select.batteries_working_mode
+    icon: mdi:auto-mode
   hsbo_batteries_excess_pv_energy_use_in_tou:
     name: HSBO Sensor for select.batteries_excess_pv_energy_use_in_tou
+    icon: mdi:form-select
   hsbo_energi_data_service_total_price:
     name: HSBO Sensor for sensor.energi_data_service_total_price
+    icon: mdi:invoice-text-arrow-left
   hsbo_energi_data_service_spot_price:
     name: HSBO Sensor for sensor.energi_data_service_spot_price
+    icon: mdi:invoice-text-arrow-left-outline
   hsbo_energi_data_service_sales_price:
     name: HSBO Sensor for sensor.energi_data_service_sales_price
+    icon: mdi:invoice-text-arrow-right-outline
   hsbo_solcast_pv_forecast_forecast_today:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_today
+    icon: mdi:weather-sunny
   hsbo_solcast_pv_forecast_forecast_tomorrow:
     name: HSBO Sensor for sensor.solcast_pv_forecast_forecast_tomorrow
+    icon: mdi:weather-sunny
   hsbo_batteries_state_of_capacity:
     name: HSBO Sensor for batteries_state_of_capacity
+    icon: mdi:battery-outline
   hsbo_inverter_active_power_control:
     name: HSBO Sensor for sensor.inverter_active_power_control
+    icon: mdi:solar-power
   hsbo_house_consumption_power:
     name: HSBO Sensor for house consumption power
+    icon: mdi:home-lightning-bolt
   hsbo_solar_production_power:
     name: HSBO Sensor for solar production power
+    icon: mdi:solar-power
   hsbo_ev_charger_status:
     name: HSBO Sensor for EV charging status
+    icon: mdi:ev-station
 
 # Define the input_boolean to enable/disable the logging to use the file integration for logging to a file
 input_boolean:
   hsbo_logging_enabled:
     name: HSBO Logging Enabled
+    icon: mdi:clipboard-check-outline
+
 

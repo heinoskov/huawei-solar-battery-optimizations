@@ -147,6 +147,1100 @@ template:
         unit_of_measurement: "W"
         state: "{{ states('sensor.hsbo_house_consumption_power') if now().hour == 23 else 0.0 }}"
 
+
+      # Weighted prediction sensor with corrected attributes
+      - name: "HSBO Weighted Consumption 00-01"
+        unique_id: "hsbo_weighted_consumption_00_01"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_00_01_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_00_01_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_00_01_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_00_01_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_00_01_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_00_01_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_00_01_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_00_01_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_00_01_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 01-02"
+        unique_id: "hsbo_weighted_consumption_01_02"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_01_02_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_01_02_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_01_02_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_01_02_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_01_02_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_01_02_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_01_02_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_01_02_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_01_02_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 02-03"
+        unique_id: "hsbo_weighted_consumption_02_03"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_02_03_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_02_03_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_02_03_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_02_03_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_02_03_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_02_03_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_02_03_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_02_03_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_02_03_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 03-04"
+        unique_id: "hsbo_weighted_consumption_03_04"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_03_04_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_03_04_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_03_04_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_03_04_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_03_04_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_03_04_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_03_04_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_03_04_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_03_04_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 04-05"
+        unique_id: "hsbo_weighted_consumption_04_05"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_04_05_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_04_05_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_04_05_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_04_05_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_04_05_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_04_05_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_04_05_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_04_05_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_04_05_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 05-06"
+        unique_id: "hsbo_weighted_consumption_05_06"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_05_06_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_05_06_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_05_06_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_05_06_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_05_06_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_05_06_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_05_06_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_05_06_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_05_06_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 06-07"
+        unique_id: "hsbo_weighted_consumption_06_07"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_06_07_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_06_07_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_06_07_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_06_07_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_06_07_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_06_07_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_06_07_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_06_07_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_06_07_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 07-08"
+        unique_id: "hsbo_weighted_consumption_07_08"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_07_08_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_07_08_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_07_08_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_07_08_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_07_08_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_07_08_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_07_08_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_07_08_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_07_08_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+
+      - name: "HSBO Weighted Consumption 08-09"
+        unique_id: "hsbo_weighted_consumption_08_09"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_08_09_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_08_09_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_08_09_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_08_09_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_08_09_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_08_09_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_08_09_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_08_09_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_08_09_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 09-10"
+        unique_id: "hsbo_weighted_consumption_09_10"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_09_10_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_09_10_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_09_10_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_09_10_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_09_10_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_09_10_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_09_10_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_09_10_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_09_10_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+          
+      - name: "HSBO Weighted Consumption 10-11"
+        unique_id: "hsbo_weighted_consumption_10_11"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_10_11_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_10_11_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_10_11_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_10_11_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_10_11_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_10_11_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_10_11_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_10_11_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_10_11_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+          
+      - name: "HSBO Weighted Consumption 11-12"
+        unique_id: "hsbo_weighted_consumption_11_12"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_11_12_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_11_12_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_11_12_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_11_12_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_11_12_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_11_12_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_11_12_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_11_12_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_11_12_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 12-13"
+        unique_id: "hsbo_weighted_consumption_12_13"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_12_13_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_12_13_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_12_13_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_12_13_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_12_13_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_12_13_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_12_13_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_12_13_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_12_13_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 13-14"
+        unique_id: "hsbo_weighted_consumption_13_14"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_13_14_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_13_14_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_13_14_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_13_14_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_13_14_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_13_14_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_13_14_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_13_14_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_13_14_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 14-15"
+        unique_id: "hsbo_weighted_consumption_14_15"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_14_15_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_14_15_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_14_15_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_14_15_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_14_15_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_14_15_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_14_15_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_14_15_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_14_15_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+          
+      - name: "HSBO Weighted Consumption 15-16"
+        unique_id: "hsbo_weighted_consumption_15_16"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_15_16_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_15_16_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_15_16_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_15_16_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_15_16_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_15_16_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_15_16_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_15_16_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_15_16_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 16-17"
+        unique_id: "hsbo_weighted_consumption_16_17"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_16_17_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_16_17_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_16_17_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_16_17_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_16_17_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_16_17_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_16_17_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_16_17_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_16_17_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 17-18"
+        unique_id: "hsbo_weighted_consumption_17_18"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_17_18_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_17_18_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_17_18_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_17_18_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_17_18_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_17_18_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_17_18_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_17_18_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_17_18_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 18-19"
+        unique_id: "hsbo_weighted_consumption_18_19"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_18_19_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_18_19_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_18_19_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_18_19_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_18_19_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_18_19_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_18_19_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_18_19_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_18_19_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+
+      - name: "HSBO Weighted Consumption 19-20"
+        unique_id: "hsbo_weighted_consumption_19_20"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_19_20_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_19_20_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_19_20_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_19_20_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_19_20_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_19_20_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_19_20_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_19_20_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_19_20_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+
+      - name: "HSBO Weighted Consumption 20-21"
+        unique_id: "hsbo_weighted_consumption_20_21"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_20_21_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_20_21_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_20_21_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_20_21_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_20_21_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_20_21_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_20_21_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_20_21_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_20_21_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 21-22"
+        unique_id: "hsbo_weighted_consumption_21_22"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_21_22_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_21_22_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_21_22_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_21_22_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_21_22_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_21_22_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_21_22_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_21_22_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_21_22_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 22-23"
+        unique_id: "hsbo_weighted_consumption_22_23"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_22_23_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_22_23_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_22_23_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_22_23_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_22_23_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_22_23_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_22_23_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_22_23_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_22_23_energy_average_14d') }}"
+            }
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+      
+      - name: "HSBO Weighted Consumption 23-00"
+        unique_id: "hsbo_weighted_consumption_23_00"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+          
+          {% set avg_3d = states('sensor.hsbo_house_consumption_23_00_energy_average_3d') | float(0) %}
+          {% set avg_7d = states('sensor.hsbo_house_consumption_23_00_energy_average_7d') | float(0) %}
+          {% set avg_14d = states('sensor.hsbo_house_consumption_23_00_energy_average_14d') | float(0) %}
+          
+          {{ ((avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d)) | round(3) }}
+        attributes:
+          three_day_component: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set avg_3d = states('sensor.hsbo_house_consumption_23_00_energy_average_3d') | float(0) %}
+            {{ (avg_3d * w3d) | round(3) }}
+          seven_day_component: >
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_23_00_energy_average_7d') | float(0) %}
+            {{ (avg_7d * w7d) | round(3) }}
+          fourteen_day_component: >
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_23_00_energy_average_14d') | float(0) %}
+            {{ (avg_14d * w14d) | round(3) }}
+          raw_values: >
+            {
+              "three_day": "{{ states('sensor.hsbo_house_consumption_23_00_energy_average_3d') }}",
+              "seven_day": "{{ states('sensor.hsbo_house_consumption_23_00_energy_average_7d') }}",
+              "fourteen_day": "{{ states('sensor.hsbo_house_consumption_23_00_energy_average_14d') }}"
+            } 
+          weights: >
+            {
+              "three_day": "{{ states('input_number.hsbo_consumption_weight_3d') }}",
+              "seven_day": "{{ states('input_number.hsbo_consumption_weight_7d') }}",
+              "fourteen_day": "{{ states('input_number.hsbo_consumption_weight_14d') }}"
+            }
+
+      # Validation sensor
+      - name: "HSBO Weighted Consumption Validation"
+        unique_id: "hsbo_weighted_consumption_validation"
+        state: >
+          {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) %}
+          {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) %}
+          {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) %}
+          {% set total = w3d + w7d + w14d %}
+          {% if total == 100 %}
+            valid
+          {% else %}
+            invalid (total: {{ total }}%)
+          {% endif %}
+        attributes:
+          total_weight: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) %}
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) %}
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) %}
+            {{ w3d + w7d + w14d }}
+          issue: >
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) %}
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) %}
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) %}
+            {% set total = w3d + w7d + w14d %}
+            {% if total > 100 %}
+              Weights sum exceeds 100%
+            {% elif total < 100 %}
+              Weights sum less than 100%
+            {% else %}
+              None
+            {% endif %}
+
+      # Morning peak period summary
+      - name: "HSBO Weighted Consumption Morning Peak"
+        unique_id: "hsbo_weighted_consumption_morning_peak"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set hours = ['06_07', '07_08', '08_09', '09_10'] %}
+          {% set total = namespace(value=0) %}
+          {% for hour in hours %}
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            
+            {% set avg_3d = states('sensor.hsbo_house_consumption_' ~ hour ~ '_energy_average_3d') | float(0) %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_' ~ hour ~ '_energy_average_7d') | float(0) %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_' ~ hour ~ '_energy_average_14d') | float(0) %}
+            
+            {% set hour_total = (avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d) %}
+            {% set total.value = total.value + hour_total %}
+          {% endfor %}
+          {{ total.value | round(3) }}
+
+      # Evening peak period summary
+      - name: "HSBO Weighted Consumption Evening Peak"
+        unique_id: "hsbo_weighted_consumption_evening_peak"
+        unit_of_measurement: "kWh"
+        state: >
+          {% set hours = ['17_18', '18_19', '19_20', '20_21'] %}
+          {% set total = namespace(value=0) %}
+          {% for hour in hours %}
+            {% set w3d = states('input_number.hsbo_consumption_weight_3d') | float(60) / 100 %}
+            {% set w7d = states('input_number.hsbo_consumption_weight_7d') | float(30) / 100 %}
+            {% set w14d = states('input_number.hsbo_consumption_weight_14d') | float(10) / 100 %}
+            
+            {% set avg_3d = states('sensor.hsbo_house_consumption_' ~ hour ~ '_energy_average_3d') | float(0) %}
+            {% set avg_7d = states('sensor.hsbo_house_consumption_' ~ hour ~ '_energy_average_7d') | float(0) %}
+            {% set avg_14d = states('sensor.hsbo_house_consumption_' ~ hour ~ '_energy_average_14d') | float(0) %}
+            
+            {% set hour_total = (avg_3d * w3d) + (avg_7d * w7d) + (avg_14d * w14d) %}
+            {% set total.value = total.value + hour_total %}
+          {% endfor %}
+          {{ total.value | round(3) }}
+
+      # Prediction confidence
+      # - name: "HSBO Consumption Prediction Confidence"
+      #   unique_id: "hsbo_consumption_prediction_confidence"
+      #   unit_of_measurement: "%"
+      #   state: >
+      #     {% set hours = range(24) %}
+      #     {% set valid_predictions = namespace(count=0) %}
+      #     {% set total_predictions = 24 %}
+          
+      #     {% for hour in hours %}
+      #       {% set hour_str = '%02d_%02d' % (hour, (hour + 1) % 24) %}
+      #       {% set avg_3d = states('sensor.hsbo_house_consumption_' ~ hour_str ~ '_energy_average_3d') | float(-1) %}
+      #       {% set avg_7d = states('sensor.hsbo_house_consumption_' ~ hour_str ~ '_energy_average_7d') | float(-1) %}
+      #       {% set avg_14d = states('sensor.hsbo_house_consumption_' ~ hour_str ~ '_energy_average_14d') | float(-1) %}
+            
+      #       {% if avg_3d >= 0 and avg_7d >= 0 and avg_14d >= 0 %}
+      #         {% set valid_predictions.count = valid_predictions.count + 1 %}
+      #       {% endif %}
+      #     {% endfor %}
+          
+      #     {{ ((valid_predictions.count / total_predictions) * 100) | round(1) }}
+      #   attributes:
+      #     valid_predictions: >
+      #       {% set hours = range(24) %}
+      #       {% set valid_predictions = namespace(count=0) %}
+      #       {% for hour in hours %}
+      #         {% set hour_str = '%02d_%02d' % (hour, (hour + 1) % 24) %}
+      #         {% set avg_3d = states('sensor.hsbo_house_consumption_' ~ hour_str ~ '_energy_average_3d') | float(-1) %}
+      #         {% set avg_7d = states('sensor.hsbo_house_consumption_' ~ hour_str ~ '_energy_average_7d') | float(-1) %}
+      #         {% set avg_14d = states('sensor.hsbo_house_consumption_' ~ hour_str ~ '_energy_average_14d') | float(-1) %}
+      #         {% if avg_3d >= 0 and avg_7d >= 0 and avg_14d >= 0 %}
+      #           {% set valid_predictions.count = valid_predictions.count + 1 %}
+      #         {% endif %}
+      #       {% endfor %}
+      #       {{ valid_predictions.count }}
+      #     total_hours: 24
+      #     status: >
+      #       {% set confidence = states('sensor.hsbo_consumption_prediction_confidence') | float(0) %}
+      #       {% if confidence >= 90 %}
+      #         High
+      #       {% elif confidence >= 75 %}
+      #         Medium
+      #       {% else %}
+      #         Low
+      #       {% endif %}
+
+      - name: "HSBO Consumption Prediction Confidence"
+        unique_id: "hsbo_consumption_prediction_confidence"
+        unit_of_measurement: "%"
+        state: >
+          {% set total_predictions = 24 %}
+          {% set valid_predictions = namespace(count=0) %}
+          
+          {% for hour in range(24) %}
+            {% set hour_str = '%02d_%02d' % (hour, (hour + 1) % 24) %}
+            {% if states('sensor.hsbo_weighted_consumption_' ~ hour_str) | float(-1) >= 0 %}
+              {% set valid_predictions.count = valid_predictions.count + 1 %}
+            {% endif %}
+          {% endfor %}
+          
+          {{ ((valid_predictions.count / total_predictions) * 100) | round(1) }}
+        attributes:
+          status: >
+            {% set confidence = states('sensor.hsbo_consumption_prediction_confidence') | float(0) %}
+            {% if confidence >= 90 %}
+              High
+            {% elif confidence >= 75 %}
+              Medium
+            {% else %}
+              Low
+            {% endif %}
+          missing_hours: >
+            {% set missing = [] %}
+            {% for hour in range(24) %}
+              {% set hour_str = '%02d_%02d' % (hour, (hour + 1) % 24) %}
+              {% if states('sensor.hsbo_weighted_consumption_' ~ hour_str) | float(-1) < 0 %}
+                {% set missing = missing + [hour_str] %}
+              {% endif %}
+            {% endfor %}
+            {{ missing | join(', ') }}
+
+
 sensor:
   # integration
   - platform: integration
@@ -1015,6 +2109,8 @@ sensor:
     sampling_size: 2160
     max_age:
       days: 3
+
+
 
 utility_meter:
   hsbo_house_consumption_00_01_energy_meter:
