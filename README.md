@@ -27,7 +27,7 @@ Perfect for homeowners looking to make the most of their solar investment while 
   - Avoids exporting during negative price periods
 - Next-day charging strategy calculation:
   - Runs at 9:00 PM to prepare for the following day
-  - Using 14days average power sensors to calculate house consumption in the late evening and early morning 
+  - Using 14days average power sensors to calculate house consumption in the late evening and early morning
   - Determines required grid charging and recommends working mode
 - EV charging optimization:
   - Switches to a special TOU mode during EV charging to prioritize vehicle charging
@@ -51,7 +51,7 @@ To use this package, you need the following integrations:
 - [Energi Data Service integration by MTrab](https://github.com/MTrab/energidataservice)
 - [File integration](https://www.home-assistant.io/integrations/file/) for system logging
 
-### Optional integrations 
+### Optional integrations
 - [Huawei Solar PEES package by JensenNick](https://github.com/JensenNick/huawei_solar_pees) (optional but recommended)
 - [Smoothing Analytics Sensors by woopstar](https://github.com/woopstar/smoothing_analytics_sensors) (optional for now)
 
@@ -99,9 +99,16 @@ homeassistant:
 > ⚠️ **Important**: The entity ID must be exactly `notify.file_hsbo_system_log` for the system to work properly.
 
 #### 4. Enable Logging
-- Locate the input boolean `input_boolean.hsbo_logging_enabled` in your Home Assistant instance
-- Set this to ON to enable the logging functionality
 
+   - Navigate to Settings → Devices & Services → Helpers
+   - Locate input_boolean.hsbo_logging_enabled
+   - Set it to ON (or enable it from your dashboard if you have it there)
+
+Verify Logging:
+
+Check that /config/hsbo_logging/hsbo_system.log is created and begins populating with logs (it may take a while before you see logs in the file)
+
+⚠️ Note: The logging system requires both the file notification service (from steps 1-3) to be properly configured AND this boolean to be enabled to function properly.
 > ⚠️ **Note**: The new logging system won't function until this boolean is enabled.<br><br>
 
 ## Installation
@@ -130,13 +137,12 @@ Place the following YAML files in your Home Assistant packages directory (`/conf
 ### 3. Restart Home Assistant
 After placing all files and updating the configuration, restart Home Assistant to load the new packages.
 
-> ⚠️ **Important**: 
+> ⚠️ **Important**:
 > - All five package files are required for the system to function properly
 > - The packages configuration in `configuration.yaml` is mandatory
 > - Restart Home Assistant after making these changes
 
 For more information on using packages in Home Assistant, see the [official documentation](https://www.home-assistant.io/docs/configuration/packages/).<br><br>
-
 
 ## Configuration
 
@@ -155,7 +161,7 @@ You need to map your specific user-provided sensors to the input sensors. You ca
 
 The package includes the following automations to manage and optimize your Huawei solar battery system:
 
-1. `hsbo_daily_battery_optimization`: 
+1. `hsbo_daily_battery_optimization`:
    - Runs daily at 6:00 AM
    - Performs the battery optimization analysis for the upcoming day
    - Calculates energy thresholds/pricing, analyzes hourly forecast data, and generates a summary of recommendations
@@ -186,7 +192,6 @@ The package includes the following automations to manage and optimize your Huawe
 
 These automations work together to provide a comprehensive, adaptive system that optimizes your solar battery usage, maximizes self-consumption, and manages grid interaction based on current conditions and forecasts.<br><br>
 
-
 ## Scripts
 
 The package includes the following scripts for managing and optimizing your Huawei solar battery system:
@@ -216,7 +221,6 @@ The package includes the following scripts for managing and optimizing your Huaw
 12. `hsbo_calculate_next_day_charging`: Calculates the charging strategy for the next day, including required grid charging and recommended working mode.
 
 These scripts are used in various automations within the package and can also be called manually or incorporated into your own custom automations as needed.<br><br>
-
 
 ## Lovelace card
 
@@ -270,7 +274,6 @@ title: HSBO Battery Optimization
 
 - The system manages inverter export based on spot prices, triggered by price changes or hourly checks.<br><br>
 
-
 ## Working Modes
 
 This package supports several working modes to optimize your Huawei solar battery system:
@@ -281,7 +284,7 @@ This package supports several working modes to optimize your Huawei solar batter
 
 **Use Case**: Ideal for households looking to reduce their reliance on grid electricity and maximize the use of their solar energy production.
 
-**When to Use**: 
+**When to Use**:
 - During periods of high solar production
 - When grid electricity prices are consistently high
 
@@ -332,7 +335,6 @@ Note: This working mode is not in use by any automations at the moment, but scri
 
 By utilizing these working modes and the grid export management feature, you can tailor your Huawei solar battery system's operation to your specific needs, local energy market conditions, and personal energy goals.<br><br>
 
-
 ## EV Charging
 
 This package now includes features to optimize battery usage when an electric vehicle (EV) is charging. Here's how it works:
@@ -365,7 +367,6 @@ To use this feature, ensure you have a binary sensor set up in Home Assistant th
 This EV charging optimization works seamlessly with the other features of the Huawei Solar Battery Optimization package, providing a comprehensive energy management solution for homes with both solar systems and electric vehicles.
 
 Please note, if you already has existing automations configuring the Huawai working mode, these should be disabled or removed as the Daily mode management automation would conflict or reset any other configurations.<br><br>
-
 
 ## What's New
 
@@ -416,7 +417,6 @@ This section highlights key updates and new features added to the Huawei Solar B
 - Added detailed README with installation instructions and configuration guidance
 - Included the Home Assistant YAML package file for easy integration<br><br>
 
-
 ## Roadmap
 
 Future planned features include:
@@ -428,7 +428,6 @@ Future planned features include:
     - Seasonal Adaptation: As the 14-day average naturally shifts with seasons, your system will automatically adjust without needing manual intervention.
 2. Adjustable AMP configuration for EV Charging based on excessive PV production after house load.
 3. Peak shaving / Capacity Control.<br><br>
-
 
 ## Contributing
 
@@ -443,11 +442,9 @@ A big thank you to all the contributors who have helped improve this project:
 
 Your contributions, whether through discussons, code, documentation, or suggestions, have been invaluable in making this project better for everyone. Thank you for your time and effort!<br><br>
 
-
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).<br><br>
-
 
 ## Disclaimer
 
