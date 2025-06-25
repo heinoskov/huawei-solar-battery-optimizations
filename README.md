@@ -2,7 +2,7 @@
 
 > ⚠️ **IMPORTANT**: This Git repo is no longer maintained or updated as I'm not using it my selfes. I have switches to this https://github.com/woopstar/hsem by @woopstar.
 
-> ⚠️ **IMPORTANT**: Before installing, please ensure you complete all steps in the [Required Configuration](#required-configuration) section. The system requires specific logging setup to function properly.
+> ⚠️ IMPORTANT: Before installing, please ensure you complete all steps in the [Required Configuration](#required-configuration) section. The system requires specific logging setup to function properly.
 
 Maximize the potential of your Huawei solar battery system with this powerful Home Assistant package. By intelligently optimizing battery usage, solar production, and grid interaction, this solution helps you:
 
